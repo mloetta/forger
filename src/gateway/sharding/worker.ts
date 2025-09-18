@@ -1,13 +1,13 @@
-import { Collection, DiscordenoShard, Intents } from "discordeno";
+import { Collection, DiscordenoShard } from "discordeno";
 import { parentPort, workerData } from 'worker_threads'
-import { AUTHORIZATION } from "../../utils/variables";
+import { AUTHORIZATION, EVENT_SERVER_URL } from "../../utils/variables";
 
 if (!parentPort) throw new Error('Parent port is null')
 
 const SHARDS = new Collection<number, DiscordenoShard>()
 
 function getUrlFromShardId(totalShards: number, shardId: number) {
-  const urls = process.env.EVENT_HANDLER_URLS?.split(',') ?? []
+  const urls = EVENT_SERVER_URL
   const index = totalShards % shardId
 
   return urls[index] ?? urls[0]

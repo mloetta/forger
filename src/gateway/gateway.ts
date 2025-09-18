@@ -1,10 +1,10 @@
 import { createGatewayManager, GatewayIntents } from "discordeno";
 import { rest } from "./rest";
-import { AUTHORIZATION, SERVER_URL, SHARD_SERVER_URL, TOKEN } from "../utils/variables";
+import { AUTHORIZATION, SHARD_SERVER_URL, TOKEN } from "../utils/variables";
 
 export const gateway = createGatewayManager({
   token: TOKEN,
-  intents: GatewayIntents.Guilds,
+  // intents: GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
   connection: await rest.getSessionInfo(),
   resharding: {
     enabled: true,
@@ -15,7 +15,6 @@ export const gateway = createGatewayManager({
 });
 
 gateway.tellWorkerToIdentify = async function (workerId, shardId, bucketId) {
-  // const url = `${SERVER_URL}_${workerId}`
   const url = SHARD_SERVER_URL
   if (!url) {
     return console.error(`No server URL found for server #${workerId}. Unable to start Shard #${shardId}`)

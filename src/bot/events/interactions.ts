@@ -1,4 +1,4 @@
-import { commandOptionsParser, InteractionTypes, MessageFlags } from "discordeno";
+import { commandOptionsParser, InteractionTypes } from "discordeno";
 import { bot } from "../bot";
 import { Collector } from "../../helpers/collector";
 

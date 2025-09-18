@@ -1,10 +1,10 @@
-import { Collection, createBot, Intents } from "discordeno";
-import { readDirectory } from "../utils/utils";
+import { Collection, createBot, createDesiredPropertiesObject, Intents, type Bot, type DesiredPropertiesBehavior } from "discordeno";
+import { createProxyCache } from "dd-cache-proxy";
 import type { ChatInput } from "../helpers/chatInput";
 import type { ContextMenu } from "../helpers/contextMenu";
 import { GATEWAY_URL, AUTHORIZATION, TOKEN, REST_URL } from "../utils/variables";
+import { readDirectory } from "../utils/utils";
 import { join } from "path";
-import * as util from 'util'
 
 declare module 'discordeno' {
   interface Bot {
@@ -12,89 +12,53 @@ declare module 'discordeno' {
   }
 }
 
-export const bot = createBot({
-  token: TOKEN,
-  intents: Intents.Guilds,
-  desiredProperties: {
-    interaction: {
-      id: true,
-      type: true,
-      token: true,
-      data: true,
-      user: true,
-      member: true,
-      guildId: true,
-      channelId: true,
-    },
-    message: {
-      content: true,
-      author: true,
-      channelId: true,
-    },
-    user: {
-      id: true,
-      toggles: true
-    }
+const desiredProperties = createDesiredPropertiesObject({
+  interaction: {
+    id: true,
+    type: true,
+    token: true,
+    data: true,
+    user: true,
+    member: true,
+    guildId: true,
+    channelId: true,
   },
-  rest: {
-    proxy: {
-      baseUrl: REST_URL,
-      authorization: AUTHORIZATION
-    },
+  message: {
+    content: true,
+    author: true,
+    channelId: true,
   },
-  events: {
-    async messageCreate(message) {
-      if (message.author.bot) return;
-
-      if (message.author.id !== BigInt('782946852278501407')) return;
-
-      if (!message.content.startsWith('pt.eval')) return;
-
-      const args = message.content.split(' ');
-      args.shift();
-
-      const cleanArgs = args.join(' ').replace(/^\s+/, '').replace(/\s*$/, '');
-
-      let result;
-      try {
-        result = eval(cleanArgs);
-      } catch (e) {
-        result = e;
-      }
-
-      const response = ['```ts'];
-      const regex = new RegExp(TOKEN, 'gi');
-
-      if (result && typeof result.then === 'function') {
-        let value
-        try {
-          value = await result
-        } catch (e) {
-          value = e;
-        }
-
-        response.push(
-          util
-            .inspect(value, { depth: 1 })
-            .replace(regex, 'nuh uh')
-            .substring(0, 1985),
-        )
-      } else {
-        response.push(
-          String(util.inspect(result))
-            .replace(regex, 'nuh uh')
-            .substring(0, 1985)
-        )
-      }
-
-      response.push('```')
-
-      await bot.rest.sendMessage(message.channelId, {
-        content: response.join('\n')
-      })
-    },
-  }
+  user: {
+    avatar: true,
+    globalName: true,
+    id: true,
+    username: true,
+    toggles: true
+  },
 })
+
+interface BotDesiredProps extends Required<typeof desiredProperties> {}
+
+const getProxyCacheBot = (bot: Bot<BotDesiredProps, DesiredPropertiesBehavior.RemoveKey>) =>
+  createProxyCache(bot, {
+    desiredProps: {
+      user: ['avatar', 'id', 'globalName', 'username'],
+    },
+  })
+
+export const bot = getProxyCacheBot(
+  createBot({
+    token: TOKEN,
+    // intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent,
+    desiredProperties,
+    rest: {
+      proxy: {
+        baseUrl: REST_URL,
+        authorization: AUTHORIZATION
+      },
+    },
+  })
+)
 
 // @ts-ignore
 bot.gateway.requestMembers = async function (guildId, options) {

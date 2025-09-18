@@ -12,6 +12,7 @@
     "@discordeno/gateway": "^21.0.0",
     "@discordeno/rest": "^21.0.0",
     "@types/express": "^5.0.3",
+    "dd-cache-proxy": "^2.6.5",
     "discordeno": "^21.0.0",
     "express": "^5.1.0"
   }
