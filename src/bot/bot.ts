@@ -65,4 +65,4 @@ for (const module of commands) {
   bot.commands.set(command.name, command);
 }
 
-// bot.start();
+bot.start();

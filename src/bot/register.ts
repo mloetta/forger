@@ -6,6 +6,9 @@ import { rest } from "../rest/rest";
 import { join } from "path/posix";
 
 const cache = new Collection<string, ChatInput & ContextMenu>()
+
+console.log('Refreshing application (/) commands');
+
 const commands = await readDirectory(join(__dirname, './commands'));
 for (const module of commands) {
   const command = module.command
@@ -14,3 +17,7 @@ for (const module of commands) {
 }
 
 await rest.upsertGlobalApplicationCommands(Array.from(cache.values()))
+
+console.log('Successfully reloaded application (/) commands');
+
+process.exit();
