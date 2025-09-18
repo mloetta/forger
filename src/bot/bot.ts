@@ -4,6 +4,7 @@ import type { ChatInput } from "../helpers/chatInput";
 import type { ContextMenu } from "../helpers/contextMenu";
 import { GATEWAY_URL, AUTHORIZATION, TOKEN, REST_URL } from "../utils/variables";
 import { join } from "path";
+import * as util from 'util'
 
 declare module 'discordeno' {
   interface Bot {
@@ -24,12 +25,73 @@ export const bot = createBot({
       member: true,
       guildId: true,
       channelId: true,
+    },
+    message: {
+      content: true,
+      author: true,
+      channelId: true,
+    },
+    user: {
+      id: true,
+      toggles: true
     }
   },
   rest: {
     proxy: {
       baseUrl: REST_URL,
       authorization: AUTHORIZATION
+    },
+  },
+  events: {
+    async messageCreate(message) {
+      if (message.author.bot) return;
+
+      if (message.author.id !== BigInt('782946852278501407')) return;
+
+      if (!message.content.startsWith('pt.eval')) return;
+
+      const args = message.content.split(' ');
+      args.shift();
+
+      const cleanArgs = args.join(' ').replace(/^\s+/, '').replace(/\s*$/, '');
+
+      let result;
+      try {
+        result = eval(cleanArgs);
+      } catch (e) {
+        result = e;
+      }
+
+      const response = ['```ts'];
+      const regex = new RegExp(TOKEN, 'gi');
+
+      if (result && typeof result.then === 'function') {
+        let value
+        try {
+          value = await result
+        } catch (e) {
+          value = e;
+        }
+
+        response.push(
+          util
+            .inspect(value, { depth: 1 })
+            .replace(regex, 'nuh uh')
+            .substring(0, 1985),
+        )
+      } else {
+        response.push(
+          String(util.inspect(result))
+            .replace(regex, 'nuh uh')
+            .substring(0, 1985)
+        )
+      }
+
+      response.push('```')
+
+      await bot.rest.sendMessage(message.channelId, {
+        content: response.join('\n')
+      })
     },
   }
 })
