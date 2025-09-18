@@ -20,7 +20,7 @@ app.all('/*path', async (req, res) => {
 
   try {
     const result = await rest.makeRequest(req.method as RequestMethods, req.url.substring(4), {
-      body: req.method !== 'DELETE' && req.method !== 'GET' ? {} : req.body,
+      body: req.method !== 'DELETE' && req.method !== 'GET' ? req.body : undefined,
     })
 
     if (result) {

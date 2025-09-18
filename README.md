@@ -1,15 +1,5 @@
-# discordeno_bot
+# Pocket Tool
 
-To install dependencies:
+Multi-purpose bot – user install only
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.20. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+[invite today](https://discord.com/oauth2/authorize?client_id=1418168974285340683)

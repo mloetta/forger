@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-export const ReadableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+export const readableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-export function ReadableFileSize(bytes: number, micro = false, precision = 1): string {
+export function readableFileSize(bytes: number, micro = false, precision = 1): string {
   const thresh = micro ? 1000 : 1024;
 
   if (Math.abs(bytes) < thresh) {
@@ -16,12 +16,12 @@ export function ReadableFileSize(bytes: number, micro = false, precision = 1): s
   do {
     bytes /= thresh;
     ++unit;
-  } while (Math.round(Math.abs(bytes) * round) / round >= thresh && unit < ReadableFileSizeUnits.length - 1);
+  } while (Math.round(Math.abs(bytes) * round) / round >= thresh && unit < readableFileSizeUnits.length - 1);
 
-  return `${bytes.toFixed(precision)} ${ReadableFileSizeUnits[unit]}`;
+  return `${bytes.toFixed(precision)} ${readableFileSizeUnits[unit]}`;
 }
 
-export function FormatTime(duration: number | string) {
+export function formatTime(duration: number | string) {
   const total = Math.floor(Number(duration) / 1000);
   const days = Math.floor(total / (24 * 60 * 60));
   const hours = Math.floor((total % (24 * 60 * 60)) / (60 * 60));
@@ -40,23 +40,11 @@ export function FormatTime(duration: number | string) {
   return parts.join(' ');
 }
 
-export function Commas(num: number | string) {
+export function commas(num: number | string) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-export function ReadDirRecursive(dir: string, callback: (filepath: string, filename: string) => any): any[] {
-  return fs.readdirSync(path.resolve(dir)).flatMap((filename) => {
-    const filepath = path.resolve(dir, filename);
-
-    if (fs.statSync(filepath).isDirectory()) {
-      return ReadDirRecursive(filepath, callback);
-    }
-
-    return callback(filepath, filename);
-  });
-}
-
-export function Debounce(fn: any, delay: number) {
+export function debounce(fn: any, delay: number) {
   let timeout: any;
 
   return function (...args: any) {
@@ -84,13 +72,13 @@ export function CRC32(string: string): string {
   return hash.toString(16).padStart(8, '0');
 }
 
-export function ComponentCustomId(customId: string, ...args: any[]): string {
+export function componentCustomId(customId: string, ...args: any[]): string {
   if (args.length) return `${customId}-${args.map((arg) => String(arg)).join(',')}`;
 
   return customId;
 }
 
-export function ClosestMatch(input: string, strings: readonly string[]): string | null {
+export function closestMatch(input: string, strings: readonly string[]): string | null {
   if (typeof input !== 'string') throw new TypeError('Input must be a string');
   if (!Array.isArray(strings)) throw new TypeError('Strings must be an array');
   for (const s of strings) {
@@ -107,7 +95,7 @@ export function ClosestMatch(input: string, strings: readonly string[]): string 
   let best: string | null = null;
 
   for (const candidate of strings) {
-    const distance = LevenshteinDistance(input, candidate);
+    const distance = levenshteinDistance(input, candidate);
     if (distance < minDistance) {
       minDistance = distance;
       best = candidate;
@@ -117,7 +105,7 @@ export function ClosestMatch(input: string, strings: readonly string[]): string 
   return best;
 }
 
-export function LevenshteinDistance(a: string, b: string): number {
+export function levenshteinDistance(a: string, b: string): number {
   if (typeof a !== 'string' || typeof b !== 'string') {
     throw new TypeError('Levenshtein Distance expects two strings');
   }
@@ -157,15 +145,20 @@ export function LevenshteinDistance(a: string, b: string): number {
   return prev[m] as number;
 }
 
-export async function ReadDirectory(dir: string): Promise<any[]> {
-  const results = await Promise.all(
-    ReadDirRecursive(dir, async (file) => {
-      delete require.cache[require.resolve(file)];
+export async function readDirectory(dir: string): Promise<any[]> {
+  const results = fs.readdirSync(path.resolve(dir), { recursive: true, encoding: 'utf-8' });
 
-      const module = await import(file);
+  const modules = await Promise.all(
+    results.map(async (file) => {
+      const fullPath = path.resolve(dir, file);
+
+      if (fs.statSync(fullPath).isDirectory()) return null;
+
+      delete require.cache[require.resolve(fullPath)];
+      const module = await import(fullPath);
       return module;
     })
-  )
+  );
 
-  return results;
+  return modules.filter(Boolean);
 }

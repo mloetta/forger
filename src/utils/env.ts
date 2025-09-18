@@ -11,11 +11,11 @@ export namespace Env {
       private value: string,
     ) {}
 
-    ToInt() {
-      return Math.floor(this.ToNumber());
+    toInt() {
+      return Math.floor(this.toNumber());
     }
 
-    ToArray<T = any>() {
+    toArray<T = any>() {
       try {
         const parsed = JSON.parse(this.value);
         if (!Array.isArray(parsed)) throw new Error();
@@ -25,7 +25,7 @@ export namespace Env {
       }
     }
 
-    ToObject<T = Record<string, any>>() {
+    toObject<T = Record<string, any>>() {
       try {
         const parsed = JSON.parse(this.value);
         if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') throw new Error();
@@ -35,17 +35,17 @@ export namespace Env {
       }
     }
 
-    ToNumber() {
+    toNumber() {
       const num = Number(this.value);
       if (isNaN(num)) throw new Error(`item '${this.key}' is not a valid number`);
       return num;
     }
 
-    ToString() {
+    toString() {
       return this.value;
     }
 
-    ToBoolean() {
+    toBoolean() {
       const val = this.value.toLowerCase();
       if (val === 'true') return true;
       if (val === 'false') return false;
@@ -53,35 +53,31 @@ export namespace Env {
     }
   }
 
-  export function Get(key: string) {
-    return Cache.hasOwnProperty(key) ? new Env(key, Cache[key]!) : undefined;
+  export function get(key: string, fallback?: any) {
+    if (Cache.hasOwnProperty(key)) {
+      return new Env(key, Cache[key]!);
+    }
+
+    set(key, fallback);
+    return new Env(key, fallback);
   }
 
-  export function Set(key: string, value: any) {
-    Cache[key] = ItemToString(value);
-    return Get(key);
+  export function set(key: string, value: any) {
+    Cache[key] = itemToString(value);
+    return get(key);
   }
 
-  export function Save() {
-    fs.writeFileSync(Path, ToString(), 'utf-8');
+  export function save() {
+    fs.writeFileSync(Path, toString(), 'utf-8');
   }
 
-  export function Required(key: string) {
-    const item = Get(key);
+  export function required(key: string) {
+    const item = get(key);
     if (!item) throw new Error(`item '${key}' is required`);
     return item;
   }
 
-  export function Default(key: string, fallback: any) {
-    let item = Get(key);
-    if (!item) {
-      Set(key, fallback);
-      item = Get(key)!;
-    }
-    return item;
-  }
-
-  export function Load() {
+  export function load() {
     if (!fs.existsSync(Path)) return;
     const content = fs.readFileSync(Path, 'utf-8');
 
@@ -105,15 +101,15 @@ export namespace Env {
     });
   }
 
-  export function ItemToString(item: any) {
+  export function itemToString(item: any) {
     return typeof item === 'object' ? JSON.stringify(item) : String(item);
   }
 
-  export function ToString() {
+  export function toString() {
     return Object.entries(Cache)
       .map(([key, value]) => `${key}=${value}`)
       .join('\n');
   }
 
-  Load();
+  load();
 }

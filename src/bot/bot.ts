@@ -1,5 +1,5 @@
 import { Collection, createBot, Intents } from "discordeno";
-import { ReadDirectory } from "../utils/utils";
+import { readDirectory } from "../utils/utils";
 import type { ChatInput } from "../helpers/chatInput";
 import type { ContextMenu } from "../helpers/contextMenu";
 import { GATEWAY_URL, AUTHORIZATION, TOKEN, REST_URL } from "../utils/variables";
@@ -48,7 +48,7 @@ bot.gateway.requestMembers = async function (guildId, options) {
     .catch(() => undefined)
 }
 
-const events = await ReadDirectory(join(__dirname, './events'));
+const events = await readDirectory(join(__dirname, './events'));
 bot.events = events.reduce((acc, mod) => {
   for (const [name, handler] of Object.entries(mod)) {
     acc[name as keyof typeof bot.events] = handler;
@@ -56,7 +56,7 @@ bot.events = events.reduce((acc, mod) => {
   return acc;
 }, {} as typeof bot.events);
 
-const commands = await ReadDirectory(join(__dirname, './commands'));
+const commands = await readDirectory(join(__dirname, './commands'));
 bot.commands = new Collection();
 
 for (const module of commands) {
@@ -65,4 +65,4 @@ for (const module of commands) {
   bot.commands.set(command.name, command);
 }
 
-bot.start();
+// bot.start();
