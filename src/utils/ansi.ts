@@ -1,4 +1,4 @@
-export const Colors: Record<string, string> = {
+const colors: Record<string, string> = {
   reset: '\u001b[0m',
   black: '\u001b[30m',
   red: '\u001b[31m',
@@ -10,7 +10,7 @@ export const Colors: Record<string, string> = {
   white: '\u001b[37m',
 };
 
-export const Aliases: Record<string, string> = {
+const aliases: Record<string, string> = {
   rs: 'reset',
   b: 'black',
   r: 'red',
@@ -22,19 +22,10 @@ export const Aliases: Record<string, string> = {
   w: 'white',
 };
 
-export function formatAnsi(text: string, color: string) {
-  let colorKey = color;
-  if (!Colors[colorKey] && !Aliases[colorKey]) {
-    throw new Error('Invalid ANSI Color');
-  }
+export type ColorsType = keyof typeof colors | keyof typeof aliases;
 
-  if (!Colors[colorKey]) {
-    const alias = Aliases[colorKey];
-    if (!alias) {
-      throw new Error('Invalid ANSI Color');
-    }
-    colorKey = alias;
-  }
+export function formatAnsi(text: string, color: ColorsType) {
+  const col = aliases[color] || color;
 
-  return `${Colors[colorKey]}${text}${Colors['reset']}`;
+  return `${colors[col]}${text}${colors['reset']}`;
 }

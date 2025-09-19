@@ -1,12 +1,11 @@
 import { EventEmitter } from 'events'
-import type { Interaction } from '../types/types'
 
-export class Collector extends EventEmitter {
-  onCollect(callback: (item: Interaction) => unknown): void {
+export class Collector<Type> extends EventEmitter {
+  onCollect(callback: (item: Type) => unknown): void {
     this.on('collect', callback)
   }
 
-  collect(item: Interaction): void {
+  collect(item: Type): void {
     this.emit('collect', item)
   }
 }

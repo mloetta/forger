@@ -1,9 +1,11 @@
 import { commandOptionsParser, InteractionTypes } from "discordeno";
 import { bot } from "../bot";
 import { Collector } from "../../helpers/collector";
+import type { Interaction } from "../../types/types";
 
-export const collectors = new Set<Collector>();
+export const collectors = new Set<Collector<Interaction>>();
 
+// TODO: add permission handler
 export const interactionCreate: typeof bot.events.interactionCreate = async (interaction) => {
   for (const collector of collectors) {
     collector.collect(interaction);

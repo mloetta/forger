@@ -5,6 +5,7 @@ import type { ContextMenu } from "../helpers/contextMenu";
 import { GATEWAY_URL, AUTHORIZATION, TOKEN, REST_URL } from "../utils/variables";
 import { readDirectory } from "../utils/utils";
 import { join } from "path";
+import { Logger } from "../utils/logger";
 
 declare module 'discordeno' {
   interface Bot {
