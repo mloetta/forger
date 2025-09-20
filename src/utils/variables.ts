@@ -1,17 +1,15 @@
-import { Env } from "./env";
+import Env from "./env";
 
-export const TOKEN = Env.required('token').toString();
-export const BOT_ID = Env.required('bot_id').toString();
-export const BOT_PORT = Env.required('bot_port').toString();
-export const BOT_URL = Env.required('bot_url').toString();
-export const AUTHORIZATION = Env.required('authorization').toString();
-export const REST_PORT = Env.required('rest_port').toString();
-export const REST_URL = Env.required('rest_url').toString();
-export const GATEWAY_PORT = Env.required('gateway_port').toString();
-export const GATEWAY_URL = Env.required('gateway_url').toString();
-export const SHARD_SERVER_PORT = Env.required('shard_server_port').toString();
-export const SHARD_SERVER_URL = Env.required('shard_server_url').toString();
-export const EVENT_SERVER_PORT = Env.required('event_server_port').toString();
-export const EVENT_SERVER_URL = Env.required('event_server_url').toString();
-export const SERVER_PORT = Env.required('server_port').toString();
-export const SERVER_URL = Env.required('server_url').toString();
+export const TOKEN = Env.get('token');
+export const BOT_ID = Env.get('bot_id');
+export const BOT_PORT = Env.get('bot_port');
+export const BOT_URL = Env.get('bot_url');
+export const AUTHORIZATION = Env.get('authorization');
+export const REST_PORT = Env.get('rest_port');
+export const REST_URL = Env.get('rest_url');
+export const GATEWAY_PORT = Env.get('gateway_port');
+export const GATEWAY_URL = Env.get('gateway_url');
+export const SHARD_SERVER_PORT = Env.get('shard_server_port');
+export const SHARD_SERVER_URL = Env.get('shard_server_url');
+export const EVENT_SERVER_URLS = Env.get('event_server_urls');
+export const EVENT_SERVER_PORT = Env.get('event_server_port')

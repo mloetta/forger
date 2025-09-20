@@ -1,4 +1,4 @@
-import type { ChatInput } from "../../helpers/chatInput";
+import type { ChatInput } from "../../../helpers/chatInput";
 
 export const command = {
   name: "ping",

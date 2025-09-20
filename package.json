@@ -9,11 +9,10 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@discordeno/gateway": "^21.0.0",
-    "@discordeno/rest": "^21.0.0",
-    "@types/express": "^5.0.3",
+    "@fastify/multipart": "^9.2.1",
+    "amqplib": "^0.10.9",
     "dd-cache-proxy": "^2.6.5",
     "discordeno": "^21.0.0",
-    "express": "^5.1.0"
+    "fastify": "^5.6.0"
   }
 }

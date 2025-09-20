@@ -1,7 +1,7 @@
 import { commandOptionsParser, InteractionTypes } from "discordeno";
 import { bot } from "../bot";
-import { Collector } from "../../helpers/collector";
-import type { Interaction } from "../../types/types";
+import { Collector } from "../../../helpers/collector";
+import type { Interaction } from "../../../types/types";
 
 export const collectors = new Set<Collector<Interaction>>();
 

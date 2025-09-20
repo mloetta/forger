@@ -1,9 +1,13 @@
-import { Collection } from "discordeno";
-import type { ChatInput } from "../helpers/chatInput";
-import type { ContextMenu } from "../helpers/contextMenu";
-import { readDirectory } from "../utils/utils";
-import { rest } from "../rest/rest";
+import { Collection, createRestManager } from "discordeno";
+import type { ChatInput } from "../../helpers/chatInput";
+import type { ContextMenu } from "../../helpers/contextMenu";
+import { readDirectory } from "../../utils/utils";
 import { join } from "path/posix";
+import { TOKEN } from "../../utils/variables";
+
+const rest = createRestManager({
+  token: TOKEN
+})
 
 const cache = new Collection<string, ChatInput & ContextMenu>()
 
