@@ -1,6 +1,5 @@
 import { Collection, createRestManager } from "discordeno";
-import type { ChatInput } from "../../helpers/chatInput";
-import type { ContextMenu } from "../../helpers/contextMenu";
+import type { Command } from "../../helpers/command";
 import { readDirectory } from "../../utils/utils";
 import { join } from "path/posix";
 import { TOKEN } from "../../utils/variables";
@@ -9,7 +8,7 @@ const rest = createRestManager({
   token: TOKEN
 })
 
-const cache = new Collection<string, ChatInput & ContextMenu>()
+const cache = new Collection<string, Command>()
 
 console.log('Refreshing application (/) commands');
 

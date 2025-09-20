@@ -2,6 +2,7 @@ import type { DiscordGatewayPayload, GatewayDispatchEventNames } from "discorden
 import { EVENT_SERVER_PORT } from "../../utils/variables";
 import { bot } from "./bot";
 import { buildFastifyApp } from "./fastify";
+import '../../utils/process'
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload

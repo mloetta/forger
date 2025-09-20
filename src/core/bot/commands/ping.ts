@@ -1,4 +1,4 @@
-import type { ChatInput } from "../../../helpers/chatInput";
+import type { Command } from "../../../helpers/command";
 
 export const command = {
   name: "ping",
@@ -7,7 +7,7 @@ export const command = {
     category: "core",
   },
   acknowledge: true,
-  async run(interaction, args) {
+  async run(interaction, options) {
     await interaction.respond('Pong!')
   },
-} satisfies ChatInput;
+} satisfies Command;

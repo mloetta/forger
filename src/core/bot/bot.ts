@@ -1,37 +1,61 @@
-import { Collection, createBot, GatewayIntents, Intents, type Bot } from "discordeno";
-import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerStatusUpdate, WorkerShardPayload } from '../gateway/worker/types.ts'
-import { AUTHORIZATION, GATEWAY_URL, TOKEN } from "../../utils/variables.ts";
-import type { ChatInput } from "../../helpers/chatInput.ts";
-import type { ContextMenu } from "../../helpers/contextMenu.ts";
+import { Collection, createBot, createDesiredPropertiesObject, GatewayIntents, type Bot, type DesiredPropertiesBehavior } from "discordeno";
+import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerPresenceUpdate, WorkerShardPayload } from '../gateway/worker/types.ts'
+import { AUTHORIZATION, GATEWAY_URL, REST_URL, TOKEN } from "../../utils/variables.ts";
 import { readDirectory } from "../../utils/utils.ts";
 import { join } from "path";
-import { Logger } from "../../utils/logger.ts";
+import { createProxyCache } from "dd-cache-proxy";
+import type { Command } from "../../helpers/command.ts";
 
 declare module 'discordeno' {
   interface Bot {
-    commands: Collection<string, ChatInput & ContextMenu>
+    commands: Collection<string, Command>
   }
 }
+
+// Desired props object
+const desiredProperties = createDesiredPropertiesObject({
+  interaction: {
+    data: true,
+    id: true,
+    token: true,
+    type: true,
+    user: true,
+  },
+  user: {
+    avatar: true,
+    globalName: true,
+    id: true,
+    publicFlags: true,
+    toggles: true,
+    username: true,
+  }
+});
+
+/*
+// This will be needed to provide the type for the bot parameter of our function.
+interface BotDesiredProperties extends Required<typeof desiredProperties> {}
+
+const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavior.RemoveKey>) =>
+  createProxyCache(bot, {
+    desiredProps: {
+      interaction: ['data', 'id', 'token', 'type', 'user'],
+      user: ['avatar', 'globalName', 'id', 'publicFlags', 'toggles', 'username']
+    },
+    cacheInMemory: {
+      user: true,
+      default: false
+    }
+  })
+*/
 
 export const bot = createBot({
   token: TOKEN,
   intents: GatewayIntents.Guilds,
-  desiredProperties: {
-    interaction: {
-      id: true,
-      type: true,
-      token: true,
-      data: true,
-      user: true,
-    },
-    user: {
-      id: true,
-      username: true,
-      discriminator: true,
-      avatar: true,
-      globalName: true,
-      publicFlags: true,
-      toggles: true
+  desiredProperties,
+  rest: {
+    proxy: {
+      baseUrl: REST_URL,
+      authorization: AUTHORIZATION
     }
   }
 })
@@ -62,7 +86,7 @@ function overrideGatewayImplementations(bot: Bot): void {
       body: JSON.stringify({
         type: 'EditShardsPresence',
         payload,
-      } satisfies WorkerStatusUpdate),
+      } satisfies WorkerPresenceUpdate),
       headers: {
         'Content-Type': 'application/json',
         Authorization: AUTHORIZATION,

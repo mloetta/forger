@@ -21,9 +21,9 @@ export const gateway = createGatewayManager({
   token: TOKEN,
   intents: GatewayIntents.Guilds,
   connection: gatewayBotConfig,
-  shardsPerWorker: 4,
-  totalShards: 1,
-  totalWorkers: 1,
+  shardsPerWorker: 16,
+  // totalShards: 1,
+  totalWorkers: 4,
   resharding: {
     enabled: true,
     shardsFullPercentage: 80,
@@ -62,7 +62,6 @@ gateway.resharding.tellWorkerToPrepare = async (workerId, shardId, bucketId) => 
   worker.off('message', waitForShardPrepared)
 }
 
-// @ts-ignore
 gateway.resharding.onReshardingSwitch = async () => {
   logger.info('Resharding switch triggered, telling workers to switch the shards')
 

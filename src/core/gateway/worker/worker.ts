@@ -158,7 +158,6 @@ function createShard(shardId: number): DiscordenoShard {
     return await promise
   }
 
-  shard.forwardToBot = (packet) => shard.events.message?.(shard, packet)
   shard.events.message = handleShardMessageEvent
 
   return shard

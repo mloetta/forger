@@ -2,7 +2,8 @@ import { GATEWAY_PORT } from "../../utils/variables"
 import { buildFastifyApp } from "./fastify"
 import { gateway, logger, workers } from "./gateway"
 import { shardInfoRequests } from "./worker/createWorker"
-import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerMessage, WorkerStatusUpdate, WorkerShardPayload } from "./worker/types"
+import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerMessage, WorkerPresenceUpdate, WorkerShardPayload } from "./worker/types"
+import '../../utils/process'
 
 const app = buildFastifyApp()
 
@@ -16,7 +17,7 @@ app.post('/', async (req, res) => {
     return
   }
 
-  const data = req.body as WorkerShardPayload | WorkerStatusUpdate | ManagerGetShardInfoFromGuildId
+  const data = req.body as WorkerShardPayload | WorkerPresenceUpdate | ManagerGetShardInfoFromGuildId
 
   if (data.type === 'ShardPayload') {
     await gateway.sendPayload(data.shardId, data.payload)

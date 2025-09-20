@@ -91,10 +91,10 @@ export function componentCustomId(customId: string, ...args: any[]): string {
 }
 
 export function closestMatch(input: string, strings: readonly string[]): string | null {
-  if (typeof input !== 'string') throw new TypeError('Input must be a string');
-  if (!Array.isArray(strings)) throw new TypeError('Strings must be an array');
+  if (typeof input !== 'string') throw new TypeError('Input must be a string.');
+  if (!Array.isArray(strings)) throw new TypeError('Strings must be an array.');
   for (const s of strings) {
-    if (typeof s !== 'string') throw new TypeError('Strings must only contain strings');
+    if (typeof s !== 'string') throw new TypeError('Strings must only contain strings.');
   }
 
   if (strings.length === 0) return null;
@@ -119,7 +119,7 @@ export function closestMatch(input: string, strings: readonly string[]): string 
 
 export function levenshteinDistance(a: string, b: string): number {
   if (typeof a !== 'string' || typeof b !== 'string') {
-    throw new TypeError('Levenshtein Distance expects two strings');
+    throw new TypeError('Levenshtein Distance expects two strings.');
   }
 
   if (a === b) return 0;
@@ -158,6 +158,10 @@ export function levenshteinDistance(a: string, b: string): number {
 }
 
 export async function readDirectory(dir: string): Promise<any[]> {
+  if (!path.isAbsolute(dir)) {
+    throw new Error('The provided path must be absolute.')
+  }
+
   const results = fs.readdirSync(path.resolve(dir), { recursive: true, encoding: 'utf-8' });
 
   const modules = await Promise.all(

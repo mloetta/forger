@@ -1,7 +1,8 @@
 import type { RequestMethods } from "discordeno";
-import { REST_URL, REST_PORT } from "../../utils/variables";
+import { REST_PORT } from "../../utils/variables";
 import { buildFastifyApp, parseMultiformBody } from "./fastify";
 import { rest, logger } from "./rest";
+import '../../utils/process'
 
 const app = buildFastifyApp()
 
@@ -41,3 +42,5 @@ app.all('/*', async (req, res) => {
 })
 
 await app.listen({ port: Number(REST_PORT) })
+
+logger.info(`REST Proxy listening on port ${REST_PORT}`)
