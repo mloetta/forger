@@ -1,5 +1,9 @@
-import { bot } from 'bot/bot'
+import { bot } from "bot/bot"
+import type { Event } from "helpers/event"
 
-export const ready: typeof bot.events.ready = async ({ shardId }) => {
-  bot.logger.info(`Shard ID #${shardId} is ready.`)
-}
+export default {
+  name: 'ready',
+  run({ shardId }) {
+    bot.logger.info(`Shard ID #${shardId} is ready.`)
+  }
+} satisfies Event<'ready'>

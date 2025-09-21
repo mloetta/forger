@@ -3,7 +3,7 @@ import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowf
 import type { ApplicationCommand } from "helpers/command";
 import { Translate } from "utils/i18n";
 
-export const command = {
+export default {
   name: "ping",
   description: "Replies with Pong!",
   descriptionLocalizations: {

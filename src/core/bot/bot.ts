@@ -5,6 +5,8 @@ import { readDirectory } from "utils/utils";
 import { join } from "path";
 import { createProxyCache } from "dd-cache-proxy";
 import type { ApplicationCommand } from "helpers/command";
+import type { Event } from "helpers/event";
+import type { Events } from "types/types";
 
 declare module 'discordeno' {
   interface Bot {
@@ -119,17 +121,14 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
 
 const events = await readDirectory(join(__dirname, './events'));
 bot.events = events.reduce((acc, mod) => {
-  for (const [name, handler] of Object.entries(mod)) {
-    acc[name as keyof typeof bot.events] = handler;
-  }
+  const event = mod.default as Event<keyof Events>;
+  acc[event.name] = event.run as Events[typeof event.name];
   return acc;
-}, {} as typeof bot.events);
+}, {} as Events); 
 
 const commands = await readDirectory(join(__dirname, './commands'));
-bot.commands = new Collection();
+bot.commands = new Collection<string, ApplicationCommand>();
 
-for (const module of commands) {
-  const command = module.command
-
+for (const command of commands) {
   bot.commands.set(command.name, command);
 }

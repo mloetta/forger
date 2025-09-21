@@ -4,46 +4,51 @@ import { Collector } from "helpers/collector";
 import type { Interaction } from "types/types";
 import { getXataClient } from "utils/xata";
 import type { ApplicationCommand } from "helpers/command";
+import type { Event } from "helpers/event";
 
 export const collectors = new Set<Collector<Interaction>>();
 const xata = getXataClient()
 
 // TODO: add permission handler
-export const interactionCreate: typeof bot.events.interactionCreate = async (interaction) => {
-  for (const collector of collectors) {
-    collector.collect(interaction);
-  }
-  
-  if (interaction.type === InteractionTypes.ApplicationCommand) {
-    if (!interaction.data) return;
-
-    const command = bot.commands.get(interaction.data.name);
-    if (!command) return;
-
-    const incognito = interaction.data.options?.find((option) => option.name === "incognito")?.value as boolean;
-
-    if (command.acknowledge ?? true) {
-      await interaction.defer(!!command.ephemeral || incognito)
+export default {
+  name: 'interactionCreate',
+  async run(interaction) {
+    for (const collector of collectors) {
+      collector.collect(interaction)
     }
 
-    try {
-      if (command.preconditions) {
-        const context = { interaction, args: commandOptionsParser(interaction) };
+    if (!interaction.data) return;
+    
+    if (interaction.data.type === ApplicationCommandTypes.ChatInput) {
+      const command = bot.commands.get(interaction.data.name) as ApplicationCommand<ApplicationCommandTypes.ChatInput>
+      if (!command) return;
 
-        if (!(await command.preconditions.run(context))) {
-          command.preconditions.fail(context);
+      if (command.acknowledge) {
+        await interaction.defer(command.ephemeral)
+      }
+
+      try {
+        if (command.preconditions) {
+          const context = { interaction, options: commandOptionsParser(interaction)}
+
+          if (!(await command.preconditions.run(context))) {
+            command.preconditions.fail(context)
+            return;
+          }
+
+          await command.run(interaction, commandOptionsParser(interaction), xata)
+        }
+      } catch (e) {
+        bot.logger.error(`Command ${command.name} has errored.`, e)
+
+        if (command.acknowledge) {
+          await interaction.edit('Uh-oh, this command feels... wrong. Maybe try again later?')
+          return;
+        } else {
+          await interaction.respond('Uh-oh, this command feels... wrong. Maybe try again later?')
           return;
         }
       }
-      
-      if (interaction.data.type === ApplicationCommandTypes.ChatInput) {
-        await (command as ApplicationCommand<ApplicationCommandTypes.ChatInput>).run(interaction, commandOptionsParser(interaction), xata);
-      } else if (interaction.data.type === ApplicationCommandTypes.Message || interaction.data.type === ApplicationCommandTypes.User) {
-        await (command as ApplicationCommand<ApplicationCommandTypes.Message | ApplicationCommandTypes.User>).run(interaction, xata);
-      }
-    } catch (e) {
-      console.error(e);
-      return
     }
-  }
-}
+  },
+} satisfies Event<'interactionCreate'>

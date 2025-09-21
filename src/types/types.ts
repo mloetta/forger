@@ -10,6 +10,7 @@ export type DeepPartial<T extends Record<any, any>> = {
 };
 
 export type Bot = typeof bot.transformers.$inferredTypes
+export type Events = Required<typeof bot.events>
 export type User = typeof bot.transformers.$inferredTypes.user
 export type Member = typeof bot.transformers.$inferredTypes.member
 export type Channel = typeof bot.transformers.$inferredTypes.channel
