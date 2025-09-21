@@ -22,6 +22,17 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Absolute paths
+    "baseUrl": "./src",
+    "paths": {
+      "bot/*": ["core/bot/*"],
+      "gateway/*": ["core/gateway/*"],
+      "rest/*": ["core/rest/*"],
+      "helpers/*": ["helpers/*"],
+      "types/*": ["types/*"],
+      "utils/*": ["utils/*"]
+    }
   }
 }

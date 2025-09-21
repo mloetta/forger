@@ -1,14 +1,14 @@
 import { Collection, createRestManager } from "discordeno";
-import type { Command } from "../../helpers/command";
-import { readDirectory } from "../../utils/utils";
+import type { ApplicationCommand } from "helpers/command";
+import { readDirectory } from "utils/utils";
 import { join } from "path/posix";
-import { TOKEN } from "../../utils/variables";
+import { TOKEN } from "utils/variables";
 
 const rest = createRestManager({
   token: TOKEN
 })
 
-const cache = new Collection<string, Command>()
+const cache = new Collection<string, ApplicationCommand>()
 
 console.log('Refreshing application (/) commands');
 

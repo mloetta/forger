@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { Worker } from 'worker_threads'
-import { TOKEN, EVENT_SERVER_URLS, AUTHORIZATION } from '../../../utils/variables'
-import { gateway, logger } from '../gateway'
+import { TOKEN, EVENT_SERVER_URL, AUTHORIZATION } from 'utils/variables'
+import { gateway, logger } from 'gateway/gateway'
 import type { ManagerMessage, ShardInfo, WorkerCreateData, WorkerMessage } from './types'
 
 // the string is the nonce of the request
@@ -20,7 +20,7 @@ export function createWorker(workerId: number): Worker {
         version: gateway.version,
       },
       eventHandler: {
-        urls: [EVENT_SERVER_URLS],
+        urls: [EVENT_SERVER_URL],
         authentication: AUTHORIZATION,
       },
       workerId,

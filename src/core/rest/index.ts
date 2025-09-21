@@ -1,8 +1,8 @@
 import type { RequestMethods } from "discordeno";
-import { REST_PORT } from "../../utils/variables";
+import { REST_PORT } from "utils/variables";
 import { buildFastifyApp, parseMultiformBody } from "./fastify";
 import { rest, logger } from "./rest";
-import '../../utils/process'
+import 'utils/process'
 
 const app = buildFastifyApp()
 

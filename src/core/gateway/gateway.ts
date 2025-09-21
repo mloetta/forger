@@ -1,7 +1,7 @@
 import type { Worker } from 'worker_threads'
 import { createGatewayManager, createLogger, createRestManager, GatewayIntents } from "discordeno";
 import type { ManagerMessage, WorkerMessage } from "./worker/types";
-import { AUTHORIZATION, REST_URL, TOKEN } from '../../utils/variables';
+import { AUTHORIZATION, REST_URL, TOKEN } from 'utils/variables';
 import { createWorker } from './worker/createWorker';
 
 export const workers = new Map<number, Worker>()

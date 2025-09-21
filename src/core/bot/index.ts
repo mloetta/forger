@@ -1,8 +1,9 @@
 import type { DiscordGatewayPayload, GatewayDispatchEventNames } from "discordeno";
-import { EVENT_SERVER_PORT } from "../../utils/variables";
+import { EVENT_SERVER_PORT } from "utils/variables";
 import { bot } from "./bot";
 import { buildFastifyApp } from "./fastify";
-import '../../utils/process'
+import 'utils/process'
+import { i18n } from "utils/i18n";
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload
@@ -40,3 +41,5 @@ async function handleGatewayEvent(payload: DiscordGatewayPayload, shardId: numbe
 
   bot.handlers[payload.t as GatewayDispatchEventNames]?.(bot, payload, shardId)
 }
+
+await i18n()

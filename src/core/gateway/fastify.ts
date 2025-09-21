@@ -1,5 +1,5 @@
 import fastify, { type FastifyInstance } from "fastify";
-import { AUTHORIZATION } from "../../utils/variables";
+import { AUTHORIZATION } from "utils/variables";
 
 export function buildFastifyApp(): FastifyInstance {
   const app = fastify()

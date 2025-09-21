@@ -1,5 +1,13 @@
 import type { Locales, PermissionStrings } from "discordeno";
-import type { bot } from "../core/bot/bot";
+import type { bot } from "bot/bot";
+
+export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
+
+export type NotOptional<T extends Record<any, any>, K extends keyof T> = Omit<DeepPartial<T>, K> & Pick<T, K>;
+
+export type DeepPartial<T extends Record<any, any>> = {
+  [K in keyof T]?: T[K] extends Object ? DeepPartial<T[K]> : T[K];
+};
 
 export type Bot = typeof bot.transformers.$inferredTypes
 export type User = typeof bot.transformers.$inferredTypes.user

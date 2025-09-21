@@ -1,9 +1,9 @@
-import { GATEWAY_PORT } from "../../utils/variables"
+import { GATEWAY_PORT } from "utils/variables"
 import { buildFastifyApp } from "./fastify"
 import { gateway, logger, workers } from "./gateway"
 import { shardInfoRequests } from "./worker/createWorker"
 import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerMessage, WorkerPresenceUpdate, WorkerShardPayload } from "./worker/types"
-import '../../utils/process'
+import 'utils/process'
 
 const app = buildFastifyApp()
 

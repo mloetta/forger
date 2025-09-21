@@ -1,14 +1,14 @@
 import { Collection, createBot, createDesiredPropertiesObject, GatewayIntents, type Bot, type DesiredPropertiesBehavior } from "discordeno";
-import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerPresenceUpdate, WorkerShardPayload } from '../gateway/worker/types.ts'
-import { AUTHORIZATION, GATEWAY_URL, REST_URL, TOKEN } from "../../utils/variables.ts";
-import { readDirectory } from "../../utils/utils.ts";
+import type { ManagerGetShardInfoFromGuildId, ShardInfo, WorkerPresenceUpdate, WorkerShardPayload } from 'gateway/worker/types'
+import { AUTHORIZATION, GATEWAY_URL, REST_URL, TOKEN } from "utils/variables";
+import { readDirectory } from "utils/utils";
 import { join } from "path";
 import { createProxyCache } from "dd-cache-proxy";
-import type { Command } from "../../helpers/command.ts";
+import type { ApplicationCommand } from "helpers/command";
 
 declare module 'discordeno' {
   interface Bot {
-    commands: Collection<string, Command>
+    commands: Collection<string, ApplicationCommand>
   }
 }
 
@@ -16,7 +16,9 @@ declare module 'discordeno' {
 const desiredProperties = createDesiredPropertiesObject({
   interaction: {
     data: true,
+    guildId: true,
     id: true,
+    locale: true,
     token: true,
     type: true,
     user: true,

@@ -1,0 +1,7 @@
+{
+  "commands": {
+    "ping": {
+      "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
+    }
+  }
+}

@@ -1,9 +1,12 @@
-import { commandOptionsParser, InteractionTypes } from "discordeno";
-import { bot } from "../bot";
-import { Collector } from "../../../helpers/collector";
-import type { Interaction } from "../../../types/types";
+import { ApplicationCommandTypes, commandOptionsParser, InteractionTypes } from "discordeno";
+import { bot } from "bot/bot";
+import { Collector } from "helpers/collector";
+import type { Interaction } from "types/types";
+import { getXataClient } from "utils/xata";
+import type { ApplicationCommand } from "helpers/command";
 
 export const collectors = new Set<Collector<Interaction>>();
+const xata = getXataClient()
 
 // TODO: add permission handler
 export const interactionCreate: typeof bot.events.interactionCreate = async (interaction) => {
@@ -33,7 +36,11 @@ export const interactionCreate: typeof bot.events.interactionCreate = async (int
         }
       }
       
-      await command.run(interaction, commandOptionsParser(interaction));
+      if (interaction.data.type === ApplicationCommandTypes.ChatInput) {
+        await (command as ApplicationCommand<ApplicationCommandTypes.ChatInput>).run(interaction, commandOptionsParser(interaction), xata);
+      } else if (interaction.data.type === ApplicationCommandTypes.Message || interaction.data.type === ApplicationCommandTypes.User) {
+        await (command as ApplicationCommand<ApplicationCommandTypes.Message | ApplicationCommandTypes.User>).run(interaction, xata);
+      }
     } catch (e) {
       console.error(e);
       return

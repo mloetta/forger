@@ -1,7 +1,7 @@
 import fs from "fs";
 
 export default new class Env {
-  private cache = new Map<string, string>( );
+  private cache = new Map<string, string>();
 
   public has(key: string) {
     return this.cache.has(key);

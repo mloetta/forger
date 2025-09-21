@@ -1,6 +1,6 @@
 import fastifyMultipart, { type MultipartFile, type MultipartValue } from '@fastify/multipart'
 import fastify, { type FastifyInstance } from 'fastify'
-import { AUTHORIZATION } from '../../utils/variables'
+import { AUTHORIZATION } from 'utils/variables'
 
 export function buildFastifyApp(): FastifyInstance {
   const app = fastify()
