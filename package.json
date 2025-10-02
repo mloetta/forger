@@ -6,10 +6,12 @@
     "start:rest": "bun run src/core/rest/index.ts",
     "start:bot": "bun run src/core/bot/index.ts",
     "start:gateway": "bun run src/core/gateway/index.ts",
-    "register": "bun run src/core/bot/register.ts"
+    "register": "bun run src/core/bot/register.ts",
+    "prettier:write": "bunx prettier --write ."
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

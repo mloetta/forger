@@ -1,25 +1,20 @@
-import { Collection, createRestManager } from "discordeno";
-import type { ApplicationCommand } from "helpers/command";
-import { readDirectory } from "utils/utils";
-import { join } from "path/posix";
-import { TOKEN } from "utils/variables";
+import { createRestManager } from 'discordeno';
+import { localize, readDirectory } from 'utils/utils';
+import { join } from 'path/posix';
+import { TOKEN } from 'utils/variables';
 
-const rest = createRestManager({
-  token: TOKEN
-})
-
-const cache = new Collection<string, ApplicationCommand>()
+const rest = createRestManager({ token: TOKEN });
 
 console.log('Refreshing application (/) commands');
 
-const commands = await readDirectory(join(__dirname, './commands'));
-for (const module of commands) {
-  const command = module.command
-  
-  cache.set(command.name, command)
-}
+const modules = await readDirectory(join(__dirname, './commands'));
 
-await rest.upsertGlobalApplicationCommands(Array.from(cache.values()))
+const commands = modules.map((module) => {
+  const command = module.default;
+  return localize(command);
+});
+
+await rest.upsertGlobalApplicationCommands(commands);
 
 console.log('Successfully reloaded application (/) commands');
 

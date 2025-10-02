@@ -1,42 +1,42 @@
-import fastifyMultipart, { type MultipartFile, type MultipartValue } from '@fastify/multipart'
-import fastify, { type FastifyInstance } from 'fastify'
-import { AUTHORIZATION } from 'utils/variables'
+import fastifyMultipart, { type MultipartFile, type MultipartValue } from '@fastify/multipart';
+import fastify, { type FastifyInstance } from 'fastify';
+import { TOKEN } from 'utils/variables';
 
 export function buildFastifyApp(): FastifyInstance {
-  const app = fastify()
+  const app = fastify();
 
-  app.register(fastifyMultipart, { attachFieldsToBody: true })
+  app.register(fastifyMultipart, { attachFieldsToBody: true });
 
   // Authorization check
   app.addHook('onRequest', async (req, res) => {
-    if (req.headers.authorization !== AUTHORIZATION) {
+    if (req.headers.authorization !== TOKEN) {
       res.status(401).send({
-          message: 'Credentials not valid.',
-      })
+        message: 'Credentials not valid.',
+      });
     }
-  })
+  });
 
-  return app
+  return app;
 }
 
 export async function parseMultiformBody(body: unknown): Promise<FormData> {
-  const form = new FormData()
+  const form = new FormData();
 
-  if (typeof body !== 'object' || !body) return form
+  if (typeof body !== 'object' || !body) return form;
 
   for (const objectValue of Object.values(body)) {
-    const value = objectValue as MultipartFile | MultipartValue
+    const value = objectValue as MultipartFile | MultipartValue;
 
-    if (value.type = 'file') {
+    if ((value.type = 'file')) {
       // @ts-ignore
-      form.append(value.fieldname, new Blob([await value.toBuffer()], value.filename))
+      form.append(value.fieldname, new Blob([await value.toBuffer()], value.filename));
     }
 
-    if (value.type = 'field') {
+    if ((value.type = 'field')) {
       // @ts-ignore
-      form.append(value.fieldname, value.value)
+      form.append(value.fieldname, value.value);
     }
   }
 
-  return form
+  return form;
 }

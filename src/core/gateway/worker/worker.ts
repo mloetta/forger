@@ -1,97 +1,104 @@
-import assert from 'assert'
-import { createHash } from 'crypto'
-import { workerData as _workerData, parentPort } from 'worker_threads'
-import { type Camelize, createLogger, DiscordenoShard, type DiscordGatewayPayload, GatewayOpcodes, ShardSocketCloseCodes } from 'discordeno'
-import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js'
+import assert from 'assert';
+import { createHash } from 'crypto';
+import { workerData as _workerData, parentPort } from 'worker_threads';
+import {
+  type Camelize,
+  createLogger,
+  DiscordenoShard,
+  type DiscordGatewayPayload,
+  GatewayOpcodes,
+  ShardSocketCloseCodes,
+} from 'discordeno';
+import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
 
-assert(parentPort)
+assert(parentPort);
 
-const workerData: WorkerCreateData = _workerData
+const workerData: WorkerCreateData = _workerData;
 
-const logger = createLogger({ name: `Worker #${workerData.workerId}` })
+const logger = createLogger({ name: `Worker #${workerData.workerId}` });
 
-const identifyPromises = new Map<number, () => void>()
-const shards = new Map<number, DiscordenoShard>()
-const pendingShards = new Map<number, DiscordenoShard>()
+const identifyPromises = new Map<number, () => void>();
+const shards = new Map<number, DiscordenoShard>();
+const pendingShards = new Map<number, DiscordenoShard>();
 
-let totalShards = workerData.connectionData.totalShards
+let totalShards = workerData.connectionData.totalShards;
 
 parentPort.on('message', async (message: WorkerMessage) => {
-  assert(parentPort)
+  assert(parentPort);
 
   switch (message.type) {
     case 'IdentifyShard': {
-      logger.info(`Starting to identify shard #${message.shardId}`)
-      const shard = shards.get(message.shardId) ?? createShard(message.shardId)
-      shards.set(message.shardId, shard)
+      logger.info(`Starting to identify shard #${message.shardId}`);
+      const shard = shards.get(message.shardId) ?? createShard(message.shardId);
+      shards.set(message.shardId, shard);
 
-      await shard.identify()
+      await shard.identify();
 
       parentPort.postMessage({
         type: 'ShardIdentified',
         shardId: message.shardId,
-      } satisfies ManagerMessage)
-      break
+      } satisfies ManagerMessage);
+      break;
     }
     case 'PrepareShard': {
-      logger.info(`Preparing shard #${message.shardId}`)
-      totalShards = message.totalShards
-      let shard = pendingShards.get(message.shardId)
+      logger.info(`Preparing shard #${message.shardId}`);
+      totalShards = message.totalShards;
+      let shard = pendingShards.get(message.shardId);
       if (!shard) {
-        shard = createShard(message.shardId)
-        pendingShards.set(message.shardId, shard)
+        shard = createShard(message.shardId);
+        pendingShards.set(message.shardId, shard);
       }
 
       // Ignore the events until switch
-      shard.events.message = () => {}
+      shard.events.message = () => {};
 
-      await shard.identify()
+      await shard.identify();
 
       parentPort.postMessage({
         type: 'ShardPrepared',
         shardId: message.shardId,
-      } satisfies ManagerMessage)
-      break
+      } satisfies ManagerMessage);
+      break;
     }
     case 'SwitchShards': {
-      logger.info('Switching shards')
+      logger.info('Switching shards');
 
       for (const shard of pendingShards.values()) {
-        shard.events.message = handleShardMessageEvent
+        shard.events.message = handleShardMessageEvent;
       }
 
       for (const shard of shards.values()) {
-        const oldHandler = shard.events.message
+        const oldHandler = shard.events.message;
         shard.events.message = async function (_, message) {
-          if (message.t === 'GUILD_MEMBERS_CHUNK') oldHandler?.(shard, message)
-        }
+          if (message.t === 'GUILD_MEMBERS_CHUNK') oldHandler?.(shard, message);
+        };
       }
 
-      const shardsToShutdown = Array.from(shards.values())
-      shards.clear()
+      const shardsToShutdown = Array.from(shards.values());
+      shards.clear();
       for (const [shardId, shard] of pendingShards.entries()) {
-        shards.set(shardId, shard)
-        pendingShards.delete(shardId)
+        shards.set(shardId, shard);
+        pendingShards.delete(shardId);
       }
 
       await Promise.all(
         shardsToShutdown.map(async (shard) => {
-          await shard.close(ShardSocketCloseCodes.Resharded, 'Shard is being resharded')
-          logger.info(`Shard #${shard.id} has been shutdown`)
-        })
-      )
-      break
+          await shard.close(ShardSocketCloseCodes.Resharded, 'Shard is being resharded');
+          logger.info(`Shard #${shard.id} has been shutdown`);
+        }),
+      );
+      break;
     }
     case 'AllowIdentify': {
-      identifyPromises.get(message.shardId)?.()
-      identifyPromises.delete(message.shardId)
-      break
+      identifyPromises.get(message.shardId)?.();
+      identifyPromises.delete(message.shardId);
+      break;
     }
     case 'ShardPayload': {
-      const shard = shards.get(message.shardId)
-      if (!shard) return
-      await shard.send(message.payload)
-      break
+      const shard = shards.get(message.shardId);
+      if (!shard) return;
+      await shard.send(message.payload);
+      break;
     }
     case 'EditShardsPresence': {
       const promises = Array.from(shards.values()).map(async (shard) => {
@@ -103,10 +110,10 @@ parentPort.on('message', async (message: WorkerMessage) => {
             activities: message.payload.activities,
             status: message.payload.status,
           },
-        })
-      })
-      await Promise.all(promises)
-      break
+        });
+      });
+      await Promise.all(promises);
+      break;
     }
     case 'GetShardInfo': {
       const status = {
@@ -114,19 +121,19 @@ parentPort.on('message', async (message: WorkerMessage) => {
         shardId: message.shardId,
         rtt: shards.get(message.shardId)?.heart.rtt ?? -1,
         nonce: message.nonce,
-      } satisfies ManagerMessage
+      } satisfies ManagerMessage;
 
-      parentPort.postMessage(status)
-      break
+      parentPort.postMessage(status);
+      break;
     }
 
     default:
-      logger.warn(`Received unknown message type: ${(message as { type: string }).type}`)
+      logger.warn(`Received unknown message type: ${(message as { type: string }).type}`);
   }
-})
+});
 
 function createShard(shardId: number): DiscordenoShard {
-    const shard = new DiscordenoShard({
+  const shard = new DiscordenoShard({
     id: shardId,
     events: {},
     connection: {
@@ -143,33 +150,33 @@ function createShard(shardId: number): DiscordenoShard {
       version: workerData.connectionData.version,
       transportCompression: null,
     },
-  })
+  });
 
   shard.requestIdentify = async () => {
-    assert(parentPort)
-    const { promise, resolve } = Promise.withResolvers<void>()
+    assert(parentPort);
+    const { promise, resolve } = Promise.withResolvers<void>();
     parentPort.postMessage({
       type: 'RequestIdentify',
       shardId,
-    } satisfies ManagerMessage)
+    } satisfies ManagerMessage);
 
-    identifyPromises.set(shardId, resolve)
-    
-    return await promise
-  }
+    identifyPromises.set(shardId, resolve);
 
-  shard.events.message = handleShardMessageEvent
+    return await promise;
+  };
 
-  return shard
+  shard.events.message = handleShardMessageEvent;
+
+  return shard;
 }
 
 async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize<DiscordGatewayPayload>) {
-  const body = JSON.stringify({ payload, shardId: shard.id })
+  const body = JSON.stringify({ payload, shardId: shard.id });
 
-  const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length]
+  const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length];
   if (!url) {
-    logger.error('No url found to send events to')
-    return
+    logger.error('No url found to send events to');
+    return;
   }
 
   try {
@@ -180,8 +187,8 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
         'Content-Type': 'application/json',
         Authorization: workerData.eventHandler.authentication,
       },
-    })
+    });
   } catch (error) {
-    logger.error(`Failed to send events to the bot code for shard #${shard.id}`, error)
+    logger.error(`Failed to send events to the bot code for shard #${shard.id}`, error);
   }
 }

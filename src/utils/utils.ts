@@ -1,5 +1,8 @@
+import type { ApplicationCommandOptionTypes, CreateApplicationCommand, Localization } from 'discordeno';
 import fs from 'fs';
+import type { ApplicationCommand, ApplicationCommandOption } from 'helpers/command';
 import path from 'path';
+import type { CommandLocalization } from 'types/types';
 
 export const readableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
@@ -50,7 +53,6 @@ export function timestamp() {
   const seconds = now.getSeconds().toString().padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
-
 
 export function commas(num: number | string) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -159,7 +161,7 @@ export function levenshteinDistance(a: string, b: string): number {
 
 export async function readDirectory(dir: string): Promise<any[]> {
   if (!path.isAbsolute(dir)) {
-    throw new Error('The provided path must be absolute.')
+    throw new Error('The provided path must be absolute.');
   }
 
   const results = fs.readdirSync(path.resolve(dir), { recursive: true, encoding: 'utf-8' });
@@ -173,8 +175,48 @@ export async function readDirectory(dir: string): Promise<any[]> {
       delete require.cache[require.resolve(fullPath)];
       const module = await import(fullPath);
       return module;
-    })
+    }),
   );
 
   return modules.filter(Boolean);
+}
+
+export function localize(command: ApplicationCommand): CreateApplicationCommand {
+  function localizeField(field?: CommandLocalization) {
+    if (!field) return { value: '', localizations: undefined };
+    if (typeof field === 'string') return { value: field, localizations: undefined };
+    const { global, ...rest } = field;
+    return { value: global, localizations: Object.keys(rest).length ? rest : undefined };
+  }
+
+  function localizeOption(option: ApplicationCommandOption): any {
+    const nameField = localizeField(option.name);
+    const descField = localizeField(option.description);
+
+    return {
+      type: option.type as ApplicationCommandOptionTypes,
+      name: nameField.value,
+      nameLocalizations: nameField.localizations ?? null,
+      description: descField.value,
+      descriptionLocalizations: descField.localizations ?? null,
+      required: option.required ?? false,
+      choices: option.choices?.map((c) => {
+        const cname = localizeField(c.name);
+        return { name: cname.value, nameLocalizations: cname.localizations ?? null, value: c.value };
+      }),
+      options: option.options?.map(localizeOption),
+    };
+  }
+
+  const nameField = localizeField(command.name);
+  const descField = localizeField(command.description);
+
+  return {
+    type: command.type,
+    name: nameField.value,
+    nameLocalizations: nameField.localizations ?? null,
+    description: descField.value,
+    descriptionLocalizations: descField.localizations ?? null,
+    options: command.options?.map(localizeOption),
+  };
 }

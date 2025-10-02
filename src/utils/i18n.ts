@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { join } from 'path';
 
-const logger = createLogger({ name: 'i18n' })
+const logger = createLogger({ name: 'i18n' });
 
 export async function i18n(): Promise<void> {
   try {
@@ -27,5 +27,5 @@ export async function i18n(): Promise<void> {
 }
 
 export function Translate(lang: string, key: string, options?: Record<string, unknown>) {
-  return i18next.t(key, { ...options, lng: lang })
+  return i18next.t(key, { ...options, lng: lang });
 }
