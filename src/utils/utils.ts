@@ -3,6 +3,8 @@ import fs from 'fs';
 import type { ApplicationCommand, ApplicationCommandOption } from 'helpers/command';
 import path from 'path';
 import type { CommandLocalization } from 'types/types';
+import { pathToFileURL } from 'url';
+import CallStack from './stack';
 
 export const readableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
@@ -165,58 +167,20 @@ export async function readDirectory(dir: string): Promise<any[]> {
   }
 
   const results = fs.readdirSync(path.resolve(dir), { recursive: true, encoding: 'utf-8' });
+  const stack = new CallStack();
+  const modules: any[] = [];
 
-  const modules = await Promise.all(
-    results.map(async (file) => {
-      const fullPath = path.resolve(dir, file);
+  for (const file of results) {
+    const filepath = path.resolve(dir, file);
+    if (fs.statSync(filepath).isDirectory()) continue;
 
-      if (fs.statSync(fullPath).isDirectory()) return null;
+    const module = await stack.add(async () => import(pathToFileURL(filepath).href));
+    modules.push(module);
+  }
 
-      delete require.cache[require.resolve(fullPath)];
-      const module = await import(fullPath);
-      return module;
-    }),
-  );
-
-  return modules.filter(Boolean);
+  return modules;
 }
 
-export function localize(command: ApplicationCommand): CreateApplicationCommand {
-  function localizeField(field?: CommandLocalization) {
-    if (!field) return { value: '', localizations: undefined };
-    if (typeof field === 'string') return { value: field, localizations: undefined };
-    const { global, ...rest } = field;
-    return { value: global, localizations: Object.keys(rest).length ? rest : undefined };
-  }
-
-  function localizeOption(option: ApplicationCommandOption): any {
-    const nameField = localizeField(option.name);
-    const descField = localizeField(option.description);
-
-    return {
-      type: option.type as ApplicationCommandOptionTypes,
-      name: nameField.value,
-      nameLocalizations: nameField.localizations ?? null,
-      description: descField.value,
-      descriptionLocalizations: descField.localizations ?? null,
-      required: option.required ?? false,
-      choices: option.choices?.map((c) => {
-        const cname = localizeField(c.name);
-        return { name: cname.value, nameLocalizations: cname.localizations ?? null, value: c.value };
-      }),
-      options: option.options?.map(localizeOption),
-    };
-  }
-
-  const nameField = localizeField(command.name);
-  const descField = localizeField(command.description);
-
-  return {
-    type: command.type,
-    name: nameField.value,
-    nameLocalizations: nameField.localizations ?? null,
-    description: descField.value,
-    descriptionLocalizations: descField.localizations ?? null,
-    options: command.options?.map(localizeOption),
-  };
+export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: Value2): NonNullable<Value1> | Value2 {
+  return ifExists !== null && ifExists !== undefined ? (ifExists as NonNullable<Value1>) : ifNot;
 }

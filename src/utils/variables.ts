@@ -11,4 +11,4 @@ export const SHARD_SERVER_URL = Env.get('shard_server_url', true);
 export const EVENT_SERVER_URL = Env.get('event_server_url', true);
 export const EVENT_SERVER_PORT = Env.get('event_server_port', true);
 export const XATA_API_KEY = Env.get('xata_api_key', true);
-export const POSTGRE_DATABASE_URL = Env.get('postgre_database_url', true);
+export const XATA_BRANCH = Env.get('xata_branch', true);

@@ -14,15 +14,15 @@
     "prettier": "^3.6.2"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@fastify/multipart": "^9.2.1",
     "@xata.io/client": "^0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa",
     "dd-cache-proxy": "^2.6.5",
-    "discordeno": "^22.0.1-next.df1658d",
-    "fastify": "^5.6.0",
-    "i18next": "^25.5.2",
+    "discordeno": "22.0.1-next.66db044",
+    "fastify": "^5.6.1",
+    "i18next": "^25.5.3",
     "i18next-fs-backend": "^2.6.0"
   }
 }

@@ -1,21 +1,14 @@
-import { createRestManager } from 'discordeno';
-import { localize, readDirectory } from 'utils/utils';
-import { join } from 'path/posix';
+import { createLogger, createRestManager } from 'discordeno';
 import { TOKEN } from 'utils/variables';
+import { bot } from './bot';
 
 const rest = createRestManager({ token: TOKEN });
+const logger = createLogger({ name: 'Application Commands' });
 
-console.log('Refreshing application (/) commands');
+logger.info('Refreshing application (/) commands');
 
-const modules = await readDirectory(join(__dirname, './commands'));
+await rest.upsertGlobalApplicationCommands(bot.commands.array());
 
-const commands = modules.map((module) => {
-  const command = module.default;
-  return localize(command);
-});
-
-await rest.upsertGlobalApplicationCommands(commands);
-
-console.log('Successfully reloaded application (/) commands');
+logger.info('Successfully reloaded application (/) commands');
 
 process.exit();

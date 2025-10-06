@@ -1,12 +1,12 @@
-import { getShardInfoFromGuild } from 'bot/bot';
 import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowflakeToTimestamp } from 'discordeno';
-import type { ApplicationCommand } from 'helpers/command';
 import { Translate } from 'utils/i18n';
+import { getShardInfoFromGuild } from 'bot/utils';
+import createApplicationCommand from 'helpers/command';
 
-export default {
+createApplicationCommand({
   name: 'ping',
-  description: {
-    global: 'Replies with Pong!',
+  description: 'Replies with Pong!',
+  descriptionLocalizations: {
     'pt-BR': 'Responde com Pong!',
   },
   integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
@@ -32,4 +32,4 @@ export default {
       Translate(interaction.locale!, 'commands.ping.response', { shard, gatewayLatency, restLatency }),
     );
   },
-} satisfies ApplicationCommand;
+});

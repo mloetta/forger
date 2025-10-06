@@ -1,6 +1,11 @@
 import type { Events } from 'types/types';
+import { bot } from 'bot/bot';
 
-export interface Event<Type extends keyof Events> {
-  name: Type;
-  run: (...args: Parameters<Events[Type]>) => any;
+export default function createEvent<const TEvent extends keyof Events>(event: Event<TEvent>): void {
+  bot.events[event.name] = event.run as Events[TEvent];
 }
+
+export type Event<TEvent extends keyof Events> = {
+  name: TEvent;
+  run: (...args: Parameters<Events[TEvent]>) => any;
+};

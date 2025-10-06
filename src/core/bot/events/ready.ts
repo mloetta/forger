@@ -1,9 +1,11 @@
-import { bot } from 'bot/bot';
-import type { Event } from 'helpers/event';
+import { createLogger } from 'discordeno';
+import createEvent from 'helpers/event';
 
-export default {
+const logger = createLogger({ name: 'ready' });
+
+createEvent({
   name: 'ready',
   run({ shardId }) {
-    bot.logger.info(`Shard ID #${shardId} is ready.`);
+    logger.info(`Shard ID #${shardId} is ready.`);
   },
-} satisfies Event<'ready'>;
+});

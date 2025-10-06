@@ -1,58 +1,99 @@
+import { bot } from 'bot/bot';
 import type {
-  ApplicationCommandTypes,
+  ApplicationCommandOptionTypes,
   Camelize,
   CreateApplicationCommand,
   DiscordApplicationCommandOption,
-  DiscordApplicationCommandOptionChoice,
+  ParsedInteractionOption,
 } from 'discordeno';
 import type {
+  Attachment,
   Bot,
-  CommandLocalization,
+  Channel,
   CommandPermission,
   Details,
+  ExtractDesiredBehavior,
+  ExtractDesiredProps,
   Interaction,
+  Member,
   Precondition,
   RateLimit,
+  Role,
+  User,
 } from 'types/types';
 
-export interface ApplicationCommandOptionChoice
-  extends Omit<DiscordApplicationCommandOptionChoice, 'name' | 'nameLocalizations'> {
-  name: CommandLocalization;
+export default function createApplicationCommand<const TOptions extends ApplicationCommandOptions>(
+  command: ApplicationCommand<TOptions>,
+): void {
+  bot.commands.set(command.name, command as ApplicationCommand);
 }
 
-export interface ApplicationCommandOption
-  extends Omit<
-    DiscordApplicationCommandOption,
-    'name' | 'nameLocalizations' | 'description' | 'descriptionLocalizations' | 'choices' | 'options'
-  > {
-  name: CommandLocalization;
-  description: CommandLocalization;
-  choices?: ApplicationCommandOptionChoice[];
-  options?: ApplicationCommandOption[];
+export type ApplicationCommand<TOptions extends ApplicationCommandOptions = ApplicationCommandOptions> =
+  CreateApplicationCommand & {
+    details: Details;
+    preconditions?: Precondition;
+    permission?: CommandPermission;
+    rateLimit?: RateLimit;
+    options?: TOptions;
+    acknowledge?: boolean;
+    ephemeral?: boolean;
+    dev?: boolean;
+    run: (bot: Bot, interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
+    autoComplete?: (bot: Bot, interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
+  };
+
+export type GetApplicationCommandOptions<T extends ApplicationCommandOptions> = T extends ApplicationCommandOptions
+  ? { [Prop in keyof BuildOptions<T> as Prop]: BuildOptions<T>[Prop] }
+  : never;
+
+export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>;
+export type ApplicationCommandOptions = ApplicationCommandOption[];
+
+// Option parsing logic
+type ResolvedValues = ParsedInteractionOption<ExtractDesiredProps<Bot>, ExtractDesiredBehavior<Bot>>[string];
+
+// Using omit + exclude is a slight trick to avoid a type error on Pick
+export type InteractionResolvedChannel = Omit<
+  Channel,
+  Exclude<keyof Channel, 'id' | 'name' | 'type' | 'permissions' | 'threadMetadata' | 'parentId'>
+>;
+export type InteractionResolvedMember = Omit<Member, 'user' | 'deaf' | 'mute'>;
+export interface InteractionResolvedUser {
+  user: User;
+  member: InteractionResolvedMember;
 }
 
-export interface ApplicationCommand<Type extends ApplicationCommandTypes = ApplicationCommandTypes>
-  extends Omit<
-    CreateApplicationCommand,
-    | 'name'
-    | 'nameLocalizations'
-    | 'description'
-    | 'descriptionLocalizations'
-    | 'options'
-    | 'defaultPermission'
-    | 'defaultMemberPermissions'
-  > {
-  name: CommandLocalization;
-  description: CommandLocalization;
-  details: Details;
-  preconditions?: Precondition;
-  permission?: CommandPermission;
-  rateLimit?: RateLimit;
-  options?: Camelize<ApplicationCommandOption[]>;
-  acknowledge?: boolean;
-  ephemeral?: boolean;
-  dev?: boolean;
-  run: Type extends ApplicationCommandTypes.ChatInput
-    ? (bot: Bot, interaction: Interaction, options: Record<string, any>) => any
-    : (bot: Bot, interaction: Interaction) => any;
+/**
+ * From here SubCommandGroup and SubCommand are missing, this is wanted.
+ *
+ * The entries are sorted based on the enum value
+ */
+interface TypeToResolvedMap {
+  [ApplicationCommandOptionTypes.String]: string;
+  [ApplicationCommandOptionTypes.Integer]: number;
+  [ApplicationCommandOptionTypes.Boolean]: boolean;
+  [ApplicationCommandOptionTypes.User]: InteractionResolvedUser;
+  [ApplicationCommandOptionTypes.Channel]: InteractionResolvedChannel;
+  [ApplicationCommandOptionTypes.Role]: Role;
+  [ApplicationCommandOptionTypes.Mentionable]: Role | InteractionResolvedUser;
+  [ApplicationCommandOptionTypes.Number]: number;
+  [ApplicationCommandOptionTypes.Attachment]: Attachment;
 }
+
+type ConvertTypeToResolved<T extends ApplicationCommandOptionTypes> = T extends keyof TypeToResolvedMap
+  ? TypeToResolvedMap[T]
+  : ResolvedValues;
+
+type SubCommandApplicationCommand =
+  | ApplicationCommandOptionTypes.SubCommand
+  | ApplicationCommandOptionTypes.SubCommandGroup;
+type GetOptionName<T> = T extends { name: string } ? T['name'] : never;
+type GetOptionValue<T> = T extends { type: ApplicationCommandOptionTypes; required?: boolean }
+  ? T extends { type: SubCommandApplicationCommand; options?: ApplicationCommandOptions }
+    ? BuildOptions<T['options']>
+    : ConvertTypeToResolved<T['type']> | (T['required'] extends true ? never : undefined)
+  : never;
+
+type BuildOptions<T extends ApplicationCommandOptions | undefined> = {
+  [Prop in keyof Omit<T, keyof unknown[]> as GetOptionName<T[Prop]>]: GetOptionValue<T[Prop]>;
+};

@@ -49,7 +49,8 @@ parentPort.on('message', async (message: WorkerMessage) => {
         pendingShards.set(message.shardId, shard);
       }
 
-      // Ignore the events until switch
+      // Ignore the events
+      // TODO: If you need 'gateway.resharding.updateGuildsShardId' it you can listen to only the ready event and use the data from that event for the function call
       shard.events.message = () => {};
 
       await shard.identify();
@@ -63,30 +64,37 @@ parentPort.on('message', async (message: WorkerMessage) => {
     case 'SwitchShards': {
       logger.info('Switching shards');
 
+      // Change the message event for all shards
       for (const shard of pendingShards.values()) {
         shard.events.message = handleShardMessageEvent;
       }
 
+      // Old shards stop processing events
       for (const shard of shards.values()) {
         const oldHandler = shard.events.message;
         shard.events.message = async function (_, message) {
+          // Member checks need to continue but others can stop
           if (message.t === 'GUILD_MEMBERS_CHUNK') oldHandler?.(shard, message);
         };
       }
 
+      // Shutdown the old shards
       const shardsToShutdown = Array.from(shards.values());
+
+      // Move the pending shards to the active shards
       shards.clear();
       for (const [shardId, shard] of pendingShards.entries()) {
         shards.set(shardId, shard);
         pendingShards.delete(shardId);
       }
 
-      await Promise.all(
-        shardsToShutdown.map(async (shard) => {
-          await shard.close(ShardSocketCloseCodes.Resharded, 'Shard is being resharded');
-          logger.info(`Shard #${shard.id} has been shutdown`);
-        }),
-      );
+      // Shutdown the old shards
+      const promises = shardsToShutdown.map(async (shard) => {
+        await shard.close(ShardSocketCloseCodes.Resharded, 'Shard is being resharded');
+        logger.info(`Shard #${shard.id} has been shutdown`);
+      });
+
+      await Promise.all(promises);
       break;
     }
     case 'AllowIdentify': {

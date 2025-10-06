@@ -1,23 +1,19 @@
 import { EventEmitter } from 'events';
 
 export interface CollectorOptions<Type> {
-  filter?: (item: Type) => boolean;
+  filter?: (item: Type) => boolean | Promise<boolean>;
   duration?: number;
 }
 
 export class Collector<Type> extends EventEmitter {
-  private filter?: (item: Type) => boolean;
+  private filter?: (item: Type) => boolean | Promise<boolean>;
   private collected: Type[] = [];
   private timeout?: NodeJS.Timeout;
-  private endReason?: string;
 
   constructor(options: CollectorOptions<Type> = {}) {
     super();
     this.filter = options.filter;
-
-    if (options.duration) {
-      this.timeout = setTimeout(() => this.stop('time'), options.duration);
-    }
+    if (options.duration) this.timeout = setTimeout(() => this.stop('time'), options.duration);
   }
 
   onCollect(callback: (item: Type) => unknown): void {
@@ -25,24 +21,27 @@ export class Collector<Type> extends EventEmitter {
   }
 
   onEnd(callback: (collected: Type[], reason: string) => unknown): void {
-    this.on('end', () => callback(this.collected, this.endReason!));
+    this.on('end', callback);
   }
 
-  collect(item: Type): void {
-    if (!this.filter || this.filter(item)) {
+  async collect(item: Type): Promise<void> {
+    try {
+      const pass = this.filter ? await this.filter(item) : true;
+      if (!pass) return;
       this.collected.push(item);
       this.emit('collect', item);
+    } catch (err) {
+      this.emit('error', err);
     }
   }
 
   stop(reason: string = 'manual'): void {
     if (this.timeout) clearTimeout(this.timeout);
-    this.endReason = reason;
-    this.emit('end');
+    this.emit('end', this.collected, reason);
     this.removeAllListeners();
   }
 
-  setFilter(filter: (item: Type) => boolean): void {
+  setFilter(filter: (item: Type) => boolean | Promise<boolean>): void {
     this.filter = filter;
   }
 }

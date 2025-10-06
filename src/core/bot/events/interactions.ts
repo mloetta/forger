@@ -1,28 +1,31 @@
-import {
-  ApplicationCommandTypes,
-  Collection,
-  commandOptionsParser,
-  InteractionTypes,
-  MessageComponentTypes,
-  MessageFlags,
-} from 'discordeno';
-import { bot } from 'bot/bot';
+import { ApplicationCommandTypes, Collection, commandOptionsParser, createLogger, MessageFlags } from 'discordeno';
 import type { ApplicationCommand } from 'helpers/command';
-import type { Event } from 'helpers/event';
 import { RateLimitManager } from 'utils/rateLimit';
 import { icon, smallPill, timestamp } from 'utils/markdown';
-import type { Component } from 'helpers/component';
+import type { Collector } from 'helpers/collector';
+import type { Interaction } from 'types/types';
+import createEvent from 'helpers/event';
 
+export const collectors = new Set<Collector<Interaction>>();
 const rateLimits = new Collection<bigint, RateLimitManager>();
+const logger = createLogger({ name: 'interactionCreate' });
 
 // TODO: add permission handler
-export default {
+createEvent({
   name: 'interactionCreate',
   async run(interaction) {
+    logger.info(
+      `Received "interactionCreate": ${interaction.id} (${interaction.type}) from ${interaction.user.username}`,
+    );
+
+    for (const collector of collectors) {
+      collector.collect(interaction);
+    }
+
     if (!interaction.data) return;
 
     if (interaction.data.type === ApplicationCommandTypes.ChatInput) {
-      const command = bot.commands.get(interaction.data.name) as ApplicationCommand<ApplicationCommandTypes.ChatInput>;
+      const command = interaction.bot.commands.get(interaction.data.name) as ApplicationCommand;
       if (!command) {
         await interaction.respond({
           content: `${icon('Melting')} Are you sure you are not mistaken? This command has never existed!`,
@@ -39,11 +42,11 @@ export default {
       }
 
       if (command.rateLimit) {
-        const rateLimiter = new RateLimitManager(rateLimits, interaction.user.id);
+        const rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
 
         const { type, limit, duration } = command.rateLimit;
 
-        const status = rateLimiter.check();
+        const status = rateLimitManager.check();
 
         if (status.limited) {
           if (acknowledged) {
@@ -75,9 +78,9 @@ export default {
             }
           }
 
-          await command.run(bot, interaction, commandOptionsParser(interaction));
+          await command.run(interaction.bot, interaction, commandOptionsParser(interaction));
         } catch (e) {
-          bot.logger.error(`Command ${command.name} has errored.`, e);
+          logger.error(`Command ${command.name} has errored.`, e);
 
           if (acknowledged) {
             await interaction.edit(`${icon('Dead')} Uh-oh, this command feels... wrong. Maybe try again later?`);
@@ -88,7 +91,7 @@ export default {
           }
         }
 
-        rateLimiter.apply(duration, limit);
+        rateLimitManager.apply(duration, limit);
         return;
       }
 
@@ -102,9 +105,9 @@ export default {
           }
         }
 
-        await command.run(bot, interaction, commandOptionsParser(interaction));
+        await command.run(interaction.bot, interaction, commandOptionsParser(interaction));
       } catch (e) {
-        bot.logger.error(`Command ${command.name} has errored.`, e);
+        logger.error(`Command ${command.name} has errored.`, e);
 
         if (acknowledged) {
           await interaction.edit(`${icon('Dead')} Uh-oh, this command feels... wrong. Maybe try again later?`);
@@ -114,69 +117,6 @@ export default {
 
         return;
       }
-    } else if (interaction.data.componentType === MessageComponentTypes.Button) {
-      const [customId, argList] = interaction.data.customId!.split('-');
-      const args = argList ? argList.split(',') : [];
-      if (!customId) return;
-
-      const button = bot.buttons.get(customId) as Component<'Button'>;
-      if (!button) return;
-
-      bot.logger.info(`Received "Button" interaction: ${button.name}`);
-
-      if (button.acknowledge) {
-        await interaction.deferEdit();
-      }
-
-      try {
-        await button.run(bot, interaction, args);
-      } catch (e) {
-        bot.logger.error(`Button ${button.name} has errored.`, e);
-        return;
-      }
-    } else if (
-      interaction.data.componentType ===
-      (MessageComponentTypes.RoleSelect |
-        MessageComponentTypes.UserSelect |
-        MessageComponentTypes.StringSelect |
-        MessageComponentTypes.ChannelSelect |
-        MessageComponentTypes.MentionableSelect)
-    ) {
-      const [customId, argList] = interaction.data.customId!.split('-');
-      const args = argList ? argList.split(',') : [];
-      if (!customId) return;
-
-      const selectMenu = bot.selectMenus.get(customId) as Component<'SelectMenu'>;
-      if (!selectMenu) return;
-
-      bot.logger.info(`Received "SelectMenu" interaction: ${selectMenu.name}`);
-
-      if (selectMenu.acknowledge) {
-        await interaction.deferEdit();
-      }
-
-      try {
-        await selectMenu.run(bot, interaction, args);
-      } catch (e) {
-        bot.logger.error(`Select Menu ${selectMenu.name} has errored.`, e);
-        return;
-      }
-    } else if (interaction.type === InteractionTypes.ModalSubmit) {
-      const [customId, argList] = interaction.data.customId!.split('-');
-      const args = argList ? argList.split(',') : [];
-      if (!customId) return;
-
-      const modal = bot.modals.get(customId) as Component<'Modal'>;
-      if (!modal) return;
-
-      bot.logger.info(`Received "Modal" interaction: ${modal.name}`);
-
-      try {
-        await modal.run(bot, interaction, args);
-      } catch (e) {
-        bot.logger.error(`Modal ${modal.name} has errored.`, e);
-        return;
-      }
     }
   },
-} satisfies Event<'interactionCreate'>;
+});
