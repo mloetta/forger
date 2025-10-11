@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 enum ItemType {
   FILE = 0,
@@ -78,16 +78,20 @@ export default class FolderWatcher {
     if (this.onChange) this.onChange(file);
   }
 
-  public watcherEvent(path: string, event: 'change' | 'rename', filename: string | null) {
+  public watcherEvent(
+    path: string,
+    event: "change" | "rename",
+    filename: string | null,
+  ) {
     if (!filename) {
       console.error(`Filename is null for path: ${path}`);
       return;
     }
 
     const fullPath = `${path}/${filename}`;
-    if (event === 'change') {
+    if (event === "change") {
       this.change(fullPath);
-    } else if (event === 'rename') {
+    } else if (event === "rename") {
       if (fs.existsSync(fullPath)) {
         this.add(fullPath);
       } else {

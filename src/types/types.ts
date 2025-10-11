@@ -1,20 +1,33 @@
-import type { Bot as DiscordenoBot, Collection, Locales, PermissionStrings } from 'discordeno';
-import type { bot } from 'bot/bot';
-import type { RateLimitManager } from 'utils/rateLimit';
-import type { Localization } from 'discordeno';
+import type {
+  Bot as DiscordenoBot,
+  Collection,
+  PermissionStrings,
+} from "discordeno";
+import type { bot } from "bot/bot";
+import type { RateLimitManager } from "utils/rateLimit";
 
 // Type helpers
-export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
+export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<
+  T,
+  K
+> &
+  DeepPartial<Pick<T, K>>;
 
-export type NotOptional<T extends Record<any, any>, K extends keyof T> = Omit<DeepPartial<T>, K> & Pick<T, K>;
+export type NotOptional<T extends Record<any, any>, K extends keyof T> = Omit<
+  DeepPartial<T>,
+  K
+> &
+  Pick<T, K>;
 
 export type DeepPartial<T extends Record<any, any>> = {
   [K in keyof T]?: T[K] extends Object ? DeepPartial<T[K]> : T[K];
 };
 
 // Discordeno type helpers
-export type ExtractDesiredProps<T> = T extends DiscordenoBot<infer Props, infer _Behavior> ? Props : never;
-export type ExtractDesiredBehavior<T> = T extends DiscordenoBot<infer _Props, infer Behavior> ? Behavior : never;
+export type ExtractDesiredProps<T> =
+  T extends DiscordenoBot<infer Props, infer _Behavior> ? Props : never;
+export type ExtractDesiredBehavior<T> =
+  T extends DiscordenoBot<infer _Props, infer Behavior> ? Behavior : never;
 
 // Discordeno inferred types
 export type Bot = typeof bot;
@@ -26,18 +39,31 @@ export type Role = typeof bot.transformers.$inferredTypes.role;
 export type Attachment = typeof bot.transformers.$inferredTypes.attachment;
 export type Interaction = typeof bot.transformers.$inferredTypes.interaction;
 
-// Custom types
-export type CommandCategory = 'Core' | 'Info' | 'Moderation' | 'Utility' | 'Web' | 'Dev';
+// Command stuff
+export enum ApplicationCommandCategory {
+  Core = "Core",
+  Info = "Info",
+  Moderation = "Moderation",
+  Utility = "Utility",
+  Web = "Web",
+  Dev = "Dev",
+}
 
 export interface Details {
-  category: CommandCategory;
+  category: ApplicationCommandCategory;
   summary?: string;
   usage?: string;
   examples?: string[];
 }
 
+export enum RateLimitType {
+  Channel = "Channel",
+  Guild = "Guild",
+  User = "User",
+}
+
 export interface RateLimit {
-  type: 'Guild' | 'User';
+  type: RateLimitType;
   limit: number;
   duration: number;
 }
@@ -52,5 +78,5 @@ export interface Precondition {
   fail(context: any): void;
 }
 
-export type CommandLocalization = (Partial<Record<keyof Localization, string>> & { global: string }) | string;
-export type RateLimitType = Collection<bigint, RateLimitManager>;
+// Custom types
+export type RateLimitManagerType = Collection<bigint, RateLimitManager>;

@@ -1,13 +1,13 @@
-import type { RateLimitType } from 'types/types';
+import type { RateLimitManagerType } from "types/types";
 
 export class RateLimitManager {
-  public rateLimits: RateLimitType;
+  public rateLimits: RateLimitManagerType;
   public id: bigint;
   private duration: number = 0;
   private limit: number = 0;
   private uses: number[] = [];
 
-  constructor(rateLimits: RateLimitType, id: bigint) {
+  constructor(rateLimits: RateLimitManagerType, id: bigint) {
     this.rateLimits = rateLimits;
     this.id = id;
 
@@ -23,7 +23,8 @@ export class RateLimitManager {
   }
 
   public check(): { limited: boolean; duration: number; limit: number } {
-    if (!this.uses.length) return { limited: false, duration: 0, limit: this.limit };
+    if (!this.uses.length)
+      return { limited: false, duration: 0, limit: this.limit };
 
     const now = Date.now();
     this.uses = this.uses.filter((t) => now - t < this.duration);

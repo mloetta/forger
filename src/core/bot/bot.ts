@@ -1,13 +1,15 @@
-import { Collection, createBot, GatewayIntents } from 'discordeno';
-import type { WorkerPresenceUpdate, WorkerShardPayload } from 'gateway/worker/types';
-import { GATEWAY_URL, REST_URL, TOKEN } from 'utils/variables';
-import { readDirectory } from 'utils/utils';
-import { join } from 'path';
-import type { ApplicationCommand } from 'helpers/command';
-import type { Event } from 'helpers/event';
-import type { Bot, Events } from 'types/types';
+import { Collection, createBot, GatewayIntents } from "discordeno";
+import type {
+  WorkerPresenceUpdate,
+  WorkerShardPayload,
+} from "gateway/worker/types";
+import { GATEWAY_URL, REST_URL, TOKEN } from "utils/variables";
+import { readDirectory } from "utils/utils";
+import { join } from "path";
+import type { ApplicationCommand } from "helpers/command";
+import type { Bot } from "types/types";
 
-declare module 'discordeno' {
+declare module "discordeno" {
   interface Bot {
     commands: Collection<string, ApplicationCommand>;
   }
@@ -37,6 +39,14 @@ export const bot = createBot({
     },
     message: {
       id: true,
+    },
+    role: {
+      id: true,
+      name: true,
+      permissions: true,
+      toggles: true,
+      color: true,
+      colors: true,
     },
     interaction: {
       data: true,
@@ -76,14 +86,14 @@ overrideGatewayImplementations(bot);
 function overrideGatewayImplementations(bot: Bot): void {
   bot.gateway.sendPayload = async (shardId, payload) => {
     await fetch(GATEWAY_URL, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
-        type: 'ShardPayload',
+        type: "ShardPayload",
         shardId,
         payload,
       } satisfies WorkerShardPayload),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: TOKEN,
       },
     });
@@ -91,13 +101,13 @@ function overrideGatewayImplementations(bot: Bot): void {
 
   bot.gateway.editBotStatus = async (payload) => {
     await fetch(GATEWAY_URL, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
-        type: 'EditShardsPresence',
+        type: "EditShardsPresence",
         payload,
       } satisfies WorkerPresenceUpdate),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: TOKEN,
       },
     });
@@ -105,5 +115,5 @@ function overrideGatewayImplementations(bot: Bot): void {
 }
 
 // Importing commands and events
-const events = await readDirectory(join(__dirname, './events'));
-const commands = await readDirectory(join(__dirname, './commands'));
+await readDirectory(join(__dirname, "./events"));
+await readDirectory(join(__dirname, "./commands"));

@@ -5,33 +5,37 @@ import {
   MessageComponentTypes,
   MessageFlags,
   SeparatorSpacingSize,
-} from 'discordeno';
-import os from 'os';
-import { iconAsEmoji, iconPill } from 'utils/markdown';
-import { formatTime, readableFileSize } from 'utils/utils';
-import { getShardInfoFromGuild } from 'bot/utils';
-import createApplicationCommand from 'helpers/command';
+} from "discordeno";
+import os from "os";
+import { iconAsEmoji, iconPill } from "utils/markdown";
+import { formatTime, readableFileSize } from "utils/utils";
+import { getShardInfoFromGuild } from "bot/utils";
+import createApplicationCommand from "helpers/command";
+import { ApplicationCommandCategory, RateLimitType } from "types/types";
 
 createApplicationCommand({
-  name: 'stats',
+  name: "stats",
   nameLocalizations: {
-    'pt-BR': 'estatísticas',
+    "pt-BR": "estatísticas",
   },
-  description: 'View some stats',
+  description: "View some stats",
   descriptionLocalizations: {
-    'pt-BR': 'Veja algumas estatísticas',
+    "pt-BR": "Veja algumas estatísticas",
   },
-  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
+  integrationTypes: [
+    DiscordApplicationIntegrationType.GuildInstall,
+    DiscordApplicationIntegrationType.UserInstall,
+  ],
   contexts: [
     DiscordInteractionContextType.BotDm,
     DiscordInteractionContextType.Guild,
     DiscordInteractionContextType.PrivateChannel,
   ],
   details: {
-    category: 'Core',
+    category: ApplicationCommandCategory.Core,
   },
   rateLimit: {
-    type: 'User',
+    type: RateLimitType.User,
     limit: 1,
     duration: 3,
   },
@@ -57,7 +61,7 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Shard #${shard}\n${iconPill('Reply01', 'Guilds')}: ${guilds}\n${iconPill('Reply02', 'Installations')}: ${installations}\n${iconPill('Reply02', 'Shards')}: ${shards}\n${iconPill('Reply02', 'Memory Usage')}: ${readableFileSize(usedMem)}\n${iconPill('Reply02', 'Uptime')}: ${formatTime(uptime)}\n${iconPill('Reply04', 'Latency')}: ${latency}ms`,
+              content: `## Shard #${shard}\n${iconPill("Reply01", "Guilds")}: ${guilds}\n${iconPill("Reply02", "Installations")}: ${installations}\n${iconPill("Reply02", "Shards")}: ${shards}\n${iconPill("Reply02", "Memory Usage")}: ${readableFileSize(usedMem)}\n${iconPill("Reply02", "Uptime")}: ${formatTime(uptime)}\n${iconPill("Reply04", "Latency")}: ${latency}ms`,
             },
             {
               type: MessageComponentTypes.Separator,
@@ -69,17 +73,17 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.Button,
-                  label: 'Support Server',
-                  emoji: iconAsEmoji('Discord'),
+                  label: "Support Server",
+                  emoji: iconAsEmoji("Discord"),
                   style: ButtonStyles.Link,
-                  url: 'https://discord.gg/7b234YFhmn',
+                  url: "https://discord.gg/7b234YFhmn",
                 },
                 {
                   type: MessageComponentTypes.Button,
-                  label: 'Add Pocket-Tool',
-                  emoji: iconAsEmoji('Link'),
+                  label: "Add Pocket-Tool",
+                  emoji: iconAsEmoji("Link"),
                   style: ButtonStyles.Link,
-                  url: 'https://discord.com/oauth2/authorize?client_id=1418168974285340683',
+                  url: "https://discord.com/oauth2/authorize?client_id=1418168974285340683",
                 },
               ],
             },

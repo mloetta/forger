@@ -1,15 +1,20 @@
-import type { ShardInfo, ManagerGetShardInfoFromGuildId } from 'gateway/worker/types';
-import { GATEWAY_URL, TOKEN } from 'utils/variables';
+import type {
+  ShardInfo,
+  ManagerGetShardInfoFromGuildId,
+} from "gateway/worker/types";
+import { GATEWAY_URL, TOKEN } from "utils/variables";
 
-export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<ShardInfo, 'nonce'>> {
+export async function getShardInfoFromGuild(
+  guildId?: bigint,
+): Promise<Omit<ShardInfo, "nonce">> {
   const req = await fetch(GATEWAY_URL, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify({
-      type: 'ShardInfoFromGuild',
+      type: "ShardInfoFromGuild",
       guildId: guildId?.toString(),
     } as ManagerGetShardInfoFromGuildId),
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: TOKEN,
     },
   });

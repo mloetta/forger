@@ -1,7 +1,17 @@
 {
+  "generic": {
+    "yes": "Yes",
+    "no": "No"
+  },
   "commands": {
     "ping": {
       "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
+    },
+    "role": {
+      "overview": "Overview",
+      "hoist": "Hoisted:",
+      "color": "Color:",
+      "mentionable": "Mentionable:"
     }
   }
 }

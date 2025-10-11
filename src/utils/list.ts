@@ -1,6 +1,7 @@
 export default class List<T> extends Array<T> {
   #current;
   #pointer;
+  public looping = false;
 
   public get current() {
     return this.#current;
@@ -10,8 +11,18 @@ export default class List<T> extends Array<T> {
     return this.#pointer;
   }
 
+  public loop(enable: boolean = true) {
+    this.looping = enable;
+
+    return this;
+  }
+
   public goTo(index: number) {
-    index = Math.min(Math.max(index, 0), this.length);
+    if (this.looping) {
+      index = ((index % this.length) + this.length) % this.length;
+    } else {
+      index = Math.min(Math.max(index, 0), this.length - 1);
+    }
 
     this.#current = this[index];
     this.#pointer = index;
@@ -20,29 +31,19 @@ export default class List<T> extends Array<T> {
   }
 
   public next() {
-    let prev = this.#current;
-
-    this.#pointer++;
-    this.#current = this[this.#pointer];
-
-    return prev!;
+    return this.goTo(this.#pointer + 1);
   }
 
   public back() {
-    let prev = this.#current;
-
-    this.#pointer--;
-    this.#current = this[this.#pointer];
-
-    return prev!;
+    return this.goTo(this.#pointer - 1);
   }
 
   public hasNext() {
-    return this.#pointer < this.length;
+    return this.looping || this.#pointer < this.length - 1;
   }
 
   public hasPrevious() {
-    return this.#pointer > 0;
+    return this.looping || this.#pointer > 0;
   }
 
   public getNext() {
