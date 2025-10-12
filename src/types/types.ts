@@ -1,33 +1,19 @@
-import type {
-  Bot as DiscordenoBot,
-  Collection,
-  PermissionStrings,
-} from "discordeno";
-import type { bot } from "bot/bot";
-import type { RateLimitManager } from "utils/rateLimit";
+import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
+import type { bot } from 'bot/bot';
+import type { RateLimitManager } from 'utils/rateLimit';
 
 // Type helpers
-export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<
-  T,
-  K
-> &
-  DeepPartial<Pick<T, K>>;
+export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
 
-export type NotOptional<T extends Record<any, any>, K extends keyof T> = Omit<
-  DeepPartial<T>,
-  K
-> &
-  Pick<T, K>;
+export type NotOptional<T extends Record<any, any>, K extends keyof T> = Omit<DeepPartial<T>, K> & Pick<T, K>;
 
 export type DeepPartial<T extends Record<any, any>> = {
   [K in keyof T]?: T[K] extends Object ? DeepPartial<T[K]> : T[K];
 };
 
 // Discordeno type helpers
-export type ExtractDesiredProps<T> =
-  T extends DiscordenoBot<infer Props, infer _Behavior> ? Props : never;
-export type ExtractDesiredBehavior<T> =
-  T extends DiscordenoBot<infer _Props, infer Behavior> ? Behavior : never;
+export type ExtractDesiredProps<T> = T extends DiscordenoBot<infer Props, infer _Behavior> ? Props : never;
+export type ExtractDesiredBehavior<T> = T extends DiscordenoBot<infer _Props, infer Behavior> ? Behavior : never;
 
 // Discordeno inferred types
 export type Bot = typeof bot;
@@ -41,12 +27,12 @@ export type Interaction = typeof bot.transformers.$inferredTypes.interaction;
 
 // Command stuff
 export enum ApplicationCommandCategory {
-  Core = "Core",
-  Info = "Info",
-  Moderation = "Moderation",
-  Utility = "Utility",
-  Web = "Web",
-  Dev = "Dev",
+  Core = 'Core',
+  Info = 'Info',
+  Moderation = 'Moderation',
+  Utility = 'Utility',
+  Web = 'Web',
+  Dev = 'Dev',
 }
 
 export interface Details {
@@ -57,9 +43,9 @@ export interface Details {
 }
 
 export enum RateLimitType {
-  Channel = "Channel",
-  Guild = "Guild",
-  User = "User",
+  Channel = 'Channel',
+  Guild = 'Guild',
+  User = 'User',
 }
 
 export interface RateLimit {

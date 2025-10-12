@@ -1,12 +1,9 @@
-import type {
-  DiscordGatewayPayload,
-  GatewayDispatchEventNames,
-} from "discordeno";
-import { EVENT_SERVER_PORT } from "utils/variables";
-import { bot } from "./bot";
-import { buildFastifyApp } from "./fastify";
-import "utils/process";
-import { i18n } from "utils/i18n";
+import type { DiscordGatewayPayload, GatewayDispatchEventNames } from 'discordeno';
+import { EVENT_SERVER_PORT } from 'utils/variables';
+import { bot } from './bot';
+import { buildFastifyApp } from './fastify';
+import 'utils/process';
+import { i18n } from 'utils/i18n';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
@@ -15,21 +12,18 @@ interface GatewayEvent {
 
 const app = buildFastifyApp();
 
-app.get("/timecheck", async (_req, res) => {
+app.get('/timecheck', async (_req, res) => {
   res.status(200).send({ message: Date.now() });
 });
 
-app.post("/", async (req, res) => {
+app.post('/', async (req, res) => {
   const body = req.body as GatewayEvent;
 
   try {
     await handleGatewayEvent(body.payload, body.shardId);
     res.status(200).send();
   } catch (error) {
-    bot.logger.error(
-      "There was an error handling the incoming gateway command",
-      error,
-    );
+    bot.logger.error('There was an error handling the incoming gateway command', error);
     res.status(500).send();
   }
 });
@@ -38,10 +32,7 @@ await app.listen({ port: Number(EVENT_SERVER_PORT) });
 
 bot.logger.info(`Bot event handler is listening on port ${EVENT_SERVER_PORT}`);
 
-async function handleGatewayEvent(
-  payload: DiscordGatewayPayload,
-  shardId: number,
-): Promise<void> {
+async function handleGatewayEvent(payload: DiscordGatewayPayload, shardId: number): Promise<void> {
   bot.events.raw?.(payload, shardId);
 
   if (!payload.t) return;

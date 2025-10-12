@@ -1,7 +1,7 @@
 export namespace Schema {
   export interface ISchema {
     string: {
-      type: "string";
+      type: 'string';
       default?: string;
 
       min?: number;
@@ -10,7 +10,7 @@ export namespace Schema {
     };
 
     number: {
-      type: "number";
+      type: 'number';
       default?: number;
 
       min?: number;
@@ -22,36 +22,36 @@ export namespace Schema {
     };
 
     boolean: {
-      type: "boolean";
+      type: 'boolean';
       default?: boolean;
     };
 
     array: {
-      type: "array";
+      type: 'array';
       default?: Array<any>;
       fields?: Array<ISchema[keyof ISchema]>;
     };
 
     object: {
-      type: "object";
+      type: 'object';
       default?: Record<string, any>;
       fields?: Record<string, ISchema[keyof ISchema]>;
     };
   }
 
-  export function string(metadata?: Omit<ISchema["string"], "type">) {
+  export function string(metadata?: Omit<ISchema['string'], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: "string" as "string",
+      type: 'string' as 'string',
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
 
-      value: metadata.default ?? "",
+      value: metadata.default ?? '',
       values: metadata.values || [],
 
       validate() {
-        if (typeof this.value !== "string") {
+        if (typeof this.value !== 'string') {
           throw new Error(`Current value is not a string`);
         }
 
@@ -59,21 +59,18 @@ export namespace Schema {
           throw new Error(`String value is not in expected values`);
         }
 
-        if (
-          (this.max != -1 && this.value.length > this.max) ||
-          (this.min != -1 && this.value.length < this.min)
-        ) {
+        if ((this.max != -1 && this.value.length > this.max) || (this.min != -1 && this.value.length < this.min)) {
           throw new Error(`String length is not in range`);
         }
       },
     };
   }
 
-  export function number(metadata?: Omit<ISchema["number"], "type">) {
+  export function number(metadata?: Omit<ISchema['number'], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: "number" as "number",
+      type: 'number' as 'number',
       int: !!metadata.int,
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
@@ -82,7 +79,7 @@ export namespace Schema {
       values: metadata.values || [],
 
       validate() {
-        if (typeof this.value !== "number") {
+        if (typeof this.value !== 'number') {
           throw new Error(`Current value is not a number`);
         }
 
@@ -94,25 +91,22 @@ export namespace Schema {
           throw new Error(`Current value is not a int`);
         }
 
-        if (
-          (this.max != -1 && this.value > this.max) ||
-          (this.min != -1 && this.value < this.min)
-        ) {
+        if ((this.max != -1 && this.value > this.max) || (this.min != -1 && this.value < this.min)) {
           throw new Error(`Number value is not in range`);
         }
       },
     };
   }
 
-  export function boolean(metadata?: Omit<ISchema["boolean"], "type">) {
+  export function boolean(metadata?: Omit<ISchema['boolean'], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: "boolean" as "boolean",
+      type: 'boolean' as 'boolean',
       value: metadata.default ?? false,
 
       validate() {
-        if (typeof this.value !== "boolean") {
+        if (typeof this.value !== 'boolean') {
           throw new Error(`Current value is not a boolean`);
         }
       },
@@ -121,26 +115,24 @@ export namespace Schema {
 
   export function array<T extends Array<ISchema[keyof ISchema]>>(fields?: T) {
     return {
-      type: "array" as "array",
+      type: 'array' as 'array',
 
       value: [] as any as T,
       fields: fields || [],
 
       validate() {
-        if (typeof this.value !== "object" && !Array.isArray(this.value)) {
+        if (typeof this.value !== 'object' && !Array.isArray(this.value)) {
           throw new Error(`Current value is not a array`);
         }
       },
     };
   }
 
-  export function object<T extends Record<string, ISchema[keyof ISchema]>>(
-    fields?: T,
-  ) {
+  export function object<T extends Record<string, ISchema[keyof ISchema]>>(fields?: T) {
     fields = fields ?? ({} as T);
 
     return {
-      type: "object" as "object",
+      type: 'object' as 'object',
 
       value: {} as T,
       fields: fields || {},
@@ -152,7 +144,7 @@ export namespace Schema {
       },
 
       validate() {
-        if (typeof this.value !== "object" && Array.isArray(this.value)) {
+        if (typeof this.value !== 'object' && Array.isArray(this.value)) {
           throw new Error(`Current value is not a object`);
         }
       },

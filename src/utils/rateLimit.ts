@@ -1,4 +1,4 @@
-import type { RateLimitManagerType } from "types/types";
+import type { RateLimitManagerType } from 'types/types';
 
 export class RateLimitManager {
   public rateLimits: RateLimitManagerType;
@@ -23,8 +23,7 @@ export class RateLimitManager {
   }
 
   public check(): { limited: boolean; duration: number; limit: number } {
-    if (!this.uses.length)
-      return { limited: false, duration: 0, limit: this.limit };
+    if (!this.uses.length) return { limited: false, duration: 0, limit: this.limit };
 
     const now = Date.now();
     this.uses = this.uses.filter((t) => now - t < this.duration);

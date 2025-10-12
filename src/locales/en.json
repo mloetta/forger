@@ -1,9 +1,40 @@
 {
   "generic": {
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "maybe": "Maybe",
+    "website": "website"
   },
   "commands": {
+    "help": {
+      "header": "# Welcome to Pocket Tool!\nYou can view all the available command on the **{{website}}**",
+      "locale": "## How to change slash command language?\nSlash commands are available in multiple languages and will automatically match your **{{langSettings}}**",
+      "langSettings": "Discord Language Settings",
+      "customization": "## How to customize Pocket Tool?",
+      "customizationInfo": "You can customize this bot however you want: change its name, its entire guild profile, go wild and make it totally your own!",
+      "disableCommands": "You can visit **{{disableCommandsBlogPost}}** to learn how to disable commands",
+      "disableCommandsBlog": "Discord Integrations Settings",
+      "buttons": {
+        "customize": "Customize Pocket Tool",
+        "reset": "Reset Pocket Tool",
+        "follow": "Follow Updates",
+        "missingPerm": "You need the {{perm}} permission to do this.",
+        "wrongChannel": "You can only follow updates in text channels."
+      },
+      "modals": {
+        "title": "Customize Pocket Tool as you wish!",
+        "header": "## Shape, twist, and reinvent - at no cost!",
+        "name": "What should my name be?",
+        "nameDesc": "This is the name that appears on my guild profile.",
+        "aboutMe": "What's my new about me?",
+        "aboutMeDesc": "This is the text that appears on my profile.",
+        "blankValue": "Leave blank for default value.",
+        "nameUpdated": "Name was updated successfully.",
+        "aboutMeUpdated": "About me was updated successfully.",
+        "profileUpdated": "Both name and about me were updated successfully.",
+        "noChanges": "No profile changes were made."
+      }
+    },
     "ping": {
       "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
     },
@@ -13,5 +44,9 @@
       "color": "Color:",
       "mentionable": "Mentionable:"
     }
+  },
+  "buttons": {
+    "support": "Join Support",
+    "invite": "Add Pocket Tool"
   }
 }

@@ -1,34 +1,11 @@
-import type {
-  ApplicationCommandOptionTypes,
-  CreateApplicationCommand,
-  Localization,
-} from "discordeno";
-import fs from "fs";
-import type {
-  ApplicationCommand,
-  ApplicationCommandOption,
-} from "helpers/command";
-import path from "path";
-import type { CommandLocalization } from "types/types";
-import { pathToFileURL } from "url";
-import CallStack from "./stack";
+import fs from 'fs';
+import path from 'path';
+import { pathToFileURL } from 'url';
+import CallStack from './stack';
 
-export const readableFileSizeUnits = [
-  "kB",
-  "MB",
-  "GB",
-  "TB",
-  "PB",
-  "EB",
-  "ZB",
-  "YB",
-];
+export const readableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-export function readableFileSize(
-  bytes: number,
-  micro = false,
-  precision = 1,
-): string {
+export function readableFileSize(bytes: number, micro = false, precision = 1): string {
   const thresh = micro ? 1000 : 1024;
 
   if (Math.abs(bytes) < thresh) {
@@ -41,10 +18,7 @@ export function readableFileSize(
   do {
     bytes /= thresh;
     ++unit;
-  } while (
-    Math.round(Math.abs(bytes) * round) / round >= thresh &&
-    unit < readableFileSizeUnits.length - 1
-  );
+  } while (Math.round(Math.abs(bytes) * round) / round >= thresh && unit < readableFileSizeUnits.length - 1);
 
   return `${bytes.toFixed(precision)} ${readableFileSizeUnits[unit]}`;
 }
@@ -65,22 +39,22 @@ export function formatTime(duration: number | string) {
   if (seconds > 0) parts.push(`${seconds}s`);
   if (milliseconds > 0) parts.push(`${milliseconds}ms`);
 
-  return parts.join(" ");
+  return parts.join(' ');
 }
 
 export function timestamp() {
   const now = new Date();
-  const year = now.getFullYear().toString().padStart(4, "0");
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
-  const day = now.getDate().toString().padStart(2, "0");
-  const hours = now.getHours().toString().padStart(2, "0");
-  const minutes = now.getMinutes().toString().padStart(2, "0");
-  const seconds = now.getSeconds().toString().padStart(2, "0");
+  const year = now.getFullYear().toString().padStart(4, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 export function commas(num: number | string) {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export function debounce(fn: any, delay: number) {
@@ -108,25 +82,20 @@ export function CRC32(string: string): string {
   }
 
   const hash = -(crc + 1) >>> 0;
-  return hash.toString(16).padStart(8, "0");
+  return hash.toString(16).padStart(8, '0');
 }
 
 export function componentCustomId(customId: string, ...args: any[]): string {
-  if (args.length)
-    return `${customId}-${args.map((arg) => String(arg)).join(",")}`;
+  if (args.length) return `${customId}-${args.map((arg) => String(arg)).join(',')}`;
 
   return customId;
 }
 
-export function closestMatch(
-  input: string,
-  strings: readonly string[],
-): string | null {
-  if (typeof input !== "string") throw new TypeError("Input must be a string.");
-  if (!Array.isArray(strings)) throw new TypeError("Strings must be an array.");
+export function closestMatch(input: string, strings: readonly string[]): string | null {
+  if (typeof input !== 'string') throw new TypeError('Input must be a string.');
+  if (!Array.isArray(strings)) throw new TypeError('Strings must be an array.');
   for (const s of strings) {
-    if (typeof s !== "string")
-      throw new TypeError("Strings must only contain strings.");
+    if (typeof s !== 'string') throw new TypeError('Strings must only contain strings.');
   }
 
   if (strings.length === 0) return null;
@@ -150,8 +119,8 @@ export function closestMatch(
 }
 
 export function levenshteinDistance(a: string, b: string): number {
-  if (typeof a !== "string" || typeof b !== "string") {
-    throw new TypeError("Levenshtein Distance expects two strings.");
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    throw new TypeError('Levenshtein Distance expects two strings.');
   }
 
   if (a === b) return 0;
@@ -191,12 +160,12 @@ export function levenshteinDistance(a: string, b: string): number {
 
 export async function readDirectory(dir: string): Promise<any[]> {
   if (!path.isAbsolute(dir)) {
-    throw new Error("The provided path must be absolute.");
+    throw new Error('The provided path must be absolute.');
   }
 
   const results = fs.readdirSync(path.resolve(dir), {
     recursive: true,
-    encoding: "utf-8",
+    encoding: 'utf-8',
   });
   const stack = new CallStack();
   const modules: any[] = [];
@@ -205,20 +174,13 @@ export async function readDirectory(dir: string): Promise<any[]> {
     const filepath = path.resolve(dir, file);
     if (fs.statSync(filepath).isDirectory()) continue;
 
-    const module = await stack.add(
-      async () => import(pathToFileURL(filepath).href),
-    );
+    const module = await stack.add(async () => import(pathToFileURL(filepath).href));
     modules.push(module);
   }
 
   return modules;
 }
 
-export default function or<Value1 = any, Value2 = any>(
-  ifExists: Value1,
-  ifNot: Value2,
-): NonNullable<Value1> | Value2 {
-  return ifExists !== null && ifExists !== undefined
-    ? (ifExists as NonNullable<Value1>)
-    : ifNot;
+export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: Value2): NonNullable<Value1> | Value2 {
+  return ifExists !== null && ifExists !== undefined ? (ifExists as NonNullable<Value1>) : ifNot;
 }
