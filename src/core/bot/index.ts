@@ -1,13 +1,33 @@
 import type { DiscordGatewayPayload, GatewayDispatchEventNames } from 'discordeno';
-import { EVENT_SERVER_PORT } from 'utils/variables';
+import { connect as connectAmqp } from 'amqplib';
+import {
+  EVENT_SERVER_PORT,
+  MESSAGEQUEUE_ENABLE,
+  RABBITMQ_USERNAME,
+  RABBITMQ_PASSWORD,
+  RABBITMQ_URL,
+} from 'utils/variables';
 import { bot } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
 import { i18n } from 'utils/i18n';
+import { readDirectory } from 'utils/utils';
+import { join } from 'path';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
   shardId: number;
+}
+
+// Import commands and events
+await readDirectory(join(__dirname, './events'));
+await readDirectory(join(__dirname, './commands'));
+
+// Initialize i18n
+await i18n();
+
+if (MESSAGEQUEUE_ENABLE) {
+  await connectToRabbitMQ();
 }
 
 const app = buildFastifyApp();
@@ -42,4 +62,59 @@ async function handleGatewayEvent(payload: DiscordGatewayPayload, shardId: numbe
   bot.handlers[payload.t as GatewayDispatchEventNames]?.(bot, payload, shardId);
 }
 
-await i18n();
+async function connectToRabbitMQ(): Promise<void> {
+  const connection = await connectAmqp(`amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_URL}`).catch(
+    (error) => {
+      bot.logger.error('Failed to connect to RabbitMQ, retrying in 1s.', error);
+      setTimeout(connectToRabbitMQ, 1000);
+    },
+  );
+
+  if (!connection) return;
+
+  connection.on('close', () => {
+    setTimeout(connectToRabbitMQ, 1000);
+  });
+  connection.on('error', (error) => {
+    bot.logger.error('There was an error in the connection with RabbitMQ, reconnecting in 1s.', error);
+    setTimeout(connectToRabbitMQ, 1000);
+  });
+
+  const channel = await connection.createChannel().catch((error) => {
+    bot.logger.error('There was an error creating the RabbitMQ channel', error);
+  });
+
+  if (!channel) return;
+
+  const exchange = await channel
+    .assertExchange('gatewayMessage', 'x-message-deduplication', {
+      durable: true,
+      arguments: {
+        'x-cache-size': 1000, // maximum number of entries
+        'x-cache-ttl': 500, // 500ms
+      },
+    })
+    .catch((error) => {
+      bot.logger.error('There was an error asserting the exchange', error);
+    });
+
+  if (!exchange) return;
+
+  await channel.assertQueue('gatewayMessageQueue').catch(bot.logger.error);
+  await channel.bindQueue('gatewayMessageQueue', 'gatewayMessage', '').catch(bot.logger.error);
+  await channel
+    .consume('gatewayMessageQueue', async (message) => {
+      if (!message) return;
+
+      try {
+        const messageBody = JSON.parse(message.content.toString()) as GatewayEvent;
+
+        await handleGatewayEvent(messageBody.payload, messageBody.shardId);
+
+        channel.ack(message);
+      } catch (error) {
+        bot.logger.error('There was an error handling events received from RabbitMQ', error);
+      }
+    })
+    .catch(bot.logger.error);
+}

@@ -6,6 +6,7 @@ import {
   MessageFlags,
   SeparatorSpacingSize,
   snowflakeToBigint,
+  type Application,
   type TextDisplayComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
@@ -51,10 +52,10 @@ createApplicationCommand({
     duration: 5,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(interaction, options) {
     const language = interaction.locale;
 
-    const target = await bot.rest.getUser(or(options?.target?.user.id, interaction.user.id));
+    const target = await interaction.bot.rest.getUser(or(options?.target?.user.id, interaction.user.id));
 
     if (target.bot) {
       const appFlags = {
@@ -107,7 +108,7 @@ createApplicationCommand({
         return;
       }
 
-      const app = await req.json();
+      const app = (await req.json()) as Application;
 
       let tags;
       let links;
@@ -120,8 +121,8 @@ createApplicationCommand({
       }
 
       const linksArr = [
-        app.terms_of_service_url ? `- ${link(app.terms_of_service_url, 'Terms of Service')}` : null,
-        app.privacy_policy_url ? `- ${link(app.privacy_policy_url, 'Privacy Policy')}` : null,
+        app.termsOfServiceUrl ? `- ${link(app.termsOfServiceUrl, 'Terms of Service')}` : null,
+        app.privacyPolicyUrl ? `- ${link(app.privacyPolicyUrl, 'Privacy Policy')}` : null,
         `- ${link(
           `https://discord.com/oauth2/authorize?client_id=${app.id}&scope=bot%20applications.commands`,
           'Invite Link',
@@ -135,7 +136,7 @@ createApplicationCommand({
       }
 
       const flagList = Object.entries(appFlags)
-        .filter(([_, flagValue]) => app.flags & (1 << flagValue))
+        .filter(([_, flagValue]) => app.flags! & (1 << flagValue))
         .map(([key]) => appFlagNames[key as keyof typeof appFlagNames] || key.replace(/_/g, ' ').toLowerCase());
 
       if (flagList.length > 0) {
@@ -180,7 +181,7 @@ createApplicationCommand({
         ],
       });
     } else {
-      const member = await bot.rest.getMember(interaction.guild.id, target.id);
+      const member = await interaction.bot.rest.getMember(interaction.guild.id, target.id);
 
       let badges: (keyof typeof Emojis)[] = [];
       if (target.flags) {

@@ -66,6 +66,12 @@ export interface WorkerCreateData {
     authentication: string;
   };
   workerId: number;
+  messageQueue: {
+    enabled: boolean;
+    username?: string;
+    password?: string;
+    url?: string;
+  };
 }
 
 export interface ShardInfo {

@@ -8,7 +8,6 @@ import {
 } from 'discordeno';
 import type {
   Attachment,
-  Bot,
   Channel,
   CommandPermission,
   Details,
@@ -38,13 +37,17 @@ export interface ApplicationCommand<TOptions extends ApplicationCommandOptions =
   acknowledge?: boolean;
   ephemeral?: boolean;
   dev?: boolean;
-  run: (bot: Bot, interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
-  autoComplete?: (bot: Bot, interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
+  run: (interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
+  autoComplete?: (interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
 }
 
 export type GetApplicationCommandOptions<T extends ApplicationCommandOptions> = T extends ApplicationCommandOptions
   ? { [Prop in keyof BuildOptions<T> as Prop]: BuildOptions<T>[Prop] }
   : never;
+
+type BuildOptions<T extends ApplicationCommandOptions | undefined> = {
+  [Prop in keyof Omit<T, keyof unknown[]> as GetOptionName<T[Prop]>]: GetOptionValue<T[Prop]>;
+};
 
 export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>;
 export type ApplicationCommandOptions = ApplicationCommandOption[];
@@ -94,7 +97,3 @@ type GetOptionValue<T> = T extends {
     ? BuildOptions<T['options']>
     : ConvertTypeToResolved<T['type']> | (T['required'] extends true ? never : undefined)
   : never;
-
-type BuildOptions<T extends ApplicationCommandOptions | undefined> = {
-  [Prop in keyof Omit<T, keyof unknown[]> as GetOptionName<T[Prop]>]: GetOptionValue<T[Prop]>;
-};

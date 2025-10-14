@@ -43,7 +43,7 @@ createApplicationCommand({
     duration: 3,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(interaction, options) {
     const language = interaction.locale!;
 
     const xata = getXataClient();
@@ -163,7 +163,7 @@ createApplicationCommand({
           const newAboutMe = or(i.data.components?.[2]?.component?.value, null);
 
           if (newName || newAboutMe) {
-            await bot.rest.editBotMember(i.guild.id, {
+            await interaction.bot.rest.editBotMember(i.guild.id, {
               nick: newName,
               bio: newAboutMe,
             });
@@ -257,7 +257,7 @@ createApplicationCommand({
             ],
           });
         } else if (i.data?.customId === 'reset-customization') {
-          await bot.rest.editBotMember(i.guild.id, {
+          await interaction.bot.rest.editBotMember(i.guild.id, {
             nick: null,
             avatar: null,
             banner: null,
@@ -296,7 +296,7 @@ createApplicationCommand({
             return;
           }
 
-          await bot.rest.followAnnouncement(source.id, channel.id!, 'Following updates from Pocket Tool');
+          await interaction.bot.rest.followAnnouncement(source.id, channel.id!, 'Following updates from Pocket Tool');
         }
       });
 

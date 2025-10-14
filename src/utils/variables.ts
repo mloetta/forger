@@ -12,3 +12,7 @@ export const EVENT_SERVER_URL = Env.get('event_server_url', true);
 export const EVENT_SERVER_PORT = Env.get('event_server_port', true);
 export const XATA_API_KEY = Env.get('xata_api_key', true);
 export const XATA_BRANCH = Env.get('xata_branch', true);
+export const MESSAGEQUEUE_ENABLE = Env.get('messagequeue_enable', true);
+export const RABBITMQ_USERNAME = Env.get('rabbitmq_username');
+export const RABBITMQ_PASSWORD = Env.get('rabbitmq_password');
+export const RABBITMQ_URL = Env.get('rabbitmq_url');

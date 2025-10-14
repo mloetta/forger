@@ -51,7 +51,7 @@ createApplicationCommand({
     duration: 5,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(interaction, options) {
     const language = interaction.locale!;
 
     const role = options.role;
@@ -161,7 +161,7 @@ createApplicationCommand({
     const categoriesList = new List(...(Object.keys(categories) as Array<keyof Categories>)).loop(true);
 
     const makeContent = () => {
-      const key = categoriesList.current;
+      const key = categoriesList.current!;
       const cat = categories[key];
 
       const permText = cat.permissions

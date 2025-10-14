@@ -1,6 +1,13 @@
 import { join } from 'path';
 import { Worker } from 'worker_threads';
-import { TOKEN, EVENT_SERVER_URL } from 'utils/variables';
+import {
+  TOKEN,
+  EVENT_SERVER_URL,
+  MESSAGEQUEUE_ENABLE,
+  RABBITMQ_USERNAME,
+  RABBITMQ_PASSWORD,
+  RABBITMQ_URL,
+} from 'utils/variables';
 import { gateway, logger } from 'gateway/gateway';
 import type { ManagerMessage, ShardInfo, WorkerCreateData, WorkerMessage } from './types';
 
@@ -24,6 +31,12 @@ export function createWorker(workerId: number): Worker {
         authentication: TOKEN,
       },
       workerId,
+      messageQueue: {
+        enabled: Boolean(MESSAGEQUEUE_ENABLE),
+        username: RABBITMQ_USERNAME,
+        password: RABBITMQ_PASSWORD,
+        url: RABBITMQ_URL,
+      },
     } satisfies WorkerCreateData,
   });
 
@@ -38,18 +51,18 @@ export function createWorker(workerId: number): Worker {
       } satisfies WorkerMessage);
 
       return;
-    }
-    if (message.type === 'ShardInfo') {
+    } else if (message.type === 'ShardInfo') {
       shardInfoRequests.get(message.nonce)?.(message);
       shardInfoRequests.delete(message.nonce);
-      return;
-    }
-    if (message.type === 'ShardIdentified') {
-      logger.info(`Shard #${message.shardId} identified`);
-      return;
-    }
 
-    logger.warn(`Worker - Received unknown message type: ${(message as { type: string }).type}`);
+      return;
+    } else if (message.type === 'ShardIdentified') {
+      logger.info(`Shard #${message.shardId} identified`);
+
+      return;
+    } else {
+      logger.warn(`Worker - Received unknown message type: ${(message as { type: string }).type}`);
+    }
   });
 
   return worker;

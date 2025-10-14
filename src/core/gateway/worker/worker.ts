@@ -9,6 +9,7 @@ import {
   GatewayOpcodes,
   ShardSocketCloseCodes,
 } from 'discordeno';
+import { type Channel as amqpChannel, connect as connectAmqp } from 'amqplib';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
 
 assert(parentPort);
@@ -22,6 +23,12 @@ const shards = new Map<number, DiscordenoShard>();
 const pendingShards = new Map<number, DiscordenoShard>();
 
 let totalShards = workerData.connectionData.totalShards;
+
+let rabbitMQChannel: amqpChannel | undefined;
+
+if (workerData.messageQueue.enabled) {
+  await connectToRabbitMQ();
+}
 
 parentPort.on('message', async (message: WorkerMessage) => {
   assert(parentPort);
@@ -50,7 +57,7 @@ parentPort.on('message', async (message: WorkerMessage) => {
       }
 
       // Ignore the events
-      // TODO: If you need 'gateway.resharding.updateGuildsShardId' it you can listen to only the ready event and use the data from that event for the function call
+      // TODO: If you need 'gateway.resharding.updateGuildsShardId', you can just listen to the ready event and use its data for the function call
       shard.events.message = () => {};
 
       await shard.identify();
@@ -181,22 +188,86 @@ function createShard(shardId: number): DiscordenoShard {
 async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize<DiscordGatewayPayload>) {
   const body = JSON.stringify({ payload, shardId: shard.id });
 
+  if (workerData.messageQueue.enabled) {
+    if (!rabbitMQChannel) {
+      logger.error('The RabbitMQ channel has not been created. The event will be lost');
+      return;
+    }
+
+    const message = Buffer.from(body);
+    const discordData = JSON.stringify(payload.d);
+
+    const deduplicationHash = createHash('sha1');
+    deduplicationHash.update(discordData);
+
+    rabbitMQChannel.publish('gatewayMessage', '', message, {
+      contentType: 'application/json',
+      headers: {
+        'x-deduplication-header': deduplicationHash.digest('hex'),
+      },
+    });
+
+    return;
+  }
+
   const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length];
   if (!url) {
     logger.error('No url found to send events to');
     return;
   }
 
-  try {
-    await fetch(url, {
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: workerData.eventHandler.authentication,
+  await fetch(url, {
+    method: 'POST',
+    body,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: workerData.eventHandler.authentication,
+    },
+  }).catch((error) => logger.error('Failed to send events to the bot code', error));
+}
+
+async function connectToRabbitMQ(): Promise<void> {
+  rabbitMQChannel = undefined;
+  const messageQueue = workerData.messageQueue;
+
+  const connection = await connectAmqp(
+    `amqp://${messageQueue.username}:${messageQueue.password}@${messageQueue.url}`,
+  ).catch((error) => {
+    logger.error('Failed to connect to RabbitMQ, retrying in 1s.', error);
+    setTimeout(connectToRabbitMQ, 1000);
+  });
+
+  if (!connection) return;
+
+  connection.on('close', () => {
+    rabbitMQChannel = undefined;
+    setTimeout(connectToRabbitMQ, 1000);
+  });
+  connection.on('error', (error) => {
+    rabbitMQChannel = undefined;
+    logger.error('There was an error in the connection with RabbitMQ, reconnecting in 1s.', error);
+    setTimeout(connectToRabbitMQ, 1000);
+  });
+
+  const channel = await connection.createChannel().catch((error) => {
+    logger.error('There was an error creating the RabbitMQ channel', error);
+  });
+
+  if (!channel) return;
+
+  const exchange = await channel
+    .assertExchange('gatewayMessage', 'x-message-deduplication', {
+      durable: true,
+      arguments: {
+        'x-cache-size': 1000, // maximum number of entries
+        'x-cache-ttl': 500, // 500ms
       },
+    })
+    .catch((error) => {
+      logger.error('There was an error asserting the exchange', error);
     });
-  } catch (error) {
-    logger.error(`Failed to send events to the bot code for shard #${shard.id}`, error);
-  }
+
+  if (!exchange) return;
+
+  rabbitMQChannel = channel;
 }

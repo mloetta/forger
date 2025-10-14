@@ -1,18 +1,9 @@
 import { Collection, createBot, GatewayIntents } from 'discordeno';
 import type { WorkerPresenceUpdate, WorkerShardPayload } from 'gateway/worker/types';
 import { GATEWAY_URL, REST_URL, TOKEN } from 'utils/variables';
-import { readDirectory } from 'utils/utils';
-import { join } from 'path';
 import type { ApplicationCommand } from 'helpers/command';
-import type { Bot } from 'types/types';
 
-declare module 'discordeno' {
-  interface Bot {
-    commands: Collection<string, ApplicationCommand>;
-  }
-}
-
-export const bot = createBot({
+const rawBot = createBot({
   token: TOKEN,
   intents: GatewayIntents.Guilds,
   desiredProperties: {
@@ -81,12 +72,19 @@ export const bot = createBot({
   },
 });
 
+// If you want to add custom properties to the bot, you can extend the CustomBot type by adding your own
+export type CustomBot = typeof rawBot & {
+  commands: Collection<string, ApplicationCommand>;
+};
+
+export const bot = rawBot as CustomBot;
+
 bot.commands = new Collection<string, ApplicationCommand>();
 
 overrideGatewayImplementations(bot);
 
 // Override the default gateway functions to allow the methods on the gateway object to proxy the requests to the gateway proxy
-function overrideGatewayImplementations(bot: Bot): void {
+function overrideGatewayImplementations(bot: CustomBot): void {
   bot.gateway.sendPayload = async (shardId, payload) => {
     await fetch(GATEWAY_URL, {
       method: 'POST',
@@ -116,7 +114,3 @@ function overrideGatewayImplementations(bot: Bot): void {
     });
   };
 }
-
-// Importing commands and events
-await readDirectory(join(__dirname, './events'));
-await readDirectory(join(__dirname, './commands'));

@@ -20,7 +20,7 @@ createApplicationCommand({
     category: ApplicationCommandCategory.Core,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(interaction, options) {
     // Gateway
     const shardInfo = await getShardInfoFromGuild(interaction.guild.id);
     const shard = shardInfo.shardId;

@@ -1,6 +1,7 @@
 import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
 import type { bot } from 'bot/bot';
 import type { RateLimitManager } from 'utils/rateLimit';
+import type { ApplicationCommand } from 'helpers/command';
 
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
@@ -16,7 +17,6 @@ export type ExtractDesiredProps<T> = T extends DiscordenoBot<infer Props, infer 
 export type ExtractDesiredBehavior<T> = T extends DiscordenoBot<infer _Props, infer Behavior> ? Behavior : never;
 
 // Discordeno inferred types
-export type Bot = typeof bot;
 export type Events = Required<typeof bot.events>;
 export type User = typeof bot.transformers.$inferredTypes.user;
 export type Member = typeof bot.transformers.$inferredTypes.member;
