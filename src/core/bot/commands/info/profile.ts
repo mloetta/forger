@@ -1,11 +1,13 @@
 import {
   ApplicationCommandOptionTypes,
+  avatarUrl,
   DiscordApplicationIntegrationType,
   DiscordInteractionContextType,
+  memberAvatarUrl,
   MessageComponentTypes,
   MessageFlags,
   SeparatorSpacingSize,
-  snowflakeToBigint,
+  snowflakeToTimestamp,
   type Application,
   type TextDisplayComponent,
 } from 'discordeno';
@@ -183,65 +185,70 @@ createApplicationCommand({
     } else {
       const member = await interaction.bot.rest.getMember(interaction.guild.id, target.id);
 
-      let badges: (keyof typeof Emojis)[] = [];
+      let flags: (keyof typeof Emojis)[] = [];
       if (target.flags) {
         switch (target.flags) {
           case 1 << 0: {
-            badges.push('Staff');
+            flags.push('Staff');
             break;
           }
           case 1 << 1: {
-            badges.push('Partner');
+            flags.push('Partner');
             break;
           }
           case 1 << 2: {
-            badges.push('Hypesquad');
+            flags.push('Hypesquad');
             break;
           }
           case 1 << 3: {
-            badges.push('BugHunterLevel1');
+            flags.push('BugHunterLevel1');
             break;
           }
           case 1 << 6: {
-            badges.push('HypeSquadOnlineHouse1');
+            flags.push('HypeSquadOnlineHouse1');
             break;
           }
           case 1 << 7: {
-            badges.push('HypeSquadOnlineHouse2');
+            flags.push('HypeSquadOnlineHouse2');
             break;
           }
           case 1 << 8: {
-            badges.push('HypeSquadOnlineHouse3');
+            flags.push('HypeSquadOnlineHouse3');
             break;
           }
           case 1 << 9: {
-            badges.push('PremiumEarlySupporter');
+            flags.push('PremiumEarlySupporter');
             break;
           }
           case 1 << 14: {
-            badges.push('BugHunterLevel2');
+            flags.push('BugHunterLevel2');
             break;
           }
           case 1 << 17: {
-            badges.push('VerifiedDeveloper');
+            flags.push('VerifiedDeveloper');
             break;
           }
           case 1 << 18: {
-            badges.push('CertifiedModerator');
+            flags.push('CertifiedModerator');
             break;
           }
           case 1 << 22: {
-            badges.push('ActiveDeveloper');
+            flags.push('ActiveDeveloper');
             break;
           }
         }
       }
 
       if (target.banner || target.avatar?.endsWith('gif')) {
-        badges.push('Nitro');
+        flags.push('Nitro');
       }
 
-      const badgeIcons = badges.map((badge) => icon(badge)).join('');
+      // A bunch of user info we can show
+      const avatar = member?.avatar ?? target.avatar ?? avatarUrl(target.id, target.discriminator);
+      const badges = flags.map((flag) => icon(flag)).join('');
+      const nick = member.nick;
+      const createdAt = snowflakeToTimestamp(target.id);
+      const joinedAt = Number(member.joinedAt);
 
       await interaction.edit({
         components: [
@@ -253,13 +260,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${icon('Mention')} **${target.username}** ${pill(target.id)} ${badgeIcons ? `\n${badgeIcons}` : ''}`,
+                    content: `${icon('Mention')} **${target.username}** ${pill(target.id)} ${badges ? `\n${badges}` : ''}`,
                   },
                 ],
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: target.avatar!,
+                    url: avatar,
                   },
                 },
               },
@@ -270,17 +277,17 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${iconPill('Member', 'Display')}\n${smallPill(member ? member.nick : target.username)}`,
+                content: `${iconPill('Member', 'Display')}\n${smallPill(member ? nick : target.username)}`,
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${iconPill('Calendar', 'Created at')}\n${timestamp(Math.floor((Number(snowflakeToBigint(target.id) >> 22n) + 1420070400000) / 1000), 'D')}`,
+                content: `${iconPill('Calendar', 'Created at')}\n${timestamp(createdAt, 'D')}`,
               },
               ...(member
                 ? [
                     {
                       type: MessageComponentTypes.TextDisplay,
-                      content: `${iconPill('Greenie', 'Joined at')}\n${timestamp(Number(member.joinedAt), 'D')}`,
+                      content: `${iconPill('Greenie', 'Joined at')}\n${timestamp(joinedAt, 'D')}`,
                     } satisfies TextDisplayComponent,
                   ]
                 : []),

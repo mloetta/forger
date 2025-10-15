@@ -2,7 +2,6 @@ import assert from 'assert';
 import { createHash } from 'crypto';
 import { workerData as _workerData, parentPort } from 'worker_threads';
 import {
-  type Camelize,
   createLogger,
   DiscordenoShard,
   type DiscordGatewayPayload,
@@ -11,6 +10,7 @@ import {
 } from 'discordeno';
 import { type Channel as amqpChannel, connect as connectAmqp } from 'amqplib';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
+import type { Camelize } from 'types/types.js';
 
 assert(parentPort);
 
@@ -45,6 +45,7 @@ parentPort.on('message', async (message: WorkerMessage) => {
         type: 'ShardIdentified',
         shardId: message.shardId,
       } satisfies ManagerMessage);
+
       break;
     }
     case 'PrepareShard': {
@@ -66,6 +67,7 @@ parentPort.on('message', async (message: WorkerMessage) => {
         type: 'ShardPrepared',
         shardId: message.shardId,
       } satisfies ManagerMessage);
+
       break;
     }
     case 'SwitchShards': {
@@ -102,17 +104,20 @@ parentPort.on('message', async (message: WorkerMessage) => {
       });
 
       await Promise.all(promises);
+
       break;
     }
     case 'AllowIdentify': {
       identifyPromises.get(message.shardId)?.();
       identifyPromises.delete(message.shardId);
+
       break;
     }
     case 'ShardPayload': {
       const shard = shards.get(message.shardId);
       if (!shard) return;
       await shard.send(message.payload);
+
       break;
     }
     case 'EditShardsPresence': {
@@ -128,6 +133,7 @@ parentPort.on('message', async (message: WorkerMessage) => {
         });
       });
       await Promise.all(promises);
+
       break;
     }
     case 'GetShardInfo': {
@@ -139,9 +145,9 @@ parentPort.on('message', async (message: WorkerMessage) => {
       } satisfies ManagerMessage;
 
       parentPort.postMessage(status);
+
       break;
     }
-
     default:
       logger.warn(`Received unknown message type: ${(message as { type: string }).type}`);
   }

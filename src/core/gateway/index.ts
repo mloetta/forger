@@ -9,7 +9,7 @@ import type {
   WorkerPresenceUpdate,
   WorkerShardPayload,
 } from './worker/types';
-import 'utils/process';
+import 'types/utils/process';
 
 const app = buildFastifyApp();
 
@@ -25,47 +25,53 @@ app.post('/', async (req, res) => {
 
   const data = req.body as WorkerShardPayload | WorkerPresenceUpdate | ManagerGetShardInfoFromGuildId;
 
-  if (data.type === 'ShardPayload') {
-    await gateway.sendPayload(data.shardId, data.payload);
-    return;
-  }
-  if (data.type === 'EditShardsPresence') {
-    await gateway.editBotStatus(data.payload);
-    return;
-  }
-  if (data.type === 'ShardInfoFromGuild') {
-    // If we don't have a guildId, we use shard 0
-    const shardId = data.guildId ? gateway.calculateShardId(data.guildId) : 0;
-    const workerId = gateway.calculateWorkerId(shardId);
-    const worker = workers.get(workerId);
+  switch (data.type) {
+    case 'ShardPayload': {
+      await gateway.sendPayload(data.shardId, data.payload);
 
-    if (!worker) {
-      await res.status(400).send({ error: `worker for shard ${shardId} not found` });
-      return;
+      break;
     }
+    case 'EditShardsPresence': {
+      await gateway.editBotStatus(data.payload);
 
-    const nonce = crypto.randomUUID();
+      break;
+    }
+    case 'ShardInfoFromGuild': {
+      // If we don't have a guildId, we use shard 0
+      const shardId = data.guildId ? gateway.calculateShardId(data.guildId) : 0;
+      const workerId = gateway.calculateWorkerId(shardId);
+      const worker = workers.get(workerId);
 
-    const { promise, resolve } = Promise.withResolvers<ShardInfo>();
+      if (!worker) {
+        await res.status(400).send({ error: `worker for shard ${shardId} not found` });
+        return;
+      }
 
-    shardInfoRequests.set(nonce, resolve);
+      const nonce = crypto.randomUUID();
 
-    worker.postMessage({
-      type: 'GetShardInfo',
-      shardId,
-      nonce,
-    } satisfies WorkerMessage);
+      const { promise, resolve } = Promise.withResolvers<ShardInfo>();
 
-    const shardInfo = await promise;
+      shardInfoRequests.set(nonce, resolve);
 
-    await res.status(200).send({
-      shardId: shardInfo.shardId,
-      rtt: shardInfo.rtt,
-    } satisfies Omit<ShardInfo, 'nonce'>);
-    return;
+      worker.postMessage({
+        type: 'GetShardInfo',
+        shardId,
+        nonce,
+      } satisfies WorkerMessage);
+
+      const shardInfo = await promise;
+
+      await res.status(200).send({
+        shardId: shardInfo.shardId,
+        rtt: shardInfo.rtt,
+      } satisfies Omit<ShardInfo, 'nonce'>);
+
+      break;
+    }
+    default: {
+      logger.warn(`Manager - Received unknown data type: ${(data as { type: string }).type}`);
+    }
   }
-
-  logger.warn(`Manager - Received unknown data type: ${(data as { type: string }).type}`);
 });
 
 await app.listen({ port: Number(GATEWAY_PORT) });

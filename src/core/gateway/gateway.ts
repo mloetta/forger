@@ -5,6 +5,7 @@ import { REST_URL, TOKEN } from 'utils/variables';
 import { createWorker } from './worker/createWorker';
 
 export const workers = new Map<number, Worker>();
+
 export const logger = createLogger({ name: 'GATEWAY' });
 
 const rest = createRestManager({
@@ -15,12 +16,10 @@ const rest = createRestManager({
   },
 });
 
-const gatewayBotConfig = await rest.getGatewayBot();
-
 export const gateway = createGatewayManager({
   token: TOKEN,
   intents: GatewayIntents.Guilds,
-  connection: gatewayBotConfig,
+  connection: await rest.getGatewayBot(),
   shardsPerWorker: 16,
   // totalShards: 1,
   totalWorkers: 4,

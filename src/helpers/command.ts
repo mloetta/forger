@@ -1,13 +1,13 @@
-import { bot } from 'bot/bot';
+import { bot, type CustomBot } from 'bot/bot';
 import {
   type ApplicationCommandOptionTypes,
-  type Camelize,
   type CreateApplicationCommand,
   type DiscordApplicationCommandOption,
   type ParsedInteractionOption,
 } from 'discordeno';
 import type {
   Attachment,
+  Camelize,
   Channel,
   CommandPermission,
   Details,
@@ -31,7 +31,7 @@ export interface ApplicationCommand<TOptions extends ApplicationCommandOptions =
   extends CreateApplicationCommand {
   details: Details;
   preconditions?: Precondition;
-  permission?: CommandPermission;
+  permissions?: CommandPermission;
   rateLimit?: RateLimit;
   options?: TOptions;
   acknowledge?: boolean;
@@ -53,7 +53,10 @@ export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>
 export type ApplicationCommandOptions = ApplicationCommandOption[];
 
 // Option parsing logic
-type ResolvedValues = ParsedInteractionOption<ExtractDesiredProps<Bot>, ExtractDesiredBehavior<Bot>>[string];
+type ResolvedValues = ParsedInteractionOption<
+  ExtractDesiredProps<CustomBot>,
+  ExtractDesiredBehavior<CustomBot>
+>[string];
 
 export type InteractionResolvedMember = Omit<Member, 'user' | 'deaf' | 'mute'>;
 export interface InteractionResolvedUser {

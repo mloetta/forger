@@ -6,42 +6,51 @@ export interface CollectorOptions<Type> {
 }
 
 export class Collector<Type> extends EventEmitter {
-  private filter?: (item: Type) => boolean | Promise<boolean>;
-  private collected: Type[] = [];
-  private timeout?: NodeJS.Timeout;
+  #filter?: (item: Type) => boolean | Promise<boolean>;
+  #collected: Type[] = [];
+  #timeout?: NodeJS.Timeout;
+  #stopped = false;
 
   constructor(options: CollectorOptions<Type> = {}) {
     super();
-    this.filter = options.filter;
-    if (options.duration) this.timeout = setTimeout(() => this.stop('time'), options.duration);
+    this.#filter = options.filter;
+    if (options.duration) {
+      this.#timeout = setTimeout(() => this.stop('time'), options.duration);
+    }
   }
 
-  onCollect(callback: (item: Type) => unknown): void {
+  public onCollect(callback: (item: Type) => unknown): this {
     this.on('collect', callback);
+    return this;
   }
 
-  onEnd(callback: (collected: Type[], reason: string) => unknown): void {
+  public onEnd(callback: (collected: Type[], reason: string) => unknown): this {
     this.on('end', callback);
+    return this;
   }
 
-  async collect(item: Type): Promise<void> {
+  public async collect(item: Type): Promise<void> {
     try {
-      const pass = this.filter ? await this.filter(item) : true;
+      const pass = this.#filter ? await this.#filter(item) : true;
       if (!pass) return;
-      this.collected.push(item);
+
+      this.#collected.push(item);
       this.emit('collect', item);
     } catch (err) {
       this.emit('error', err);
     }
   }
 
-  stop(reason: string = 'manual'): void {
-    if (this.timeout) clearTimeout(this.timeout);
-    this.emit('end', this.collected, reason);
+  public stop(reason: string = 'manual'): void {
+    if (this.#stopped) return;
+    this.#stopped = true;
+
+    if (this.#timeout) clearTimeout(this.#timeout);
+    this.emit('end', this.#collected, reason);
     this.removeAllListeners();
   }
 
-  setFilter(filter: (item: Type) => boolean | Promise<boolean>): void {
-    this.filter = filter;
+  public setFilter(filter: (item: Type) => boolean | Promise<boolean>): void {
+    this.#filter = filter;
   }
 }

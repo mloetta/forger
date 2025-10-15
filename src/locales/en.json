@@ -6,6 +6,9 @@
     "website": "website"
   },
   "commands": {
+    "ping": {
+      "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
+    },
     "help": {
       "header": "# Welcome to Pocket Tool!\nYou can view all the available command on the **{{website}}**",
       "locale": "## How to change slash command language?\nSlash commands are available in multiple languages and will automatically match your **{{langSettings}}**",
@@ -35,14 +38,37 @@
         "noChanges": "No profile changes were made."
       }
     },
-    "ping": {
-      "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
-    },
     "role": {
       "overview": "Overview",
       "hoist": "Hoisted:",
       "color": "Color:",
       "mentionable": "Mentionable:"
+    },
+    "server": {
+      "members": "Members",
+      "boosts": "Boosts",
+      "roles": "Roles",
+      "expressions": "Expressions",
+      "createdAt": "Created at",
+      "channels": "Channels",
+      "total": "Total",
+      "textChannels": "Text Channels",
+      "voiceChannels": "Voice Channels",
+      "categories": "Categories",
+      "announcementChannels": "Announcement Channels",
+      "stageChannels": "Stage Channels",
+      "forumChannels": "Forum Channels"
+    }
+  },
+  "events": {
+    "interactionCreate": {
+      "commandNotFound": "Are you sure you are not mistaken? This command has never existed!",
+      "missingAuthorPerms": "Looks like you can't do that. Missing permissions: {{perms}}",
+      "missingBotPerms": "Oops, looks like I can't do that. Missing permissions: {{perms}}",
+      "guildRateLimited": "Whoa, slow down! The guild needs a breather. Wait {{time}} before using {{command}} again!",
+      "channelRateLimited": "Whoa, slow down! This channel needs a break. Wait {{time}} before using {{command}} here again!",
+      "userRateLimited": "Whoa, slow down! You need to wait {{time}} before using {{command}} again!",
+      "commandErrored": "Uh-oh, this command feels... wrong. Maybe try again later?"
     }
   },
   "buttons": {

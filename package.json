@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@fastify/multipart": "^9.2.1",
+    "@influxdata/influxdb-client": "^1.35.0",
     "@xata.io/client": "^0.30.1",
     "amqplib": "^0.10.9",
     "dd-cache-proxy": "^2.6.5",

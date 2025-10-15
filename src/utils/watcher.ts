@@ -11,11 +11,9 @@ enum ItemType {
 export default class FolderWatcher {
   public folder: string;
   public recursive: boolean;
-
   public onAdd: null | ((filePath: string, type: ItemType) => void);
   public onChange: null | ((filePath: string) => void);
   public onRemove: null | ((filePath: string) => void);
-
   public watchers: Map<string, fs.FSWatcher>; // path -> watcher
 
   constructor(folder: string, recursive = true) {

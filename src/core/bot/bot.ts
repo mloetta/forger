@@ -1,5 +1,10 @@
 import { Collection, createBot, GatewayIntents } from 'discordeno';
-import type { WorkerPresenceUpdate, WorkerShardPayload } from 'gateway/worker/types';
+import type {
+  ManagerGetShardInfoFromGuildId,
+  ShardInfo,
+  WorkerPresenceUpdate,
+  WorkerShardPayload,
+} from 'gateway/worker/types';
 import { GATEWAY_URL, REST_URL, TOKEN } from 'utils/variables';
 import type { ApplicationCommand } from 'helpers/command';
 
@@ -17,6 +22,17 @@ const rawBot = createBot({
       members: true,
       presences: true,
       toggles: true,
+      icon: true,
+      banner: true,
+      channels: true,
+      name: true,
+      description: true,
+      emojis: true,
+      stickers: true,
+      premiumSubscriptionCount: true,
+      roles: true,
+      ownerId: true,
+      preferredLocale: true,
     },
     member: {
       avatar: true,
@@ -113,4 +129,24 @@ function overrideGatewayImplementations(bot: CustomBot): void {
       },
     });
   };
+}
+
+export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<ShardInfo, 'nonce'>> {
+  const req = await fetch(GATEWAY_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'ShardInfoFromGuild',
+      guildId: guildId?.toString(),
+    } as ManagerGetShardInfoFromGuildId),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: TOKEN,
+    },
+  });
+
+  const res = await req.json();
+
+  if (req.ok) return res as Omit<ShardInfo, 'nonce'>;
+
+  throw new Error(`There was an issue getting the shard info: ${(res as any).error}`);
 }

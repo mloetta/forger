@@ -1,7 +1,14 @@
 export default class List<T> extends Array<T> {
+  public looping = false;
   #current;
   #pointer;
-  public looping = false;
+
+  constructor(...items: T[]) {
+    super(...items);
+
+    this.#pointer = 0;
+    this.#current = items[this.#pointer];
+  }
 
   public get current() {
     return this.#current;
@@ -52,12 +59,5 @@ export default class List<T> extends Array<T> {
 
   public getPrevious() {
     return this[this.#pointer - 1]!;
-  }
-
-  constructor(...items: T[]) {
-    super(...items);
-
-    this.#pointer = 0;
-    this.#current = items[this.#pointer];
   }
 }

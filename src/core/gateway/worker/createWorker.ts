@@ -22,9 +22,9 @@ export function createWorker(workerId: number): Worker {
       connectionData: {
         intents: gateway.intents,
         token: TOKEN,
-        totalShards: gateway.totalShards,
         url: gateway.url,
         version: gateway.version,
+        totalShards: gateway.totalShards,
       },
       eventHandler: {
         urls: [EVENT_SERVER_URL],
@@ -41,27 +41,32 @@ export function createWorker(workerId: number): Worker {
   });
 
   worker.on('message', async (message: ManagerMessage) => {
-    if (message.type === 'RequestIdentify') {
-      logger.info(`Requesting identify for shardId: #${message.shardId}`);
-      await gateway.requestIdentify(message.shardId);
+    switch (message.type) {
+      case 'RequestIdentify': {
+        logger.info(`Requesting identify for shardId: #${message.shardId}`);
+        await gateway.requestIdentify(message.shardId);
 
-      worker.postMessage({
-        type: 'AllowIdentify',
-        shardId: message.shardId,
-      } satisfies WorkerMessage);
+        worker.postMessage({
+          type: 'AllowIdentify',
+          shardId: message.shardId,
+        } satisfies WorkerMessage);
 
-      return;
-    } else if (message.type === 'ShardInfo') {
-      shardInfoRequests.get(message.nonce)?.(message);
-      shardInfoRequests.delete(message.nonce);
+        break;
+      }
+      case 'ShardInfo': {
+        shardInfoRequests.get(message.nonce)?.(message);
+        shardInfoRequests.delete(message.nonce);
 
-      return;
-    } else if (message.type === 'ShardIdentified') {
-      logger.info(`Shard #${message.shardId} identified`);
+        break;
+      }
+      case 'ShardIdentified': {
+        logger.info(`Shard #${message.shardId} identified`);
 
-      return;
-    } else {
-      logger.warn(`Worker - Received unknown message type: ${(message as { type: string }).type}`);
+        break;
+      }
+      default: {
+        logger.warn(`Worker - Received unknown message type: ${(message as { type: string }).type}`);
+      }
     }
   });
 

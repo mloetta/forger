@@ -41,7 +41,7 @@ createApplicationCommand({
     const app = await interaction.bot.rest.getApplicationInfo();
     const shardData = await getShardInfoFromGuild(interaction.guild.id);
 
-    // A bunch of stats we can show
+    // A bunch of application stats we can show
     const guilds = app.approximateGuildCount;
     const installations = app.approximateUserInstallCount;
     const shards = interaction.bot.gateway.shards.size;

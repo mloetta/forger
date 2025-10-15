@@ -5,7 +5,6 @@ import {
   DiscordInteractionContextType,
   MessageComponentTypes,
   MessageFlags,
-  type Component,
   type MessageComponents,
   type PermissionStrings,
 } from 'discordeno';
