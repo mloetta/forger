@@ -21,3 +21,4 @@ export const INFLUX_URL = Env.get('influx_url');
 export const INFLUX_TOKEN = Env.get('influx_token');
 export const INFLUX_ORG = Env.get('influx_org');
 export const INFLUX_BUCKET = Env.get('influx_bucket');
+export const PERSPECTIVE_API_KEY = Env.get('perspective_api_key', true);

@@ -11,6 +11,7 @@ import {
 import { type Channel as amqpChannel, connect as connectAmqp } from 'amqplib';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
 import type { Camelize } from 'types/types.js';
+import { makeRequest, RequestMethod, ResponseType } from 'utils/request.js';
 
 assert(parentPort);
 
@@ -192,7 +193,7 @@ function createShard(shardId: number): DiscordenoShard {
 }
 
 async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize<DiscordGatewayPayload>) {
-  const body = JSON.stringify({ payload, shardId: shard.id });
+  const data = { payload, shardId: shard.id };
 
   if (workerData.messageQueue.enabled) {
     if (!rabbitMQChannel) {
@@ -200,7 +201,7 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
       return;
     }
 
-    const message = Buffer.from(body);
+    const message = Buffer.from(JSON.stringify(data));
     const discordData = JSON.stringify(payload.d);
 
     const deduplicationHash = createHash('sha1');
@@ -222,13 +223,11 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
     return;
   }
 
-  await fetch(url, {
-    method: 'POST',
-    body,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: workerData.eventHandler.authentication,
-    },
+  await makeRequest(url, {
+    method: RequestMethod.POST,
+    response: ResponseType.JSON,
+    data,
+    headers: { Authorization: workerData.eventHandler.authentication },
   }).catch((error) => logger.error('Failed to send events to the bot code', error));
 }
 

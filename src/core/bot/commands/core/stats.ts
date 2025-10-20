@@ -9,9 +9,9 @@ import {
 import os from 'os';
 import { iconAsEmoji, iconPill } from 'utils/markdown';
 import { formatTime, readableFileSize } from 'utils/utils';
-import { getShardInfoFromGuild } from 'bot/utils';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RateLimitType } from 'types/types';
+import { getShardInfoFromGuild } from 'bot/bot';
 
 createApplicationCommand({
   name: 'stats',

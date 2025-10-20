@@ -33,6 +33,7 @@
       "gateway/*": ["core/gateway/*"],
       "rest/*": ["core/rest/*"],
       "helpers/*": ["helpers/*"],
+      "middlewares/*": ["middlewares/*"],
       "types/*": ["types/*"],
       "utils/*": ["utils/*"]
     }

@@ -3,7 +3,6 @@ import {
   avatarUrl,
   DiscordApplicationIntegrationType,
   DiscordInteractionContextType,
-  memberAvatarUrl,
   MessageComponentTypes,
   MessageFlags,
   SeparatorSpacingSize,
@@ -15,6 +14,7 @@ import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import type { Emojis } from 'utils/emojis';
 import { icon, iconPill, link, pill, smallPill, timestamp } from 'utils/markdown';
+import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import or from 'utils/utils';
 
 createApplicationCommand({
@@ -88,11 +88,12 @@ createApplicationCommand({
         HAS_SLASH_COMMAND: `Has Slash Commands ${icon('Slash')}`,
       };
 
-      const req = await fetch(`https://discord.com/api/v10/applications/${target.id}/rpc`, {
-        method: 'GET',
-      });
+      const app = (await makeRequest(`https://discord.com/api/v10/applications/${target.id}/rpc`, {
+        method: RequestMethod.GET,
+        response: ResponseType.JSON,
+      })) as Application;
 
-      if (!req.ok) {
+      if (!app) {
         await interaction.edit({
           components: [
             {
@@ -109,8 +110,6 @@ createApplicationCommand({
         });
         return;
       }
-
-      const app = (await req.json()) as Application;
 
       let tags;
       let links;

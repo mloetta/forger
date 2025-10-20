@@ -58,6 +58,12 @@
       "announcementChannels": "Announcement Channels",
       "stageChannels": "Stage Channels",
       "forumChannels": "Forum Channels"
+    },
+    "analyze": {
+      "scores": "Scores",
+      "meaning": "What do these mean?",
+      "details": "Check out the detection details",
+      "flagged": "{{msg}} was flagged as\n{{results}}"
     }
   },
   "events": {

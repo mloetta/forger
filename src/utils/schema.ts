@@ -1,7 +1,15 @@
+export enum SchemaType {
+  String = 'string',
+  Number = 'number',
+  Boolean = 'boolean',
+  Array = 'array',
+  Object = 'object',
+}
+
 export namespace Schema {
   export interface ISchema {
     string: {
-      type: 'string';
+      type: SchemaType.String;
       default?: string;
 
       min?: number;
@@ -10,7 +18,7 @@ export namespace Schema {
     };
 
     number: {
-      type: 'number';
+      type: SchemaType.Number;
       default?: number;
 
       min?: number;
@@ -22,31 +30,30 @@ export namespace Schema {
     };
 
     boolean: {
-      type: 'boolean';
+      type: SchemaType.Boolean;
       default?: boolean;
     };
 
     array: {
-      type: 'array';
+      type: SchemaType.Array;
       default?: Array<any>;
       fields?: Array<ISchema[keyof ISchema]>;
     };
 
     object: {
-      type: 'object';
+      type: SchemaType.Object;
       default?: Record<string, any>;
       fields?: Record<string, ISchema[keyof ISchema]>;
     };
   }
 
-  export function string(metadata?: Omit<ISchema['string'], 'type'>) {
+  export function string(metadata?: Omit<ISchema[SchemaType.String], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: 'string' as 'string',
+      type: SchemaType.String,
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
-
       value: metadata.default ?? '',
       values: metadata.values || [],
 
@@ -66,15 +73,14 @@ export namespace Schema {
     };
   }
 
-  export function number(metadata?: Omit<ISchema['number'], 'type'>) {
+  export function number(metadata?: Omit<ISchema[SchemaType.Number], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: 'number' as 'number',
+      type: SchemaType.Number,
       int: !!metadata.int,
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
-
       value: metadata.default ?? 0,
       values: metadata.values || [],
 
@@ -98,11 +104,11 @@ export namespace Schema {
     };
   }
 
-  export function boolean(metadata?: Omit<ISchema['boolean'], 'type'>) {
+  export function boolean(metadata?: Omit<ISchema[SchemaType.Boolean], 'type'>) {
     metadata = metadata ?? {};
 
     return {
-      type: 'boolean' as 'boolean',
+      type: SchemaType.Boolean,
       value: metadata.default ?? false,
 
       validate() {
@@ -115,14 +121,13 @@ export namespace Schema {
 
   export function array<T extends Array<ISchema[keyof ISchema]>>(fields?: T) {
     return {
-      type: 'array' as 'array',
-
+      type: SchemaType.Array,
       value: [] as any as T,
       fields: fields || [],
 
       validate() {
-        if (typeof this.value !== 'object' && !Array.isArray(this.value)) {
-          throw new Error(`Current value is not a array`);
+        if (!Array.isArray(this.value)) {
+          throw new Error(`Current value is not an array`);
         }
       },
     };
@@ -132,8 +137,7 @@ export namespace Schema {
     fields = fields ?? ({} as T);
 
     return {
-      type: 'object' as 'object',
-
+      type: SchemaType.Object,
       value: {} as T,
       fields: fields || {},
 
@@ -144,8 +148,8 @@ export namespace Schema {
       },
 
       validate() {
-        if (typeof this.value !== 'object' && Array.isArray(this.value)) {
-          throw new Error(`Current value is not a object`);
+        if (typeof this.value !== 'object' || Array.isArray(this.value) || this.value === null) {
+          throw new Error(`Current value is not an object`);
         }
       },
     };

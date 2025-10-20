@@ -7,6 +7,7 @@ import type {
 } from 'gateway/worker/types';
 import { GATEWAY_URL, REST_URL, TOKEN } from 'utils/variables';
 import type { ApplicationCommand } from 'helpers/command';
+import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 
 const rawBot = createBot({
   token: TOKEN,
@@ -102,46 +103,40 @@ overrideGatewayImplementations(bot);
 // Override the default gateway functions to allow the methods on the gateway object to proxy the requests to the gateway proxy
 function overrideGatewayImplementations(bot: CustomBot): void {
   bot.gateway.sendPayload = async (shardId, payload) => {
-    await fetch(GATEWAY_URL, {
-      method: 'POST',
-      body: JSON.stringify({
+    await makeRequest(GATEWAY_URL, {
+      method: RequestMethod.POST,
+      response: ResponseType.JSON,
+      data: {
         type: 'ShardPayload',
         shardId,
         payload,
-      } satisfies WorkerShardPayload),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: TOKEN,
-      },
+      } satisfies WorkerShardPayload,
+      headers: { Authorization: TOKEN },
     });
   };
 
   bot.gateway.editBotStatus = async (payload) => {
-    await fetch(GATEWAY_URL, {
-      method: 'POST',
-      body: JSON.stringify({
+    await makeRequest(GATEWAY_URL, {
+      method: RequestMethod.POST,
+      response: ResponseType.JSON,
+      data: {
         type: 'EditShardsPresence',
         payload,
-      } satisfies WorkerPresenceUpdate),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: TOKEN,
-      },
+      } satisfies WorkerPresenceUpdate,
+      headers: { Authorization: TOKEN },
     });
   };
 }
 
 export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<ShardInfo, 'nonce'>> {
-  const req = await fetch(GATEWAY_URL, {
-    method: 'POST',
-    body: JSON.stringify({
+  const req = await makeRequest(GATEWAY_URL, {
+    method: RequestMethod.POST,
+    response: ResponseType.JSON,
+    data: {
       type: 'ShardInfoFromGuild',
       guildId: guildId?.toString(),
-    } as ManagerGetShardInfoFromGuildId),
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: TOKEN,
-    },
+    } as ManagerGetShardInfoFromGuildId,
+    headers: { Authorization: TOKEN },
   });
 
   const res = await req.json();

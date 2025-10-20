@@ -1,7 +1,6 @@
 import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
 import type { bot } from 'bot/bot';
 import type { RateLimitManager } from 'middlewares/rateLimit';
-import type { ApplicationCommand } from 'helpers/command';
 
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
