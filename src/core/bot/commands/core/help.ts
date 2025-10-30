@@ -9,11 +9,12 @@ import {
   MessageFlags,
   SeparatorSpacingSize,
   TextStyles,
-  type ButtonComponent,
+  urlToBase64,
 } from 'discordeno';
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, RateLimitType, type Interaction } from 'types/types';
+import { isInGuild } from 'types/typeguards';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon, iconAsEmoji, link } from 'utils/markdown';
 import or from 'utils/utils';
@@ -36,6 +37,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
+    scope: ApplicationCommandScope.Guild,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -46,23 +48,11 @@ createApplicationCommand({
   async run(interaction, options) {
     const language = interaction.locale!;
 
-    const xata = getXataClient();
+    if (isInGuild(interaction)) {
+      const xata = getXataClient();
 
-    const isInGuild = interaction.authorizingIntegrationOwners[0] === interaction.guild.id;
-
-    if (isInGuild) {
-      const record = await xata.db.botGuildProfile.filter('guild_id', interaction.guild.id.toString()).getFirst();
+      const record = await xata.db.bot_guild_profile.filter('guild_id', interaction.guild.id.toString()).getFirst();
       const isCustomized = Boolean(record);
-
-      const customizationButton = {
-        type: MessageComponentTypes.Button,
-        customId: isCustomized ? 'reset-customization' : 'customize',
-        label: isCustomized
-          ? t(language, 'commands.help.buttons.reset')
-          : t(language, 'commands.help.buttons.customize'),
-        emoji: iconAsEmoji('Control'),
-        style: isCustomized ? ButtonStyles.Danger : ButtonStyles.Secondary,
-      } satisfies ButtonComponent;
 
       const message = await interaction.edit({
         components: [
@@ -106,7 +96,15 @@ createApplicationCommand({
                     content: t(language, 'commands.help.customizationInfo'),
                   },
                 ],
-                accessory: customizationButton as any,
+                accessory: {
+                  type: MessageComponentTypes.Button,
+                  customId: isCustomized ? 'reset-customization' : 'customize',
+                  label: isCustomized
+                    ? t(language, 'commands.help.buttons.reset')
+                    : t(language, 'commands.help.buttons.customize'),
+                  emoji: iconAsEmoji('Control'),
+                  style: isCustomized ? ButtonStyles.Danger : ButtonStyles.Secondary,
+                },
               },
               {
                 type: MessageComponentTypes.Separator,
@@ -158,42 +156,48 @@ createApplicationCommand({
       collectors.add(collector);
 
       collector.onCollect(async (i) => {
-        if (i.type === InteractionTypes.ModalSubmit && i.data?.customId === 'customization-modal') {
+        if (!i.data) return;
+
+        if (i.type === InteractionTypes.ModalSubmit && i.data.customId === 'customization-modal') {
           const newName = or(i.data.components?.[1]?.component?.value, null);
           const newAboutMe = or(i.data.components?.[2]?.component?.value, null);
+          const newAvatarId = or(i.data.components?.[3]?.component?.value, null);
+          const newBannerId = or(i.data.components?.[4]?.component?.value, null);
+          const newAvatar = newAvatarId
+            ? await urlToBase64(i.data.resolved!.attachments!.get(BigInt(newAvatarId))!.url)
+            : null;
+          const newBanner = newBannerId
+            ? await urlToBase64(i.data.resolved!.attachments!.get(BigInt(newBannerId))!.url)
+            : null;
 
-          if (newName || newAboutMe) {
+          if (newName || newAboutMe || newAvatar || newBanner) {
             await interaction.bot.rest.editBotMember(i.guild.id, {
               nick: newName,
               bio: newAboutMe,
+              avatar: newAvatar,
+              banner: newBanner,
             });
 
             if (record) {
-              await xata.db.botGuildProfile.update(record.id, {
+              await xata.db.bot_guild_profile.update(record.id, {
                 nick: newName,
                 about_me: newAboutMe,
+                avatar_url: newAvatar,
+                banner_url: newBanner,
               });
             } else {
-              await xata.db.botGuildProfile.create({
+              await xata.db.bot_guild_profile.create({
                 guild_id: i.guild.id.toString(),
                 nick: newName,
                 about_me: newAboutMe,
+                avatar_url: newAvatar,
+                banner_url: newBanner,
               });
             }
 
-            if (newName && newAboutMe) {
+            if (newName || newAboutMe || newAvatar || newBanner) {
               await i.respond({
                 content: t(language, 'commands.help.modals.profileUpdated'),
-                flags: MessageFlags.Ephemeral,
-              });
-            } else if (newName) {
-              await i.respond({
-                content: t(language, 'commands.help.modals.nameUpdated'),
-                flags: MessageFlags.Ephemeral,
-              });
-            } else if (newAboutMe) {
-              await i.respond({
-                content: t(language, 'commands.help.modals.aboutMeUpdated'),
                 flags: MessageFlags.Ephemeral,
               });
             }
@@ -210,7 +214,7 @@ createApplicationCommand({
         // @ts-ignore
         if (i.message?.id !== message.id) return;
 
-        if (i.data?.customId === 'customize') {
+        if (i.data.customId === 'customize') {
           if (!i.member?.permissions?.has('ADMINISTRATOR')) {
             await i.respond({
               title: t(language, 'commands.help.buttons.missingPerm', {
@@ -254,9 +258,29 @@ createApplicationCommand({
                   required: false,
                 },
               },
+              {
+                type: MessageComponentTypes.Label,
+                label: 'How should my new avatar look like?',
+                description: 'This is the avatar that appears on my guild profile',
+                component: {
+                  type: MessageComponentTypes.FileUpload,
+                  customId: 'new-avatar',
+                  maxValues: 1,
+                },
+              },
+              {
+                type: MessageComponentTypes.Label,
+                label: 'How should my new banner look like?',
+                description: 'This is the banner that appears on my guild profile',
+                component: {
+                  type: MessageComponentTypes.FileUpload,
+                  customId: 'new-banner',
+                  maxValues: 1,
+                },
+              },
             ],
           });
-        } else if (i.data?.customId === 'reset-customization') {
+        } else if (i.data.customId === 'reset-customization') {
           await interaction.bot.rest.editBotMember(i.guild.id, {
             nick: null,
             avatar: null,
@@ -271,7 +295,7 @@ createApplicationCommand({
             flags: MessageFlags.Ephemeral,
           });
           return;
-        } else if (i.data?.customId === 'follow_updates') {
+        } else if (i.data.customId === 'follow_updates') {
           await i.deferEdit();
 
           if (!i.member?.permissions?.has('MANAGE_WEBHOOKS')) {
@@ -344,7 +368,13 @@ createApplicationCommand({
                     },
                   ],
                   accessory: {
-                    ...customizationButton,
+                    type: MessageComponentTypes.Button,
+                    customId: isCustomized ? 'reset-customization' : 'customize',
+                    label: isCustomized
+                      ? t(language, 'commands.help.buttons.reset')
+                      : t(language, 'commands.help.buttons.customize'),
+                    emoji: iconAsEmoji('Control'),
+                    style: isCustomized ? ButtonStyles.Danger : ButtonStyles.Secondary,
                     disabled: true,
                   },
                 },

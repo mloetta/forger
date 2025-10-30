@@ -9,7 +9,7 @@
         "@xata.io/client": "^0.30.1",
         "amqplib": "^0.10.9",
         "dd-cache-proxy": "^2.6.5",
-        "discordeno": "22.0.1-next.9393168",
+        "discordeno": "22.0.1-next.5867d11",
         "fastify": "^5.6.1",
         "i18next": "^25.5.3",
         "i18next-fs-backend": "^2.6.0",
@@ -29,13 +29,13 @@
 
     "@discordeno/bot": ["@discordeno/bot@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/gateway": "22.0.1-next.9393168", "@discordeno/rest": "22.0.1-next.9393168", "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168" } }, "sha512-XO33DpSLn4ii3J7qIGO8mE5oJchASkNKJbC40HO+U+wvfL/t/ZouU0n+0kXV749uf0SUKZq1m5PMB3s3ghHe0Q=="],
 
-    "@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168", "ws": "^8.18.3" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-PCct8UR9R/C0ZTZuIEWTMfatPlkJ+clS5KhiCobqqjX2yDbv5nC2NqeWw/DwiYLW8dlLgRG//71VvKyeSXg4QQ=="],
+    "@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.5867d11", "", { "dependencies": { "@discordeno/types": "22.0.1-next.5867d11", "@discordeno/utils": "22.0.1-next.5867d11", "ws": "^8.18.3" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-pDP3P35YDyGizXuiiCLXmuOusuInn58AcGTcbKwdYfkg7h09J/Vn3bq+21cgZwFmdAGoy5Z2zvE00NDYkqDBrg=="],
 
-    "@discordeno/rest": ["@discordeno/rest@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168" } }, "sha512-loiaXTOUOEJqy5AXUuirK7KWjEgJyMF4K2T8TMeazNkg08ompcBMdVDozfT0RPYJimb1lPYj1w8L9EEoTWdQxg=="],
+    "@discordeno/rest": ["@discordeno/rest@22.0.1-next.5867d11", "", { "dependencies": { "@discordeno/types": "22.0.1-next.5867d11", "@discordeno/utils": "22.0.1-next.5867d11" } }, "sha512-RXxQsGxISm0icZkesYczRyDLJG7Pz7clebq/b3UStskTsUgYegKTK3gQevqOvXggdTDucW7v4zXhh2p5Ru17+A=="],
 
-    "@discordeno/types": ["@discordeno/types@22.0.1-next.9393168", "", {}, "sha512-akmtclpweOGeuf6LKKG0R+92Yyas2h2x9mRW/+Hz9BQybRCyhHQr0Cv6DCtuHCtfachlxxUYrdo91ny4mdcXwA=="],
+    "@discordeno/types": ["@discordeno/types@22.0.1-next.5867d11", "", {}, "sha512-Ttx6uB72Bsu7yuZ6eMyp/bDmPlcrs+ei5ZYZwzJedImT7BRMvFW80NiFz4ox1K1pG8tIuU9jqAaQK3WdZT5xAg=="],
 
-    "@discordeno/utils": ["@discordeno/utils@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168" } }, "sha512-Ubmt7h0OrB8Bu0jgwYa8UQKqJ/GJKQ4Qtaw7DYZ0j4fiejQP6HcNFw5cuOHTH9CKk4YFRyFzh0luH1kOgyTftA=="],
+    "@discordeno/utils": ["@discordeno/utils@22.0.1-next.5867d11", "", { "dependencies": { "@discordeno/types": "22.0.1-next.5867d11" } }, "sha512-DgHRybajOF5U2mQJVV/TfngBTdoMv+uOZ/n0wrL9BAN+lViYlQ21KGOIAJ4t1zjzFUuZjjsxkdXdeO0TjnnETg=="],
 
     "@fastify/ajv-compiler": ["@fastify/ajv-compiler@4.0.2", "", { "dependencies": { "ajv": "^8.12.0", "ajv-formats": "^3.0.1", "fast-uri": "^3.0.0" } }, "sha512-Rkiu/8wIjpsf46Rr+Fitd3HRP+VsxUFDDeag0hs9L0ksfnwx2g7SPQQTFL0E8Qv+rfXzQOxBJnjUB9ITUDjfWQ=="],
 
@@ -91,7 +91,7 @@
 
     "dequal": ["dequal@2.0.3", "", {}, "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA=="],
 
-    "discordeno": ["discordeno@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/bot": "22.0.1-next.9393168", "@discordeno/gateway": "22.0.1-next.9393168", "@discordeno/rest": "22.0.1-next.9393168", "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168" } }, "sha512-MjkrbBO6WzgKPInPPiefgNvQhEW4IVuSBkvO5arK68EgI7cbjVn3Ei/Plv+YVQBjmwOm18Sw9LMvJ+TQHf+uAQ=="],
+    "discordeno": ["discordeno@22.0.1-next.5867d11", "", { "dependencies": { "@discordeno/bot": "22.0.1-next.5867d11", "@discordeno/gateway": "22.0.1-next.5867d11", "@discordeno/rest": "22.0.1-next.5867d11", "@discordeno/types": "22.0.1-next.5867d11", "@discordeno/utils": "22.0.1-next.5867d11" } }, "sha512-iQkdTY0JqpKcb0yBhy/KxhofQQp5F1bXFP1i9HY+xAuc0Id20KItwb9z67kLDbY+k9rmZI2jQjoKGkXOxC56kA=="],
 
     "fast-decode-uri-component": ["fast-decode-uri-component@1.0.1", "", {}, "sha512-WKgKWg5eUxvRZGwW8FvfbaH7AXSh2cL+3j5fMGzUMCxWBJ3dV3a7Wz8y2f/uQ0e3B6WmodD3oS54jTQ9HVTIIg=="],
 
@@ -180,6 +180,16 @@
     "url-parse": ["url-parse@1.5.10", "", { "dependencies": { "querystringify": "^2.1.1", "requires-port": "^1.0.0" } }, "sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ=="],
 
     "ws": ["ws@8.18.3", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="],
+
+    "@discordeno/bot/@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168", "ws": "^8.18.3" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-PCct8UR9R/C0ZTZuIEWTMfatPlkJ+clS5KhiCobqqjX2yDbv5nC2NqeWw/DwiYLW8dlLgRG//71VvKyeSXg4QQ=="],
+
+    "@discordeno/bot/@discordeno/rest": ["@discordeno/rest@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168", "@discordeno/utils": "22.0.1-next.9393168" } }, "sha512-loiaXTOUOEJqy5AXUuirK7KWjEgJyMF4K2T8TMeazNkg08ompcBMdVDozfT0RPYJimb1lPYj1w8L9EEoTWdQxg=="],
+
+    "@discordeno/bot/@discordeno/types": ["@discordeno/types@22.0.1-next.9393168", "", {}, "sha512-akmtclpweOGeuf6LKKG0R+92Yyas2h2x9mRW/+Hz9BQybRCyhHQr0Cv6DCtuHCtfachlxxUYrdo91ny4mdcXwA=="],
+
+    "@discordeno/bot/@discordeno/utils": ["@discordeno/utils@22.0.1-next.9393168", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9393168" } }, "sha512-Ubmt7h0OrB8Bu0jgwYa8UQKqJ/GJKQ4Qtaw7DYZ0j4fiejQP6HcNFw5cuOHTH9CKk4YFRyFzh0luH1kOgyTftA=="],
+
+    "discordeno/@discordeno/bot": ["@discordeno/bot@22.0.1-next.5867d11", "", { "dependencies": { "@discordeno/gateway": "22.0.1-next.5867d11", "@discordeno/rest": "22.0.1-next.5867d11", "@discordeno/types": "22.0.1-next.5867d11", "@discordeno/utils": "22.0.1-next.5867d11" } }, "sha512-OUo0xwZgL3uQ5NcqIRyzlj1fqI6RnknuaO2xgbDG3XZGJJLAAfzPfdh6RNKo7KBWY0Cb5rhUNNCmmZEGeu91og=="],
 
     "light-my-request/process-warning": ["process-warning@4.0.1", "", {}, "sha512-3c2LzQ3rY9d0hc1emcsHhfT9Jwz0cChib/QN89oME2R451w5fy3f0afAhERFZAwrbDU43wk12d0ORBpDVME50Q=="],
   }

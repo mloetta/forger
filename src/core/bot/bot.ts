@@ -13,6 +13,12 @@ const rawBot = createBot({
   token: TOKEN,
   intents: GatewayIntents.Guilds,
   desiredProperties: {
+    message: {
+      id: true,
+      guildId: true,
+      channelId: true,
+      author: true,
+    },
     channel: {
       id: true,
       guildId: true,
@@ -41,9 +47,6 @@ const rawBot = createBot({
       nick: true,
       user: true,
       permissions: true,
-    },
-    message: {
-      id: true,
     },
     role: {
       id: true,
@@ -79,6 +82,9 @@ const rawBot = createBot({
       components: true,
       value: true,
       values: true,
+    },
+    attachment: {
+      url: true,
     },
   },
   rest: {

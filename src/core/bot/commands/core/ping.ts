@@ -1,8 +1,8 @@
 import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowflakeToTimestamp } from 'discordeno';
 import { t } from 'utils/i18n';
-import { getShardInfoFromGuild } from 'bot/utils';
+import { getShardInfoFromGuild } from 'bot/bot';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope } from 'types/types';
 
 createApplicationCommand({
   name: 'ping',
@@ -18,6 +18,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
+    scope: ApplicationCommandScope.Global,
   },
   acknowledge: true,
   async run(interaction, options) {

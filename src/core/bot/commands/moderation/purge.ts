@@ -3,9 +3,13 @@ import {
   ChannelTypes,
   DiscordApplicationIntegrationType,
   DiscordInteractionContextType,
+  MessageComponentTypes,
+  MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { t } from 'utils/i18n';
+import { highlight, icon } from 'utils/markdown';
 
 createApplicationCommand({
   name: 'purge',
@@ -24,6 +28,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Moderation,
+    scope: ApplicationCommandScope.Global,
   },
   permissions: {
     author: ['MANAGE_MESSAGES'],
@@ -78,6 +83,67 @@ createApplicationCommand({
     ];
 
     if (!textBasedChannels.includes(channel.type!)) {
+      await interaction.edit({
+        components: [
+          {
+            type: MessageComponentTypes.TextDisplay,
+            content: `${icon('Error')} ${t(language, 'commands.purge.invalidChannelType')}`,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
     }
+
+    const messages = await interaction.bot.rest.getMessages(interaction.channel.id!, { limit: amount + 1 });
+    let filtered = messages;
+
+    if (content) {
+      filtered = messages.filter((msg) => msg.content === content && msg.id !== interaction.message?.id.toString());
+      if (filtered.length === 0) {
+        await interaction.edit({
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesWithContentFound', { content })}`,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
+
+        return;
+      }
+    } else {
+      filtered = messages.filter((msg) => msg.id !== interaction.message?.id.toString());
+      if (filtered.length === 0) {
+        await interaction.edit({
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesFound')}`,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
+        });
+
+        return;
+      }
+    }
+
+    await interaction.bot.rest.deleteMessages(
+      interaction.channel.id!,
+      filtered.map((msg) => msg.id),
+    );
+
+    await interaction.edit({
+      components: [
+        {
+          type: MessageComponentTypes.TextDisplay,
+          content: `${icon('Success')} ${t(language, 'commands.purge.success', { count: highlight(filtered.length) })}`,
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2,
+    });
   },
 });

@@ -4,7 +4,7 @@ import type { BaseClientOptions, SchemaInference, XataRecord } from '@xata.io/cl
 
 const tables = [
   {
-    name: 'botGuildProfile',
+    name: 'bot_guild_profile',
     checkConstraints: {
       botGuildProfile_xata_id_length_xata_id: {
         name: 'botGuildProfile_xata_id_length_xata_id',
@@ -27,6 +27,22 @@ const tables = [
     columns: [
       {
         name: 'about_me',
+        type: 'text',
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'avatar_url',
+        type: 'text',
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'banner_url',
         type: 'text',
         notNull: false,
         unique: false,
@@ -83,16 +99,124 @@ const tables = [
       },
     ],
   },
+  {
+    name: 'sticky_messages',
+    checkConstraints: {
+      sticky_messages_xata_id_length_xata_id: {
+        name: 'sticky_messages_xata_id_length_xata_id',
+        columns: ['xata_id'],
+        definition: 'CHECK ((length(xata_id) < 256))',
+      },
+    },
+    foreignKeys: {},
+    primaryKey: [],
+    uniqueConstraints: {
+      _pgroll_new_sticky_messages_xata_id_key: {
+        name: '_pgroll_new_sticky_messages_xata_id_key',
+        columns: ['xata_id'],
+      },
+      sticky_messages__pgroll_new_channel_id_key: {
+        name: 'sticky_messages__pgroll_new_channel_id_key',
+        columns: ['channel_id'],
+      },
+      sticky_messages__pgroll_new_guild_id_key: {
+        name: 'sticky_messages__pgroll_new_guild_id_key',
+        columns: ['guild_id'],
+      },
+      sticky_messages__pgroll_new_message_id_key: {
+        name: 'sticky_messages__pgroll_new_message_id_key',
+        columns: ['message_id'],
+      },
+    },
+    columns: [
+      {
+        name: 'channel_id',
+        type: 'text',
+        notNull: true,
+        unique: true,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'content',
+        type: 'text',
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'files',
+        type: 'multiple',
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'guild_id',
+        type: 'text',
+        notNull: true,
+        unique: true,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'message_id',
+        type: 'text',
+        notNull: false,
+        unique: true,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'xata_createdat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
+        name: 'xata_id',
+        type: 'text',
+        notNull: true,
+        unique: true,
+        defaultValue: "('rec_'::text || (xata_private.xid())::text)",
+        comment: '',
+      },
+      {
+        name: 'xata_updatedat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
+        name: 'xata_version',
+        type: 'int',
+        notNull: true,
+        unique: false,
+        defaultValue: '0',
+        comment: '',
+      },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
 export type InferredTypes = SchemaInference<SchemaTables>;
 
-export type BotGuildProfile = InferredTypes['botGuildProfile'];
+export type BotGuildProfile = InferredTypes['bot_guild_profile'];
 export type BotGuildProfileRecord = BotGuildProfile & XataRecord;
 
+export type StickyMessages = InferredTypes['sticky_messages'];
+export type StickyMessagesRecord = StickyMessages & XataRecord;
+
 export type DatabaseSchema = {
-  botGuildProfile: BotGuildProfileRecord;
+  bot_guild_profile: BotGuildProfileRecord;
+  sticky_messages: StickyMessagesRecord;
 };
 
 const DatabaseClient = buildClient();

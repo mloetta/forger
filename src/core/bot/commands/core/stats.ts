@@ -10,7 +10,7 @@ import os from 'os';
 import { iconAsEmoji, iconPill } from 'utils/markdown';
 import { formatTime, readableFileSize } from 'utils/utils';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import { getShardInfoFromGuild } from 'bot/bot';
 
 createApplicationCommand({
@@ -30,6 +30,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
+    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,

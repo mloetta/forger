@@ -31,8 +31,8 @@ export interface ApplicationCommand<TOptions extends ApplicationCommandOptions =
   extends CreateApplicationCommand {
   details: Details;
   preconditions?: Precondition;
-  permissions?: CommandPermission;
   rateLimit?: RateLimit;
+  permissions?: CommandPermission;
   options?: TOptions;
   acknowledge?: boolean;
   ephemeral?: boolean;
@@ -41,18 +41,9 @@ export interface ApplicationCommand<TOptions extends ApplicationCommandOptions =
   autoComplete?: (interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
 }
 
-export type GetApplicationCommandOptions<T extends ApplicationCommandOptions> = T extends ApplicationCommandOptions
-  ? { [Prop in keyof BuildOptions<T> as Prop]: BuildOptions<T>[Prop] }
-  : never;
-
-type BuildOptions<T extends ApplicationCommandOptions | undefined> = {
-  [Prop in keyof Omit<T, keyof unknown[]> as GetOptionName<T[Prop]>]: GetOptionValue<T[Prop]>;
-};
-
 export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>;
 export type ApplicationCommandOptions = ApplicationCommandOption[];
 
-// Option parsing logic
 type ResolvedValues = ParsedInteractionOption<
   ExtractDesiredProps<CustomBot>,
   ExtractDesiredBehavior<CustomBot>
@@ -64,11 +55,7 @@ export interface InteractionResolvedUser {
   member: InteractionResolvedMember;
 }
 
-/**
- * From here SubCommandGroup and SubCommand are missing, this is wanted.
- *
- * The entries are sorted based on the enum value
- */
+// Map Discord types to resolved TS types
 interface TypeToResolvedMap {
   [ApplicationCommandOptionTypes.String]: string;
   [ApplicationCommandOptionTypes.Integer]: number;
@@ -88,7 +75,9 @@ type ConvertTypeToResolved<T extends ApplicationCommandOptionTypes> = T extends 
 type SubCommandApplicationCommand =
   | ApplicationCommandOptionTypes.SubCommand
   | ApplicationCommandOptionTypes.SubCommandGroup;
+
 type GetOptionName<T> = T extends { name: string } ? T['name'] : never;
+
 type GetOptionValue<T> = T extends {
   type: ApplicationCommandOptionTypes;
   required?: boolean;
@@ -99,4 +88,12 @@ type GetOptionValue<T> = T extends {
     }
     ? BuildOptions<T['options']>
     : ConvertTypeToResolved<T['type']> | (T['required'] extends true ? never : undefined)
+  : never;
+
+type BuildOptions<T extends ApplicationCommandOptions | undefined> = {
+  [Prop in keyof Omit<T, keyof unknown[]> as GetOptionName<T[Prop]>]: GetOptionValue<T[Prop]>;
+};
+
+export type GetApplicationCommandOptions<T extends ApplicationCommandOptions> = T extends ApplicationCommandOptions
+  ? { [Prop in keyof BuildOptions<T> as Prop]: BuildOptions<T>[Prop] }
   : never;

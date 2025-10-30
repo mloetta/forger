@@ -10,7 +10,7 @@ import {
   type MediaGalleryComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { codeblock, icon, iconPill, pill, smallIconPill, timestamp } from 'utils/markdown';
 
@@ -27,6 +27,7 @@ createApplicationCommand({
   contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Info,
+    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,

@@ -23,7 +23,7 @@
     "@xata.io/client": "^0.30.1",
     "amqplib": "^0.10.9",
     "dd-cache-proxy": "^2.6.5",
-    "discordeno": "22.0.1-next.9393168",
+    "discordeno": "22.0.1-next.5867d11",
     "fastify": "^5.6.1",
     "i18next": "^25.5.3",
     "i18next-fs-backend": "^2.6.0"

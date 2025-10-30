@@ -75,8 +75,14 @@ export enum ApplicationCommandCategory {
   Dev = 'Dev',
 }
 
+export enum ApplicationCommandScope {
+  Global = 'Global',
+  Guild = 'Guild',
+}
+
 export interface Details {
   category: ApplicationCommandCategory;
+  scope: ApplicationCommandScope;
   summary?: string;
   usage?: string;
   examples?: string[];

@@ -11,7 +11,7 @@ import {
   type TextDisplayComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import type { Emojis } from 'utils/emojis';
 import { icon, iconPill, link, pill, smallPill, timestamp } from 'utils/markdown';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
@@ -34,6 +34,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Info,
+    scope: ApplicationCommandScope.Global,
   },
   options: [
     {
