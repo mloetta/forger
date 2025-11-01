@@ -10,7 +10,6 @@
     "prettier:write": "bunx prettier --config ../prettier/.prettierrc --write ."
   },
   "devDependencies": {
-    "@types/amqplib": "^0.10.7",
     "@types/bun": "latest",
     "prettier": "^3.6.2"
   },
@@ -18,10 +17,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@fastify/env": "^5.0.3",
+    "@fastify/helmet": "^13.0.2",
     "@fastify/multipart": "^9.2.1",
     "@influxdata/influxdb-client": "^1.35.0",
     "@xata.io/client": "^0.30.1",
-    "amqplib": "^0.10.9",
     "dd-cache-proxy": "^2.6.5",
     "discordeno": "22.0.1-next.5867d11",
     "fastify": "^5.6.1",

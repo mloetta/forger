@@ -24,14 +24,18 @@
         "missingPerm": "You need the {{perm}} permission to do this",
         "wrongChannel": "You can only follow updates in text channels"
       },
-      "modals": {
+      "modal": {
         "title": "Customize Pocket Tool as you wish!",
         "header": "## Here you can configure Pocket Tool's guild profile",
         "name": "What should my name be?",
         "nameDesc": "This is the name that appears on my guild profile",
         "aboutMe": "What's my new about me?",
         "aboutMeDesc": "This is the text that appears on my profile",
-        "blankValue": "Leave blank for default value",
+        "avatar": "How should my new avatar look like?",
+        "avatarDesc": "This is the avatar that appears on my guild profile",
+        "banner": "What should my new banner look like?",
+        "bannerDesc": "This is the banner that appears on my guild profile",
+        "placeholder": "Leave blank for default value",
         "profileUpdated": "Profile updated successfully",
         "noChanges": "No profile changes were made"
       }
@@ -68,6 +72,22 @@
       "noMessagesWithContentFound": "No messages found with the given content: {{content}}",
       "noMessagesFound": "No messages were found",
       "success": "Successfully purged {{count}} messages"
+    },
+    "sticky_message": {
+      "noStickyMessageFound": "No sticky message found on this channel",
+      "stickyMessageDeleted": "Sticky message deleted successfully",
+      "modal": {
+        "title": "Sticky Message Setup",
+        "header": "## Configure the sticky message module for the actual channel",
+        "stickyMessageTextContent": "Should the sticky message include text?",
+        "stickyMessageTextContentDesc": "Provide the content for the sticky message",
+        "stickyMessageTextContentPlaceholder": "Leave blank for no text content",
+        "stickyMessageFiles": "Should the sticky message include files?",
+        "stickyMessageFilesDesc": "Upload up to 4 files to include in the message",
+        "stickyMessageEmpty": "Sticky message couldn’t be sent because there’s no content to display",
+        "stickyMessageLimitReached": "Your guild has reached the maximum limit of 5 sticky messages",
+        "stickyMessageUpdated": "Sticky message updated successfully"
+      }
     }
   },
   "events": {
@@ -79,6 +99,11 @@
       "channelRateLimited": "Whoa, slow down! This channel needs a break. Wait {{time}} before using {{command}} here again!",
       "userRateLimited": "Whoa, slow down! You need to wait {{time}} before using {{command}} again!",
       "commandErrored": "Uh-oh, this command feels... wrong. Maybe try again later?"
+    },
+    "messageCreate": {
+      "stickyMessage": {
+        "warn": "-# This is an automated sticky message"
+      }
     }
   },
   "buttons": {

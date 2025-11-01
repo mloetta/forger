@@ -1,6 +1,6 @@
 import type { RestManager } from 'discordeno';
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
-import { INFLUX_ENABLE, INFLUX_URL, INFLUX_TOKEN, INFLUX_ORG, INFLUX_BUCKET } from 'utils/variables';
+import { INFLUX_ENABLE, INFLUX_URL, INFLUX_TOKEN, INFLUX_ORG, INFLUX_BUCKET } from 'core/variables';
 
 export const influxDB = INFLUX_ENABLE ? new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN }) : undefined;
 export const influx = INFLUX_ENABLE && influxDB ? influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET) : undefined;

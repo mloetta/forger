@@ -147,7 +147,7 @@ const tables = [
       },
       {
         name: 'files',
-        type: 'multiple',
+        type: 'json',
         notNull: false,
         unique: false,
         defaultValue: null,

@@ -1,10 +1,10 @@
 import type { RequestMethods } from 'discordeno';
-import { REST_PORT } from 'utils/variables';
+import { REST_PORT } from 'core/variables';
 import { buildFastifyApp, parseMultiformBody } from './fastify';
 import { rest, logger } from './rest';
 import 'utils/process';
 
-const app = buildFastifyApp();
+const app = await buildFastifyApp();
 
 app.get('/timecheck', async (_req, res) => {
   res.status(200).send({ message: Date.now() });
@@ -18,20 +18,18 @@ app.all('/*', async (req, res) => {
   }
 
   const isMultipart = req.headers['content-type']?.startsWith('multipart/form-data');
-  const hasBody = req.method !== 'GET' && req.method !== 'DELETE';
-  const body = hasBody ? (isMultipart ? await parseMultiformBody(req.body) : req.body) : undefined;
+  const body = req.method !== 'GET' && req.method !== 'DELETE' ? req.body : undefined;
 
   try {
     const result = await rest.makeRequest(req.method as RequestMethods, url, {
-      body,
+      body: isMultipart && body ? await parseMultiformBody(body) : body,
     });
 
     if (result) {
       res.status(200).send(result);
-      return;
+    } else {
+      res.status(204).send({});
     }
-
-    res.status(204).send({});
   } catch (e) {
     logger.error(e);
 
@@ -41,6 +39,6 @@ app.all('/*', async (req, res) => {
   }
 });
 
-await app.listen({ port: Number(REST_PORT) });
+await app.listen({ host: app.config.host, port: Number(REST_PORT) });
 
 logger.info(`REST Proxy listening on port ${REST_PORT}`);

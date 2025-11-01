@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { createHash } from 'crypto';
 import { workerData as _workerData, parentPort } from 'worker_threads';
 import {
   createLogger,
@@ -8,7 +7,6 @@ import {
   GatewayOpcodes,
   ShardSocketCloseCodes,
 } from 'discordeno';
-import { type Channel as amqpChannel, connect as connectAmqp } from 'amqplib';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
 import type { Camelize } from 'types/types.js';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request.js';
@@ -24,12 +22,6 @@ const shards = new Map<number, DiscordenoShard>();
 const pendingShards = new Map<number, DiscordenoShard>();
 
 let totalShards = workerData.connectionData.totalShards;
-
-let rabbitMQChannel: amqpChannel | undefined;
-
-if (workerData.messageQueue.enabled) {
-  await connectToRabbitMQ();
-}
 
 parentPort.on('message', async (message: WorkerMessage) => {
   assert(parentPort);
@@ -195,28 +187,6 @@ function createShard(shardId: number): DiscordenoShard {
 async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize<DiscordGatewayPayload>) {
   const data = { payload, shardId: shard.id };
 
-  if (workerData.messageQueue.enabled) {
-    if (!rabbitMQChannel) {
-      logger.error('The RabbitMQ channel has not been created. The event will be lost');
-      return;
-    }
-
-    const message = Buffer.from(JSON.stringify(data));
-    const discordData = JSON.stringify(payload.d);
-
-    const deduplicationHash = createHash('sha1');
-    deduplicationHash.update(discordData);
-
-    rabbitMQChannel.publish('gatewayMessage', '', message, {
-      contentType: 'application/json',
-      headers: {
-        'x-deduplication-header': deduplicationHash.digest('hex'),
-      },
-    });
-
-    return;
-  }
-
   const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length];
   if (!url) {
     logger.error('No url found to send events to');
@@ -229,50 +199,4 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
     data,
     headers: { Authorization: workerData.eventHandler.authentication },
   }).catch((error) => logger.error('Failed to send events to the bot code', error));
-}
-
-async function connectToRabbitMQ(): Promise<void> {
-  rabbitMQChannel = undefined;
-  const messageQueue = workerData.messageQueue;
-
-  const connection = await connectAmqp(
-    `amqp://${messageQueue.username}:${messageQueue.password}@${messageQueue.url}`,
-  ).catch((error) => {
-    logger.error('Failed to connect to RabbitMQ, retrying in 1s.', error);
-    setTimeout(connectToRabbitMQ, 1000);
-  });
-
-  if (!connection) return;
-
-  connection.on('close', () => {
-    rabbitMQChannel = undefined;
-    setTimeout(connectToRabbitMQ, 1000);
-  });
-  connection.on('error', (error) => {
-    rabbitMQChannel = undefined;
-    logger.error('There was an error in the connection with RabbitMQ, reconnecting in 1s.', error);
-    setTimeout(connectToRabbitMQ, 1000);
-  });
-
-  const channel = await connection.createChannel().catch((error) => {
-    logger.error('There was an error creating the RabbitMQ channel', error);
-  });
-
-  if (!channel) return;
-
-  const exchange = await channel
-    .assertExchange('gatewayMessage', 'x-message-deduplication', {
-      durable: true,
-      arguments: {
-        'x-cache-size': 1000, // maximum number of entries
-        'x-cache-ttl': 500, // 500ms
-      },
-    })
-    .catch((error) => {
-      logger.error('There was an error asserting the exchange', error);
-    });
-
-  if (!exchange) return;
-
-  rabbitMQChannel = channel;
 }

@@ -1,4 +1,11 @@
-import { Collection, commandOptionsParser, createLogger, InteractionTypes, MessageFlags } from 'discordeno';
+import {
+  Collection,
+  commandOptionsParser,
+  createLogger,
+  InteractionTypes,
+  MessageFlags,
+  Permissions,
+} from 'discordeno';
 import type { ApplicationCommand } from 'helpers/command';
 import { RateLimitManager } from 'middlewares/rateLimit';
 import { highlight, icon, smallPill, timestamp } from 'utils/markdown';
@@ -124,9 +131,20 @@ async function handleApplicationCommand(interaction: Interaction) {
   }
 
   if (command.permissions) {
+    const botMember = await bot.rest.getMember(interaction.guild.id, bot.id);
+    const botRoles = botMember.roles;
+
+    let rolePerms = BigInt(0);
+    for (const roleId of botRoles) {
+      const role = await bot.rest.getRole(interaction.guild.id, roleId);
+      rolePerms |= BigInt(role.permissions);
+    }
+
+    const botPerms = BigInt(botMember.permissions ?? 0) | rolePerms;
+
     const permissionManager = new PermissionManager(
-      interaction.member!.permissions!,
-      interaction.guild.members.get(interaction.bot.id)!.permissions!,
+      interaction.member?.permissions!,
+      new Permissions(botPerms),
       command.permissions,
     );
 

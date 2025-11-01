@@ -17,8 +17,11 @@
   });
 
   // Standard crash
-  process.on('unhandledRejection', (err) => {
-    console.log(`UNHANDLED REJECTION: ${err}`);
+  process.on('unhandledRejection', (err: any) => {
+    console.log('UNHANDLED REJECTION:', err);
+    if (err && err.cause) {
+      console.log('CAUSE:', err.cause);
+    }
   });
 
   // Deprecation warnings

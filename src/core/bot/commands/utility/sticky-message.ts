@@ -11,6 +11,8 @@ import {
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
+import { t } from 'utils/i18n';
+import { icon } from 'utils/markdown';
 import or from 'utils/utils';
 import { getXataClient } from 'utils/xata';
 
@@ -43,7 +45,7 @@ createApplicationCommand({
       type: ApplicationCommandOptionTypes.Boolean,
       name: 'delete',
       nameLocalizations: {
-        'pt-BR': 'Excluir',
+        'pt-BR': 'excluir',
       },
       description: 'Should the sticky message be deleted?',
       descriptionLocalizations: {
@@ -53,6 +55,8 @@ createApplicationCommand({
     },
   ],
   async run(interaction, options) {
+    const language = interaction.locale!;
+
     const xata = getXataClient();
 
     const record = await xata.db.sticky_messages.filter('guild_id', interaction.guild.id.toString()).getAll();
@@ -62,8 +66,13 @@ createApplicationCommand({
 
       if (!exists) {
         await interaction.respond({
-          content: 'No sticky message found on this channel',
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Error')} ${t(language, 'commands.sticky_message.stickyMessageNotFound')}`,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
         });
 
         return;
@@ -72,40 +81,47 @@ createApplicationCommand({
       await xata.db.sticky_messages.delete(exists.id);
 
       await interaction.respond({
-        content: 'Sticky message deleted successfully',
-        flags: MessageFlags.Ephemeral,
+        components: [
+          {
+            type: MessageComponentTypes.TextDisplay,
+            content: `${icon('Success')} ${t(language, 'commands.sticky_message.stickyMessageDeleted')}`,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
       });
 
       return;
     }
 
     await interaction.respond({
-      title: 'Sticky Message Setup',
+      title: t(language, 'commands.sticky_message.modal.title'),
       customId: 'sticky-message-setup',
       components: [
         {
           type: MessageComponentTypes.TextDisplay,
-          content: '## Configure the sticky message module for your server',
+          content: t(language, 'commands.sticky_message.modal.header'),
         },
         {
           type: MessageComponentTypes.Label,
-          label: 'Should the sticky message have a text content?',
-          description: 'Write down the content of the sticky message',
+          label: t(language, 'commands.sticky_message.modal.stickyMessageTextContent'),
+          description: t(language, 'commands.sticky_message.modal.stickyMessageTextContentDesc'),
           component: {
             type: MessageComponentTypes.TextInput,
             customId: 'sticky-message-content',
-            placeholder: 'Leave blank for no text content',
+            placeholder: t(language, 'commands.sticky_message.modal.stickyMessageTextContentPlaceholder'),
             style: TextStyles.Short,
+            required: false,
           },
         },
         {
           type: MessageComponentTypes.Label,
-          label: 'Should the sticky message have some files?',
-          description: 'Upload the files you want your sticky message to have. Upload up to 4 files.',
+          label: t(language, 'commands.sticky_message.modal.stickyMessageFiles'),
+          description: t(language, 'commands.sticky_message.modal.stickyMessageFilesDesc'),
           component: {
             type: MessageComponentTypes.FileUpload,
             customId: 'sticky-message-files',
             maxValues: 4,
+            required: false,
           },
         },
       ],
@@ -118,8 +134,23 @@ createApplicationCommand({
       if (!i.data) return;
 
       const stickyContent = or(i.data.components?.[1]?.component?.value, null);
-      const stickyFilesIds = or(i.data.components?.[2]?.component?.value, null);
-      let stickyFiles: string[] | null = null;
+      const stickyFilesIds = or(i.data.components?.[2]?.component?.values, null);
+
+      if (!stickyContent && !stickyFilesIds) {
+        await i.respond({
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modal.stickyMessageEmpty')}`,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+        });
+
+        return;
+      }
+
+      let stickyFiles: any[] | null = null;
 
       if (stickyFilesIds?.length) {
         stickyFiles = [];
@@ -127,12 +158,27 @@ createApplicationCommand({
         for (const fileId of stickyFilesIds) {
           const attachment = i.data.resolved!.attachments!.get(BigInt(fileId));
           if (!attachment) continue;
-          const base64 = await urlToBase64(attachment.url);
-          stickyFiles.push(base64);
+
+          stickyFiles.push({
+            base64: urlToBase64(attachment.url),
+            url: attachment.url,
+            filename: attachment.filename,
+            contentType: attachment.contentType,
+          });
         }
       }
 
       if (record.length >= 5 && !record.find((s) => s.channel_id === i.channel.id?.toString())) {
+        await i.respond({
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modal.stickyMessageLimitReached')}`,
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+        });
+
         return;
       }
 
@@ -153,8 +199,13 @@ createApplicationCommand({
       }
 
       await i.respond({
-        content: 'Successfully updated sticky message!',
-        flags: MessageFlags.Ephemeral,
+        components: [
+          {
+            type: MessageComponentTypes.TextDisplay,
+            content: `${icon('Success')} ${t(language, 'commands.sticky_message.modal.stickyMessageUpdated')}`,
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
       });
     });
   },

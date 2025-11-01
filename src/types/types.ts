@@ -64,6 +64,7 @@ export type Channel = typeof bot.transformers.$inferredTypes.channel;
 export type Role = typeof bot.transformers.$inferredTypes.role;
 export type Attachment = typeof bot.transformers.$inferredTypes.attachment;
 export type Interaction = typeof bot.transformers.$inferredTypes.interaction;
+export type Message = typeof bot.transformers.$inferredTypes.message;
 
 // Command stuff
 export enum ApplicationCommandCategory {

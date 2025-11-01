@@ -1,12 +1,12 @@
 import type { Permissions } from 'discordeno';
-import type { ApplicationCommand } from 'helpers/command';
+import type { CommandPermission } from 'types/types';
 
 export class PermissionManager {
   #userPerms: Permissions;
   #botPerms: Permissions;
-  #commandPerms: ApplicationCommand['permissions'];
+  #commandPerms: CommandPermission;
 
-  constructor(userPerms: Permissions, botPerms: Permissions, commandPerms: ApplicationCommand['permissions']) {
+  constructor(userPerms: Permissions, botPerms: Permissions, commandPerms: CommandPermission) {
     this.#userPerms = userPerms;
     this.#botPerms = botPerms;
     this.#commandPerms = commandPerms;

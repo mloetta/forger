@@ -197,13 +197,13 @@ createApplicationCommand({
 
             if (newName || newAboutMe || newAvatar || newBanner) {
               await i.respond({
-                content: t(language, 'commands.help.modals.profileUpdated'),
+                content: t(language, 'commands.help.modal.profileUpdated'),
                 flags: MessageFlags.Ephemeral,
               });
             }
           } else {
             await i.respond({
-              content: t(language, 'commands.help.modals.noChanges'),
+              content: t(language, 'commands.help.modal.noChanges'),
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -232,50 +232,52 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: t(language, 'commands.help.modals.header'),
+                content: t(language, 'commands.help.modal.header'),
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modals.name'),
-                description: t(language, 'commands.help.modals.nameDesc'),
+                label: t(language, 'commands.help.modal.name'),
+                description: t(language, 'commands.help.modal.nameDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
                   customId: 'new-name-input',
-                  placeholder: t(language, 'commands.help.modals.blankValue'),
+                  placeholder: t(language, 'commands.help.modal.placeholder'),
                   style: TextStyles.Short,
                   required: false,
                 },
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modals.aboutMe'),
-                description: t(language, 'commands.help.modals.aboutMeDesc'),
+                label: t(language, 'commands.help.modal.aboutMe'),
+                description: t(language, 'commands.help.modal.aboutMeDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
                   customId: 'new-about-input',
-                  placeholder: t(language, 'commands.help.modals.blankValue'),
+                  placeholder: t(language, 'commands.help.modal.placeholder'),
                   style: TextStyles.Paragraph,
                   required: false,
                 },
               },
               {
                 type: MessageComponentTypes.Label,
-                label: 'How should my new avatar look like?',
-                description: 'This is the avatar that appears on my guild profile',
+                label: t(language, 'commands.help.modal.avatar'),
+                description: t(language, 'commands.help.modal.avatarDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
                   customId: 'new-avatar',
                   maxValues: 1,
+                  required: false,
                 },
               },
               {
                 type: MessageComponentTypes.Label,
-                label: 'How should my new banner look like?',
-                description: 'This is the banner that appears on my guild profile',
+                label: t(language, 'commands.help.modal.banner'),
+                description: t(language, 'commands.help.modal.bannerDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
                   customId: 'new-banner',
                   maxValues: 1,
+                  required: false,
                 },
               },
             ],

@@ -184,3 +184,7 @@ export async function readDirectory(dir: string): Promise<any[]> {
 export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: Value2): NonNullable<Value1> | Value2 {
   return ifExists !== null && ifExists !== undefined ? (ifExists as NonNullable<Value1>) : ifNot;
 }
+
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+  return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;
+}

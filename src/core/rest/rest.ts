@@ -1,5 +1,5 @@
 import { createLogger, createRestManager } from 'discordeno';
-import { TOKEN } from 'utils/variables';
+import { TOKEN } from 'core/variables';
 import { setupRestAnalyticsHooks } from './influx';
 
 export const logger = createLogger({ name: 'REST' });

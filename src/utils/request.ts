@@ -63,14 +63,20 @@ export function makeRequest<T extends ResponseType>(url: string, options: Option
             if (status >= 200 && status < 300) {
               try {
                 switch (options.response) {
-                  case ResponseType.JSON:
-                    resolve(JSON.parse(buffer.toString('utf-8')) as Response[T]);
+                  case ResponseType.JSON: {
+                    const text = buffer.toString('utf-8').trim();
+                    resolve(text ? (JSON.parse(text) as Response[T]) : ({} as Response[T]));
+
                     break;
-                  case ResponseType.BUFFER:
+                  }
+                  case ResponseType.BUFFER: {
                     resolve(buffer as Response[T]);
+
                     break;
-                  default:
+                  }
+                  default: {
                     resolve(buffer.toString('utf-8') as Response[T]);
+                  }
                 }
               } catch (e) {
                 reject(new Error(`Failed to parse response: ${(e as Error).message}`));

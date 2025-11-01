@@ -11,7 +11,7 @@ import { formatAnsi, type ColorsType } from 'utils/ansi';
 import { t } from 'utils/i18n';
 import { codeblock, highlight, iconPill, link } from 'utils/markdown';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
-import { PERSPECTIVE_API_KEY } from 'utils/variables';
+import { PERSPECTIVE_API_KEY } from 'core/variables';
 
 createApplicationCommand({
   name: 'analyze',

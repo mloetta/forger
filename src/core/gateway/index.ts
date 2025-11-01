@@ -1,4 +1,4 @@
-import { GATEWAY_PORT } from 'utils/variables';
+import { GATEWAY_PORT } from 'core/variables';
 import { buildFastifyApp } from './fastify';
 import { gateway, logger, workers } from './gateway';
 import { shardInfoRequests } from './worker/createWorker';
@@ -9,9 +9,9 @@ import type {
   WorkerPresenceUpdate,
   WorkerShardPayload,
 } from './worker/types';
-import 'types/utils/process';
+import 'utils/process';
 
-const app = buildFastifyApp();
+const app = await buildFastifyApp();
 
 app.get('/timecheck', (_req, res) => {
   res.status(200).send({ message: Date.now() });
@@ -74,7 +74,7 @@ app.post('/', async (req, res) => {
   }
 });
 
-await app.listen({ port: Number(GATEWAY_PORT) });
+await app.listen({ host: app.config.host, port: Number(GATEWAY_PORT) });
 
 logger.info(`Gateway manager listening on port ${GATEWAY_PORT}`);
 
