@@ -11,7 +11,6 @@ export namespace Schema {
     string: {
       type: SchemaType.String;
       default?: string;
-
       min?: number;
       max?: number;
       values?: string[];
@@ -20,12 +19,9 @@ export namespace Schema {
     number: {
       type: SchemaType.Number;
       default?: number;
-
       min?: number;
       max?: number;
-
       int?: boolean;
-
       values?: number[];
     };
 
@@ -51,7 +47,7 @@ export namespace Schema {
     metadata = metadata ?? {};
 
     return {
-      type: SchemaType.String,
+      type: SchemaType.String as SchemaType.String,
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
       value: metadata.default ?? '',
@@ -59,15 +55,15 @@ export namespace Schema {
 
       validate() {
         if (typeof this.value !== 'string') {
-          throw new Error(`Current value is not a string`);
+          throw new Error(`Schema error: current value is not a string`);
         }
 
         if (this.values.length && this.values.indexOf(this.value) == -1) {
-          throw new Error(`String value is not in expected values`);
+          throw new Error(`Schema error: string value is not in expected values`);
         }
 
         if ((this.max != -1 && this.value.length > this.max) || (this.min != -1 && this.value.length < this.min)) {
-          throw new Error(`String length is not in range`);
+          throw new Error(`Schema error: string length is not in range`);
         }
       },
     };
@@ -77,7 +73,7 @@ export namespace Schema {
     metadata = metadata ?? {};
 
     return {
-      type: SchemaType.Number,
+      type: SchemaType.Number as SchemaType.Number,
       int: !!metadata.int,
       max: metadata.max ?? -1,
       min: metadata.min ?? -1,
@@ -86,19 +82,19 @@ export namespace Schema {
 
       validate() {
         if (typeof this.value !== 'number') {
-          throw new Error(`Current value is not a number`);
+          throw new Error(`Schema error: current value is not a number`);
         }
 
         if (this.values.length && this.values.indexOf(this.value) == -1) {
-          throw new Error(`Number value is not in expected values`);
+          throw new Error(`Schema error: number value is not in expected values`);
         }
 
         if (this.int && !Number.isInteger(this.value)) {
-          throw new Error(`Current value is not a int`);
+          throw new Error(`Schema error: current value is not a int`);
         }
 
         if ((this.max != -1 && this.value > this.max) || (this.min != -1 && this.value < this.min)) {
-          throw new Error(`Number value is not in range`);
+          throw new Error(`Schema error: number value is not in range`);
         }
       },
     };
@@ -108,12 +104,12 @@ export namespace Schema {
     metadata = metadata ?? {};
 
     return {
-      type: SchemaType.Boolean,
+      type: SchemaType.Boolean as SchemaType.Boolean,
       value: metadata.default ?? false,
 
       validate() {
         if (typeof this.value !== 'boolean') {
-          throw new Error(`Current value is not a boolean`);
+          throw new Error(`Schema error: current value is not a boolean`);
         }
       },
     };
@@ -121,13 +117,13 @@ export namespace Schema {
 
   export function array<T extends Array<ISchema[keyof ISchema]>>(fields?: T) {
     return {
-      type: SchemaType.Array,
+      type: SchemaType.Array as SchemaType.Array,
       value: [] as any as T,
       fields: fields || [],
 
       validate() {
-        if (!Array.isArray(this.value)) {
-          throw new Error(`Current value is not an array`);
+        if (typeof this.value !== 'object' && !Array.isArray(this.value)) {
+          throw new Error(`Schema error: current value is not a array`);
         }
       },
     };
@@ -137,7 +133,7 @@ export namespace Schema {
     fields = fields ?? ({} as T);
 
     return {
-      type: SchemaType.Object,
+      type: SchemaType.Object as SchemaType.Object,
       value: {} as T,
       fields: fields || {},
 
@@ -148,8 +144,8 @@ export namespace Schema {
       },
 
       validate() {
-        if (typeof this.value !== 'object' || Array.isArray(this.value) || this.value === null) {
-          throw new Error(`Current value is not an object`);
+        if (typeof this.value !== 'object' && Array.isArray(this.value)) {
+          throw new Error(`Schema error: current value is not a object`);
         }
       },
     };

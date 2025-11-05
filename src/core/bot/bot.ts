@@ -18,70 +18,15 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import { createProxyCache } from 'dd-cache-proxy';
 
 const desiredProperties = createDesiredPropertiesObject({
-  message: {
-    id: true,
-    guildId: true,
-    channelId: true,
-    author: true,
+  attachment: {
+    contentType: true,
+    filename: true,
+    url: true,
   },
   channel: {
-    id: true,
     guildId: true,
+    id: true,
     type: true,
-  },
-  guild: {
-    id: true,
-    members: true,
-    presences: true,
-    toggles: true,
-    icon: true,
-    banner: true,
-    channels: true,
-    name: true,
-    description: true,
-    emojis: true,
-    stickers: true,
-    premiumSubscriptionCount: true,
-    roles: true,
-    ownerId: true,
-    preferredLocale: true,
-  },
-  member: {
-    avatar: true,
-    joinedAt: true,
-    nick: true,
-    user: true,
-    permissions: true,
-    id: true,
-  },
-  role: {
-    id: true,
-    name: true,
-    permissions: true,
-    toggles: true,
-    color: true,
-    colors: true,
-  },
-  interaction: {
-    data: true,
-    guild: true,
-    id: true,
-    locale: true,
-    member: true,
-    message: true,
-    token: true,
-    type: true,
-    user: true,
-    channel: true,
-    authorizingIntegrationOwners: true,
-  },
-  user: {
-    avatar: true,
-    globalName: true,
-    id: true,
-    publicFlags: true,
-    toggles: true,
-    username: true,
   },
   component: {
     component: true,
@@ -89,77 +34,104 @@ const desiredProperties = createDesiredPropertiesObject({
     value: true,
     values: true,
   },
-  attachment: {
-    url: true,
-    filename: true,
-    contentType: true,
+  guild: {
+    banner: true,
+    channels: true,
+    description: true,
+    emojis: true,
+    icon: true,
+    id: true,
+    members: true,
+    name: true,
+    ownerId: true,
+    presences: true,
+    premiumSubscriptionCount: true,
+    preferredLocale: true,
+    roles: true,
+    stickers: true,
+    toggles: true,
+  },
+  interaction: {
+    authorizingIntegrationOwners: true,
+    channel: true,
+    channelId: true,
+    data: true,
+    guild: true,
+    guildId: true,
+    id: true,
+    locale: true,
+    member: true,
+    message: true,
+    token: true,
+    type: true,
+    user: true,
+  },
+  member: {
+    avatar: true,
+    guildId: true,
+    id: true,
+    joinedAt: true,
+    nick: true,
+    permissions: true,
+    user: true,
+  },
+  message: {
+    author: true,
+    channelId: true,
+    content: true,
+    guildId: true,
+    id: true,
+  },
+  role: {
+    color: true,
+    colors: true,
+    guildId: true,
+    id: true,
+    name: true,
+    permissions: true,
+    toggles: true,
+  },
+  user: {
+    avatar: true,
+    banner: true,
+    discriminator: true,
+    globalName: true,
+    id: true,
+    publicFlags: true,
+    toggles: true,
+    username: true,
   },
 });
 
-// interface BotDesiredProperties extends Required<typeof desiredProperties> {}
+interface BotDesiredProperties extends Required<typeof desiredProperties> {}
 
-/*
 const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavior.RemoveKey>) =>
   createProxyCache(bot, {
     desiredProps: {
-      message: ['id', 'guildId', 'channelId', 'author'],
-      channel: ['id', 'guildId', 'type'],
-      guild: [
-        'id',
-        'members',
-        'presences',
-        'toggles',
-        'icon',
-        'banner',
-        'channels',
-        'name',
-        'description',
-        'emojis',
-        'stickers',
-        'premiumSubscriptionCount',
-        'roles',
-        'ownerId',
-        'preferredLocale',
-      ],
-      member: ['avatar', 'joinedAt', 'nick', 'user', 'permissions', 'id'],
-      role: ['id', 'name', 'permissions', 'toggles', 'color', 'colors'],
-      interaction: [
-        'data',
-        'guild',
-        'id',
-        'locale',
-        'member',
-        'message',
-        'token',
-        'type',
-        'user',
-        'channel',
-        'authorizingIntegrationOwners',
-      ],
-      user: ['avatar', 'globalName', 'id', 'publicFlags', 'toggles', 'username'],
-      component: ['component', 'components', 'value', 'values'],
-      attachment: ['url'],
+      guild: ['channels', 'icon', 'id', 'name', 'ownerId', 'roles', 'members'],
+      channel: ['guildId', 'id', 'type'],
+      member: ['avatar', 'id', 'joinedAt', 'nick', 'permissions', 'user', 'guildId'],
+      role: ['color', 'id', 'name', 'permissions', 'guildId'],
+      user: ['avatar', 'globalName', 'id', 'publicFlags', 'username'],
     },
-    cacheInMemory: {
-      guild: true,
-      channel: true,
-      member: true,
-      user: true
-    }
+    cacheOutsideMemory: {
+      default: true,
+    },
   });
-*/
 
-const rawBot = createBot({
-  token: TOKEN,
-  intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
-  desiredProperties,
-  rest: {
-    proxy: {
-      baseUrl: REST_URL,
-      authorization: TOKEN,
+const rawBot = getProxyCacheBot(
+  createBot({
+    token: TOKEN,
+    intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
+    desiredProperties,
+    rest: {
+      proxy: {
+        baseUrl: REST_URL,
+        authorization: TOKEN,
+      },
     },
-  },
-});
+  }),
+);
 
 // If you want to add custom properties to the bot, you can extend the CustomBot type by adding your own
 export type CustomBot = typeof rawBot & {

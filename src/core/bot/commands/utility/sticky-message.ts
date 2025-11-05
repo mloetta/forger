@@ -13,8 +13,8 @@ import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon } from 'utils/markdown';
+import { Schema } from 'utils/schema';
 import or from 'utils/utils';
-import { getXataClient } from 'utils/xata';
 
 createApplicationCommand({
   name: 'sticky-message',
@@ -54,12 +54,10 @@ createApplicationCommand({
       required: false,
     },
   ],
-  async run(interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
-    const xata = getXataClient();
-
-    const record = await xata.db.sticky_messages.filter('guild_id', interaction.guild.id.toString()).getAll();
+    const record = await extras.xata.db.sticky_messages.filter('guild_id', interaction.guild.id.toString()).getAll();
 
     if (options.delete === true) {
       const exists = record.find((r) => r.channel_id === interaction.channel.id?.toString());
@@ -78,7 +76,7 @@ createApplicationCommand({
         return;
       }
 
-      await xata.db.sticky_messages.delete(exists.id);
+      await extras.xata.db.sticky_messages.delete(exists.id);
 
       await interaction.respond({
         components: [
@@ -133,8 +131,11 @@ createApplicationCommand({
     collector.onCollect(async (i) => {
       if (!i.data) return;
 
+      const channelId = i.channelId!.toString();
+      const guildId = i.guildId!.toString();
+
       const stickyContent = or(i.data.components?.[1]?.component?.value, null);
-      const stickyFilesIds = or(i.data.components?.[2]?.component?.values, null);
+      const stickyFilesIds = or(i.data.components?.[2]?.component?.values, []);
 
       if (!stickyContent && !stickyFilesIds) {
         await i.respond({
@@ -150,25 +151,38 @@ createApplicationCommand({
         return;
       }
 
-      let stickyFiles: any[] | null = null;
-
-      if (stickyFilesIds?.length) {
-        stickyFiles = [];
+      const stickyFiles = [];
 
         for (const fileId of stickyFilesIds) {
           const attachment = i.data.resolved!.attachments!.get(BigInt(fileId));
           if (!attachment) continue;
 
+          const urlBase64 = await urlToBase64(attachment.url);
+
+          const StickyFileSchema = Schema.object({
+            base64: Schema.string({ min: 1, default: '' }),
+            url: Schema.string({ min: 1, default: '' }),
+            filename: Schema.string({ min: 1, default: '' }),
+            contentType: Schema.string({ min: 1, default: '' }),
+          });
+
+          StickyFileSchema.value.base64.value = urlBase64;
+          StickyFileSchema.value.url.value = attachment.url;
+          StickyFileSchema.value.filename.value = attachment.filename;
+          StickyFileSchema.value.contentType.value = attachment.contentType ?? '';
+
+          StickyFileSchema.validate();
+
           stickyFiles.push({
-            base64: urlToBase64(attachment.url),
+            base64: urlBase64,
             url: attachment.url,
             filename: attachment.filename,
             contentType: attachment.contentType,
           });
         }
-      }
 
-      if (record.length >= 5 && !record.find((s) => s.channel_id === i.channel.id?.toString())) {
+
+      if (record.length >= 5 && !record.find((s) => s.channel_id === channelId)) {
         await i.respond({
           components: [
             {
@@ -182,17 +196,31 @@ createApplicationCommand({
         return;
       }
 
-      const hasSticky = record.find((s) => s.channel_id === i.channel.id?.toString());
+      const StickyMessageSchema = Schema.object({
+        guild_id: Schema.string({ min: 1 }),
+        channel_id: Schema.string({ min: 1 }),
+        content: Schema.string({ default: '' }),
+        files: Schema.array<any[]>([]),
+      });
+
+      StickyMessageSchema.value.guild_id.value = guildId;
+      StickyMessageSchema.value.channel_id.value = channelId;
+      StickyMessageSchema.value.content.value = stickyContent ?? '';
+      StickyMessageSchema.value.files.value = stickyFiles;
+
+      StickyMessageSchema.validate()
+
+      const hasSticky = record.find((s) => s.channel_id === channelId);
 
       if (hasSticky) {
-        await xata.db.sticky_messages.update(hasSticky.id, {
+        await extras.xata.db.sticky_messages.update(hasSticky.id, {
           content: stickyContent,
           files: stickyFiles,
         });
       } else {
-        await xata.db.sticky_messages.create({
-          guild_id: i.guild.id.toString(),
-          channel_id: i.channel.id?.toString(),
+        await extras.xata.db.sticky_messages.create({
+          guild_id: guildId,
+          channel_id: channelId,
           content: stickyContent,
           files: stickyFiles,
         });

@@ -3,16 +3,19 @@ import {
   avatarUrl,
   DiscordApplicationIntegrationType,
   DiscordInteractionContextType,
+  iconBigintToHash,
   MessageComponentTypes,
   MessageFlags,
   SeparatorSpacingSize,
   snowflakeToTimestamp,
+  UserFlags,
   type Application,
   type TextDisplayComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import type { Emojis } from 'utils/emojis';
+import { t } from 'utils/i18n';
 import { icon, iconPill, link, pill, smallPill, timestamp } from 'utils/markdown';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import or from 'utils/utils';
@@ -55,10 +58,24 @@ createApplicationCommand({
     duration: 5,
   },
   acknowledge: true,
-  async run(interaction, options) {
-    const language = interaction.locale;
+  async run(bot, interaction, options) {
+    const language = interaction.locale!;
 
-    const target = await interaction.bot.rest.getUser(or(options?.target?.user.id, interaction.user.id));
+    const target = await bot.helpers.getUser(or(options?.target?.user.id, interaction.user.id));
+
+    if (!target) {
+      await interaction.respond({
+        components: [
+          {
+            type: MessageComponentTypes.TextDisplay,
+            content: t(language, 'commands.profile.targetNotFound'),
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
+
+      return;
+    }
 
     if (target.bot) {
       const appFlags = {
@@ -76,17 +93,17 @@ createApplicationCommand({
       };
 
       const appFlagNames = {
-        EMBEDDED_RELEASED: 'Embedded Released',
-        GATEWAY_PRESENCE: 'Presence Intent',
-        GATEWAY_PRESENCE_LIMITED: 'Presence Intent (Not approved)',
-        GATEWAY_GUILD_MEMBERS: 'Server Members Intent',
-        GATEWAY_GUILD_MEMBERS_LIMITED: 'Server Members Intent (Not approved)',
-        VERIFICATION_PENDING_GUILD_LIMIT: 'Pending Server Limit',
-        EMBEDDED: 'Embedded',
-        GATEWAY_MESSAGE_CONTENT: 'Message Content Intent',
-        GATEWAY_MESSAGE_CONTENT_LIMITED: 'Message Content Intent (Not approved)',
-        EMBEDDED_FIRST_PARTY: 'Embedded First Party',
-        HAS_SLASH_COMMAND: `Has Slash Commands ${icon('Slash')}`,
+        EMBEDDED_RELEASED: t(language, 'commands.profile.EMBEDDED_RELEASED'),
+        GATEWAY_PRESENCE: t(language, 'commands.profile.GATEWAY_PRESENCE'),
+        GATEWAY_PRESENCE_LIMITED: t(language, 'commands.profile.GATEWAY_PRESENCE_LIMITED'),
+        GATEWAY_GUILD_MEMBERS: t(language, 'commands.profile.GATEWAY_GUILD_MEMBERS'),
+        GATEWAY_GUILD_MEMBERS_LIMITED: t(language, 'commands.profile.GATEWAY_GUILD_MEMBERS_LIMITED'),
+        VERIFICATION_PENDING_GUILD_LIMIT: t(language, 'commands.profile.VERIFICATION_PENDING_GUILD_LIMIT'),
+        EMBEDDED: t(language, 'commands.profile.EMBEDDED'),
+        GATEWAY_MESSAGE_CONTENT: t(language, 'commands.profile.GATEWAY_MESSAGE_CONTENT'),
+        GATEWAY_MESSAGE_CONTENT_LIMITED: t(language, 'commands.profile.GATEWAY_MESSAGE_CONTENT_LIMITED'),
+        EMBEDDED_FIRST_PARTY: t(language, 'commands.profile.EMBEDDED_FIRST_PARTY'),
+        HAS_SLASH_COMMAND: t(language, 'commands.profile.HAS_SLASH_COMMAND', { slash: icon('Slash') }),
       };
 
       const app = (await makeRequest(`https://discord.com/api/v10/applications/${target.id}/rpc`, {
@@ -102,7 +119,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Error')} Unable to fetch application information`,
+                  content: `${icon('Error')} ${t(language, 'commands.profile.applicationFetchError')}`,
                 },
               ],
             },
@@ -123,8 +140,8 @@ createApplicationCommand({
       }
 
       const linksArr = [
-        app.termsOfServiceUrl ? `- ${link(app.termsOfServiceUrl, 'Terms of Service')}` : null,
-        app.privacyPolicyUrl ? `- ${link(app.privacyPolicyUrl, 'Privacy Policy')}` : null,
+        app.termsOfServiceUrl ? `- ${link(app.termsOfServiceUrl, t(language, 'commands.profile.TOS'))}` : null,
+        app.privacyPolicyUrl ? `- ${link(app.privacyPolicyUrl, t(language, 'commands.profile.privacyPolicy'))}` : null,
         `- ${link(
           `https://discord.com/oauth2/authorize?client_id=${app.id}&scope=bot%20applications.commands`,
           'Invite Link',
@@ -132,7 +149,7 @@ createApplicationCommand({
       ].filter(Boolean);
 
       if (linksArr) {
-        links = `${iconPill('Link', 'Links')}\n${linksArr.join('\n')}`.trim();
+        links = `${iconPill('Link', t(language, 'generic.links'))}\n${linksArr.join('\n')}`.trim();
       } else {
         links = '';
       }
@@ -142,7 +159,7 @@ createApplicationCommand({
         .map(([key]) => appFlagNames[key as keyof typeof appFlagNames] || key.replace(/_/g, ' ').toLowerCase());
 
       if (flagList.length > 0) {
-        flags = `${iconPill('Flag', 'Flags')}\n${flagList.map((flag) => `- ${flag}`).join('\n')}\n`;
+        flags = `${iconPill('Flag', t(language, 'generic.flags'))}\n${flagList.map((flag) => `- ${flag}`).join('\n')}\n`;
       }
 
       const sections = [tags, links, flags]
@@ -165,7 +182,7 @@ createApplicationCommand({
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: target.avatar!,
+                    url: target.avatar ? iconBigintToHash(target.avatar) : avatarUrl(target.id, target.discriminator),
                   },
                 },
               },
@@ -183,68 +200,73 @@ createApplicationCommand({
         ],
       });
     } else {
-      const member = await interaction.bot.rest.getMember(interaction.guild.id, target.id);
+      const member = await bot.helpers.getMember(interaction.guild.id, target.id);
 
       let flags: (keyof typeof Emojis)[] = [];
-      if (target.flags) {
-        switch (target.flags) {
-          case 1 << 0: {
+      if (target.publicFlags) {
+        switch (target.publicFlags.bitfield) {
+          case UserFlags.DiscordEmployee: {
             flags.push('Staff');
             break;
           }
-          case 1 << 1: {
+          case UserFlags.PartneredServerOwner: {
             flags.push('Partner');
             break;
           }
-          case 1 << 2: {
+          case UserFlags.HypeSquadEventsMember: {
             flags.push('Hypesquad');
             break;
           }
-          case 1 << 3: {
+          case UserFlags.BugHunterLevel1: {
             flags.push('BugHunterLevel1');
             break;
           }
-          case 1 << 6: {
+          case UserFlags.HouseBravery: {
             flags.push('HypeSquadOnlineHouse1');
             break;
           }
-          case 1 << 7: {
+          case UserFlags.HouseBrilliance: {
             flags.push('HypeSquadOnlineHouse2');
             break;
           }
-          case 1 << 8: {
+          case UserFlags.HouseBalance: {
             flags.push('HypeSquadOnlineHouse3');
             break;
           }
-          case 1 << 9: {
+          case UserFlags.EarlySupporter: {
             flags.push('PremiumEarlySupporter');
             break;
           }
-          case 1 << 14: {
+          case UserFlags.BugHunterLevel2: {
             flags.push('BugHunterLevel2');
             break;
           }
-          case 1 << 17: {
+          case UserFlags.EarlyVerifiedBotDeveloper: {
             flags.push('VerifiedDeveloper');
             break;
           }
-          case 1 << 18: {
+          case UserFlags.DiscordCertifiedModerator: {
             flags.push('CertifiedModerator');
             break;
           }
-          case 1 << 22: {
+          case UserFlags.ActiveDeveloper: {
             flags.push('ActiveDeveloper');
             break;
           }
         }
       }
 
-      if (target.banner || target.avatar?.endsWith('gif')) {
+      const avatarHash = target.avatar ? iconBigintToHash(target.avatar) : null;
+
+      if (target.banner || avatarHash?.startsWith('a_')) {
         flags.push('Nitro');
       }
 
       // A bunch of user info we can show
-      const avatar = member?.avatar ?? target.avatar ?? avatarUrl(target.id, target.discriminator);
+      const avatar =
+        (member?.avatar ? iconBigintToHash(member.avatar) : null) ??
+        (target.avatar ? iconBigintToHash(target.avatar) : null) ??
+        avatarUrl(target.id, target.discriminator);
       const badges = flags.map((flag) => icon(flag)).join('');
       const nick = member.nick;
       const createdAt = snowflakeToTimestamp(target.id);
@@ -277,17 +299,17 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${iconPill('Member', 'Display')}\n${smallPill(member ? nick : target.username)}`,
+                content: `${iconPill('Member', t(language, 'commands.profile.display'))}\n${smallPill(member ? nick : target.username)}`,
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${iconPill('Calendar', 'Created at')}\n${timestamp(createdAt, 'D')}`,
+                content: `${iconPill('Calendar', t(language, 'commands.profile.accountCreatedAt'))}\n${timestamp(createdAt, 'D')}`,
               },
               ...(member
                 ? [
                     {
                       type: MessageComponentTypes.TextDisplay,
-                      content: `${iconPill('Greenie', 'Joined at')}\n${timestamp(joinedAt, 'D')}`,
+                      content: `${iconPill('Greenie', t(language, 'commands.profile.memberJoinedAt'))}\n${timestamp(joinedAt, 'D')}`,
                     } satisfies TextDisplayComponent,
                   ]
                 : []),

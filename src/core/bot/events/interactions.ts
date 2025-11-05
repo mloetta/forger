@@ -10,10 +10,11 @@ import type { ApplicationCommand } from 'helpers/command';
 import { RateLimitManager } from 'middlewares/rateLimit';
 import { highlight, icon, smallPill, timestamp } from 'utils/markdown';
 import type { Collector } from 'helpers/collector';
-import { RateLimitType, type Interaction } from 'types/types';
+import { RateLimitType, type ExtraProperties, type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
+import { getXataClient } from 'utils/xata';
 import { t } from 'utils/i18n';
 
 export const collectors = new Set<Collector<Interaction>>();
@@ -131,22 +132,10 @@ async function handleApplicationCommand(interaction: Interaction) {
   }
 
   if (command.permissions) {
-    const botMember = await bot.rest.getMember(interaction.guild.id, bot.id);
-    const botRoles = botMember.roles;
+    const botMember = await bot.cache.members.get(bot.id, interaction.guild.id);
+    const botPerms = new Permissions(botMember!.permissions!.bitfield);
 
-    let rolePerms = BigInt(0);
-    for (const roleId of botRoles) {
-      const role = await bot.rest.getRole(interaction.guild.id, roleId);
-      rolePerms |= BigInt(role.permissions);
-    }
-
-    const botPerms = BigInt(botMember.permissions ?? 0) | rolePerms;
-
-    const permissionManager = new PermissionManager(
-      interaction.member?.permissions!,
-      new Permissions(botPerms),
-      command.permissions,
-    );
+    const permissionManager = new PermissionManager(interaction.member?.permissions!, botPerms, command.permissions);
 
     const { userHasPerm, botHasPerm, missingUserPerms, missingBotPerms } = permissionManager.check();
 
@@ -197,7 +186,13 @@ async function handleApplicationCommand(interaction: Interaction) {
       }
     }
 
-    await command.run(interaction, commandOptionsParser(interaction));
+    const xata = getXataClient();
+
+    const extras = {
+      xata,
+    } satisfies ExtraProperties;
+
+    await command.run(bot, interaction, commandOptionsParser(interaction), extras);
 
     if (command.rateLimit && rateLimitManager) {
       const { duration, limit } = command.rateLimit;
@@ -232,7 +227,13 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
     return;
   }
 
-  if (!command.autoComplete) return;
+  if (!command.autocomplete) return;
 
-  await command.autoComplete(interaction, commandOptionsParser(interaction));
+  const xata = getXataClient();
+
+  const extras = {
+    xata,
+  } satisfies ExtraProperties;
+
+  await command.autocomplete(bot, interaction, commandOptionsParser(interaction), extras);
 }

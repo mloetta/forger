@@ -51,7 +51,7 @@ createApplicationCommand({
     duration: 5,
   },
   acknowledge: true,
-  async run(interaction, options) {
+  async run(bot, interaction, options) {
     const language = interaction.locale!;
 
     const role = options.role;

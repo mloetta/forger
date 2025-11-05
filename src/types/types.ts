@@ -1,6 +1,7 @@
 import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
 import type { bot } from 'bot/bot';
 import type { RateLimitManager } from 'middlewares/rateLimit';
+import type { XataClient } from 'utils/xata';
 
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
@@ -65,6 +66,7 @@ export type Role = typeof bot.transformers.$inferredTypes.role;
 export type Attachment = typeof bot.transformers.$inferredTypes.attachment;
 export type Interaction = typeof bot.transformers.$inferredTypes.interaction;
 export type Message = typeof bot.transformers.$inferredTypes.message;
+export type Guild = typeof bot.transformers.$inferredTypes.guild;
 
 // Command stuff
 export enum ApplicationCommandCategory {
@@ -109,6 +111,10 @@ export interface CommandPermission {
 export interface Precondition {
   run(context: any): boolean | Promise<boolean>;
   fail(context: any): void;
+}
+
+export interface ExtraProperties {
+  xata: XataClient;
 }
 
 // Custom types

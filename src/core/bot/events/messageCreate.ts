@@ -21,25 +21,28 @@ createEvent({
 messageCreateHandlers.set('stickyMessage', async (message) => {
   if (!message.guildId || message.author.bot) return;
 
-  const language = (await bot.rest.getGuild(message.guildId)).preferredLocale;
+  const language = (await bot.helpers.getGuild(message.guildId)).preferredLocale;
 
   const xata = getXataClient();
   const debouncedChannels = new Collection<string, ReturnType<typeof debounce>>();
 
-  if (!debouncedChannels.has(message.channelId.toString())) {
+  const channelId = message.channelId.toString();
+  const guildId = message.guildId.toString();
+
+  if (!debouncedChannels.has(channelId)) {
     debouncedChannels.set(
-      message.channelId.toString(),
+      channelId,
       debounce(async () => {
         const sticky = await xata.db.sticky_messages
-          .filter('guild_id', message.guildId?.toString())
-          .filter('channel_id', message.channelId.toString())
+          .filter('guild_id', guildId)
+          .filter('channel_id', channelId)
           .getFirst();
 
         if (!sticky) return;
 
         if (sticky.message_id) {
           try {
-            await bot.rest.deleteMessage(message.channelId, BigInt(sticky.message_id));
+            await bot.helpers.deleteMessage(BigInt(channelId), BigInt(sticky.message_id));
           } catch (e) {
             bot.logger.error('Error deleting sticky message:', e);
           }
@@ -59,7 +62,7 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
           );
         }
 
-        const sent = await bot.rest.sendMessage(message.channelId, {
+        const sent = await bot.helpers.sendMessage(BigInt(channelId), {
           content: `${sticky.content ?? ''}\n${t(language, 'events.messageCreate.stickyMessage.warn')}`,
           attachments:
             sticky.files?.map((f: any, i: number) => ({
@@ -70,11 +73,11 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
         });
 
         await xata.db.sticky_messages.update(sticky.id, {
-          message_id: sent.id,
+          message_id: sent.id.toString(),
         });
       }, 10000),
     );
   }
 
-  debouncedChannels.get(message.channelId.toString())!();
+  debouncedChannels.get(channelId)!();
 });

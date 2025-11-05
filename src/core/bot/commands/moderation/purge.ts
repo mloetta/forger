@@ -66,7 +66,7 @@ createApplicationCommand({
       },
     },
   ],
-  async run(interaction, options) {
+  async run(bot, interaction, options) {
     const language = interaction.locale!;
 
     const amount = options.amount;
@@ -96,11 +96,11 @@ createApplicationCommand({
       return;
     }
 
-    const messages = await interaction.bot.rest.getMessages(interaction.channel.id!, { limit: amount + 1 });
+    const messages = await bot.helpers.getMessages(interaction.channel.id!, { limit: amount + 1 });
     let filtered = messages;
 
     if (content) {
-      filtered = messages.filter((msg) => msg.content === content && msg.id !== interaction.message?.id.toString());
+      filtered = messages.filter((msg) => msg.content === content && msg.id !== interaction.message?.id);
       if (filtered.length === 0) {
         await interaction.edit({
           components: [
@@ -115,7 +115,7 @@ createApplicationCommand({
         return;
       }
     } else {
-      filtered = messages.filter((msg) => msg.id !== interaction.message?.id.toString());
+      filtered = messages.filter((msg) => msg.id !== interaction.message?.id);
       if (filtered.length === 0) {
         await interaction.edit({
           components: [
@@ -131,7 +131,7 @@ createApplicationCommand({
       }
     }
 
-    await interaction.bot.rest.deleteMessages(
+    await bot.helpers.deleteMessages(
       interaction.channel.id!,
       filtered.map((msg) => msg.id),
     );

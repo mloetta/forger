@@ -38,14 +38,14 @@ createApplicationCommand({
     duration: 3,
   },
   acknowledge: true,
-  async run(interaction, options) {
-    const app = await interaction.bot.rest.getApplicationInfo();
+  async run(bot, interaction, options) {
+    const app = await bot.helpers.getApplicationInfo();
     const shardData = await getShardInfoFromGuild(interaction.guild.id);
 
     // A bunch of application stats we can show
     const guilds = app.approximateGuildCount;
     const installations = app.approximateUserInstallCount;
-    const shards = interaction.bot.gateway.shards.size;
+    const shards = bot.gateway.shards.size;
     const shard = shardData.shardId;
     const totalMem = os.totalmem();
     const usedMem = totalMem - os.freemem();

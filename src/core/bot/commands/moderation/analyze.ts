@@ -52,7 +52,7 @@ createApplicationCommand({
     },
   ],
   acknowledge: true,
-  async run(interaction, options) {
+  async run(bot, interaction, options) {
     const language = interaction.locale!;
 
     const msg = options.message;

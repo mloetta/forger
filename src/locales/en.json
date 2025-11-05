@@ -3,7 +3,9 @@
     "yes": "Yes",
     "no": "No",
     "maybe": "Maybe",
-    "website": "website"
+    "website": "website",
+    "links": "Links",
+    "flags": "Flags"
   },
   "commands": {
     "ping": {
@@ -39,6 +41,26 @@
         "profileUpdated": "Profile updated successfully",
         "noChanges": "No profile changes were made"
       }
+    },
+    "profile": {
+      "targetNotFound": "Couldn't find the given target",
+      "EMBEDDED_RELEASE": "Embedded Released",
+      "GATEWAY_PRESENCE": "Presence Intent",
+      "GATEWAY_PRESENCE_LIMITED": "Presence Intent (Not approved)",
+      "GATEWAY_GUILD_MEMBERS": "Server Members Intent",
+      "GATEWAY_GUILD_MEMBERS_LIMITED": "Server Members Intent (Not approved)",
+      "VERIFICATION_PENDING_GUILD_LIMIT": "Pending Server Limit",
+      "EMBEDDED": "Embedded",
+      "GATEWAY_MESSAGE_CONTENT": "Message Content Intent",
+      "GATEWAY_MESSAGE_CONTENT_LIMITED": "Message Content Intent (Not approved)",
+      "EMBEDDED_FIRST_PARTY": "Embedded First Party",
+      "HAS_SLASH_COMMAND": "Has Slash Commands {{slash}}",
+      "applicationFetchError": "Failed to fetch application information",
+      "TOS": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "display": "Display",
+      "accountCreated": "Created at",
+      "memberJoinedAt": "Joined at"
     },
     "role": {
       "overview": "Overview",

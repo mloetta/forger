@@ -5,7 +5,7 @@ import { join } from 'path';
 
 const logger = createLogger({ name: 'i18n' });
 
-export async function i18n(): Promise<void> {
+export async function createI18n() {
   try {
     await i18next.use(Backend).init({
       backend: {
@@ -21,6 +21,7 @@ export async function i18n(): Promise<void> {
     });
 
     logger.info('i18n initialized successfully');
+    return i18next;
   } catch (e) {
     logger.info('Failed to initialize i18n:', e);
   }

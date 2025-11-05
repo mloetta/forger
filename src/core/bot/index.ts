@@ -3,7 +3,7 @@ import { EVENT_SERVER_PORT } from 'core/variables';
 import { bot } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
-import { i18n } from 'utils/i18n';
+import { createI18n } from 'utils/i18n';
 import { readDirectory } from 'utils/utils';
 import { join } from 'path';
 
@@ -17,7 +17,7 @@ await readDirectory(join(__dirname, './events'));
 await readDirectory(join(__dirname, './commands'));
 
 // Initialize i18n
-await i18n();
+await createI18n();
 
 const app = await buildFastifyApp();
 

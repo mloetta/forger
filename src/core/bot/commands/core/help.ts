@@ -13,10 +13,11 @@ import {
 } from 'discordeno';
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { isInGuild } from 'types/typeguards';
+import { isInCachedGuild } from 'types/typeguards';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon, iconAsEmoji, link } from 'utils/markdown';
+import { Schema } from 'utils/schema';
 import or from 'utils/utils';
 import { getXataClient } from 'utils/xata';
 
@@ -45,13 +46,13 @@ createApplicationCommand({
     duration: 3,
   },
   acknowledge: true,
-  async run(interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
-    if (isInGuild(interaction)) {
-      const xata = getXataClient();
-
-      const record = await xata.db.bot_guild_profile.filter('guild_id', interaction.guild.id.toString()).getFirst();
+    if (await isInCachedGuild(interaction)) {
+      const record = await extras.xata.db.bot_guild_profile
+        .filter('guild_id', interaction.guild.id.toString())
+        .getFirst();
       const isCustomized = Boolean(record);
 
       const message = await interaction.edit({
@@ -170,8 +171,22 @@ createApplicationCommand({
             ? await urlToBase64(i.data.resolved!.attachments!.get(BigInt(newBannerId))!.url)
             : null;
 
+          const BotProfileSchema = Schema.object({
+            name: Schema.string({ min: 0, default: '' }),
+            aboutMe: Schema.string({ min: 0, default: '' }),
+            avatarUrl: Schema.string({ min: 0, default: '' }),
+            bannerUrl: Schema.string({ min: 0, default: '' }),
+          });
+
+          BotProfileSchema.value.name.value = newName ?? '';
+          BotProfileSchema.value.aboutMe.value = newAboutMe ?? '';
+          BotProfileSchema.value.avatarUrl.value = newAvatar ?? '';
+          BotProfileSchema.value.bannerUrl.value = newBanner ?? '';
+
+          BotProfileSchema.validate();
+
           if (newName || newAboutMe || newAvatar || newBanner) {
-            await interaction.bot.rest.editBotMember(i.guild.id, {
+            await bot.helpers.editBotMember(i.guild.id, {
               nick: newName,
               bio: newAboutMe,
               avatar: newAvatar,
@@ -179,14 +194,14 @@ createApplicationCommand({
             });
 
             if (record) {
-              await xata.db.bot_guild_profile.update(record.id, {
+              await extras.xata.db.bot_guild_profile.update(record.id, {
                 nick: newName,
                 about_me: newAboutMe,
                 avatar_url: newAvatar,
                 banner_url: newBanner,
               });
             } else {
-              await xata.db.bot_guild_profile.create({
+              await extras.xata.db.bot_guild_profile.create({
                 guild_id: i.guild.id.toString(),
                 nick: newName,
                 about_me: newAboutMe,
@@ -283,7 +298,7 @@ createApplicationCommand({
             ],
           });
         } else if (i.data.customId === 'reset-customization') {
-          await interaction.bot.rest.editBotMember(i.guild.id, {
+          await bot.helpers.editBotMember(i.guild.id, {
             nick: null,
             avatar: null,
             banner: null,
@@ -311,7 +326,7 @@ createApplicationCommand({
           }
 
           const channel = i.channel;
-          const source = await i.bot.rest.getChannel('1383924380479918260');
+          const source = await bot.helpers.getChannel('1383924380479918260');
           if (!channel || !source) return;
 
           if (source.type !== ChannelTypes.GuildAnnouncement) return;
@@ -322,7 +337,7 @@ createApplicationCommand({
             return;
           }
 
-          await interaction.bot.rest.followAnnouncement(source.id, channel.id!, 'Following updates from Pocket Tool');
+          await bot.helpers.followAnnouncement(source.id, channel.id!);
         }
       });
 

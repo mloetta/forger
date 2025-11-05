@@ -13,6 +13,7 @@ import type {
   Details,
   ExtractDesiredBehavior,
   ExtractDesiredProps,
+  ExtraProperties,
   Interaction,
   Member,
   Precondition,
@@ -37,8 +38,18 @@ export interface ApplicationCommand<TOptions extends ApplicationCommandOptions =
   acknowledge?: boolean;
   ephemeral?: boolean;
   dev?: boolean;
-  run: (interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
-  autoComplete?: (interaction: Interaction, options: GetApplicationCommandOptions<TOptions>) => any;
+  run: (
+    bot: CustomBot,
+    interaction: Interaction,
+    options: GetApplicationCommandOptions<TOptions>,
+    extras: ExtraProperties,
+  ) => any;
+  autocomplete?: (
+    bot: CustomBot,
+    interaction: Interaction,
+    options: GetApplicationCommandOptions<TOptions>,
+    extras: ExtraProperties,
+  ) => any;
 }
 
 export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>;
