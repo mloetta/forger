@@ -22,6 +22,8 @@ createApplicationCommand({
   },
   acknowledge: true,
   async run(bot, interaction, options) {
+    const language = interaction.locale!;
+
     // Gateway
     const shardInfo = await getShardInfoFromGuild(interaction.guild.id);
     const shard = shardInfo.shardId;
@@ -31,7 +33,7 @@ createApplicationCommand({
     const restLatency = Date.now() - snowflakeToTimestamp(interaction.id);
 
     await interaction.edit(
-      t(interaction.locale!, 'commands.ping.response', {
+      t(language, 'commands.ping.response', {
         shard,
         gatewayLatency,
         restLatency,

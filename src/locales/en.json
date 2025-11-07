@@ -5,7 +5,8 @@
     "maybe": "Maybe",
     "website": "website",
     "links": "Links",
-    "flags": "Flags"
+    "flags": "Flags",
+    "supportServer": "support server"
   },
   "commands": {
     "ping": {
@@ -16,7 +17,7 @@
       "locale": "## How to change slash command language?\nSlash commands are available in multiple languages and will automatically match your **{{langSettings}}**",
       "langSettings": "Discord Language Settings",
       "customization": "## How to customize Pocket Tool?",
-      "customizationInfo": "You can customize this bot however you want: change its name, its entire guild profile, go wild and make it totally your own!",
+      "customizationInfo": "You can change this bot's name, about me, avatar, and banner by simply clicking the customization button nearby",
       "disableCommands": "You can visit **{{disableCommandsBlogPost}}** to learn how to disable commands",
       "disableCommandsBlog": "Discord Integrations Settings",
       "buttons": {
@@ -26,7 +27,7 @@
         "missingPerm": "You need the {{perm}} permission to do this",
         "wrongChannel": "You can only follow updates in text channels"
       },
-      "modal": {
+      "modals": {
         "title": "Customize Pocket Tool as you wish!",
         "header": "## Here you can configure Pocket Tool's guild profile",
         "name": "What should my name be?",
@@ -37,7 +38,7 @@
         "avatarDesc": "This is the avatar that appears on my guild profile",
         "banner": "What should my new banner look like?",
         "bannerDesc": "This is the banner that appears on my guild profile",
-        "placeholder": "Leave blank for default value",
+        "placeholder": "Leave blank to use the default value",
         "profileUpdated": "Profile updated successfully",
         "noChanges": "No profile changes were made"
       }
@@ -95,15 +96,18 @@
       "noMessagesFound": "No messages were found",
       "success": "Successfully purged {{count}} messages"
     },
+    "code": {
+      "invalidLanguage": "An invalid language was provided"
+    },
     "sticky_message": {
       "noStickyMessageFound": "No sticky message found on this channel",
       "stickyMessageDeleted": "Sticky message deleted successfully",
-      "modal": {
+      "modals": {
         "title": "Sticky Message Setup",
         "header": "## Configure the sticky message module for the actual channel",
         "stickyMessageTextContent": "Should the sticky message include text?",
         "stickyMessageTextContentDesc": "Provide the content for the sticky message",
-        "stickyMessageTextContentPlaceholder": "Leave blank for no text content",
+        "stickyMessageTextContentPlaceholder": "Leave blank to use the default text content",
         "stickyMessageFiles": "Should the sticky message include files?",
         "stickyMessageFilesDesc": "Upload up to 4 files to include in the message",
         "stickyMessageEmpty": "Sticky message couldn’t be sent because there’s no content to display",
@@ -114,13 +118,13 @@
   },
   "events": {
     "interactionCreate": {
-      "commandNotFound": "Are you sure you are not mistaken? This command has never existed!",
-      "missingAuthorPerms": "Looks like you can't do that. Missing permissions: {{perms}}",
-      "missingBotPerms": "Oops, looks like I can't do that. Missing permissions: {{perms}}",
-      "guildRateLimited": "Whoa, slow down! The guild needs a breather. Wait {{time}} before using {{command}} again!",
-      "channelRateLimited": "Whoa, slow down! This channel needs a break. Wait {{time}} before using {{command}} here again!",
-      "userRateLimited": "Whoa, slow down! You need to wait {{time}} before using {{command}} again!",
-      "commandErrored": "Uh-oh, this command feels... wrong. Maybe try again later?"
+      "commandNotFound": "The command: {{command}} was not found",
+      "guildRateLimited": "This guild has reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}.",
+      "channelRateLimited": "This channel has reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}.",
+      "userRateLimited": "You have reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}",
+      "missingAuthorPerms": "You lack the following permissions: {{perms}} required to use this command",
+      "missingBotPerms": "I lack the following permissions: {{perms}} required to perform this action",
+      "commandErrored": "The command: {{command}} has encountered an error. Please try again later\n-#If you believe this is a bug, please report it to our {{server}}"
     },
     "messageCreate": {
       "stickyMessage": {

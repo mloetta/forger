@@ -178,10 +178,10 @@ createApplicationCommand({
             bannerUrl: Schema.string({ min: 0, default: '' }),
           });
 
-          BotProfileSchema.value.name.value = newName ?? '';
-          BotProfileSchema.value.aboutMe.value = newAboutMe ?? '';
-          BotProfileSchema.value.avatarUrl.value = newAvatar ?? '';
-          BotProfileSchema.value.bannerUrl.value = newBanner ?? '';
+          BotProfileSchema.fields.name.value = newName ?? '';
+          BotProfileSchema.fields.aboutMe.value = newAboutMe ?? '';
+          BotProfileSchema.fields.avatarUrl.value = newAvatar ?? '';
+          BotProfileSchema.fields.bannerUrl.value = newBanner ?? '';
 
           BotProfileSchema.validate();
 
@@ -212,13 +212,13 @@ createApplicationCommand({
 
             if (newName || newAboutMe || newAvatar || newBanner) {
               await i.respond({
-                content: t(language, 'commands.help.modal.profileUpdated'),
+                content: t(language, 'commands.help.modals.profileUpdated'),
                 flags: MessageFlags.Ephemeral,
               });
             }
           } else {
             await i.respond({
-              content: t(language, 'commands.help.modal.noChanges'),
+              content: t(language, 'commands.help.modals.noChanges'),
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -247,36 +247,36 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: t(language, 'commands.help.modal.header'),
+                content: t(language, 'commands.help.modals.header'),
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modal.name'),
-                description: t(language, 'commands.help.modal.nameDesc'),
+                label: t(language, 'commands.help.modals.name'),
+                description: t(language, 'commands.help.modals.nameDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
                   customId: 'new-name-input',
-                  placeholder: t(language, 'commands.help.modal.placeholder'),
+                  placeholder: t(language, 'commands.help.modals.placeholder'),
                   style: TextStyles.Short,
                   required: false,
                 },
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modal.aboutMe'),
-                description: t(language, 'commands.help.modal.aboutMeDesc'),
+                label: t(language, 'commands.help.modals.aboutMe'),
+                description: t(language, 'commands.help.modals.aboutMeDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
                   customId: 'new-about-input',
-                  placeholder: t(language, 'commands.help.modal.placeholder'),
+                  placeholder: t(language, 'commands.help.modals.placeholder'),
                   style: TextStyles.Paragraph,
                   required: false,
                 },
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modal.avatar'),
-                description: t(language, 'commands.help.modal.avatarDesc'),
+                label: t(language, 'commands.help.modals.avatar'),
+                description: t(language, 'commands.help.modals.avatarDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
                   customId: 'new-avatar',
@@ -286,8 +286,8 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.Label,
-                label: t(language, 'commands.help.modal.banner'),
-                description: t(language, 'commands.help.modal.bannerDesc'),
+                label: t(language, 'commands.help.modals.banner'),
+                description: t(language, 'commands.help.modals.bannerDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
                   customId: 'new-banner',

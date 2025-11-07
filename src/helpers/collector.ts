@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 export interface CollectorOptions<Type> {
   filter?: (item: Type) => boolean | Promise<boolean>;
   duration?: number;
-  max?: number; // número máximo de itens a coletar
+  max?: number;
 }
 
 export class Collector<Type> extends EventEmitter {
@@ -40,7 +40,6 @@ export class Collector<Type> extends EventEmitter {
       this.#collected.push(item);
       this.emit('collect', item);
 
-      // verifica se atingiu o limite
       if (this.#max && this.#collected.length >= this.#max) {
         this.stop('max');
       }

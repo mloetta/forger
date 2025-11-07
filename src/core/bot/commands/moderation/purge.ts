@@ -86,8 +86,13 @@ createApplicationCommand({
       await interaction.edit({
         components: [
           {
-            type: MessageComponentTypes.TextDisplay,
-            content: `${icon('Error')} ${t(language, 'commands.purge.invalidChannelType')}`,
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `${icon('Error')} ${t(language, 'commands.purge.invalidChannelType')}`,
+              },
+            ],
           },
         ],
         flags: MessageFlags.IsComponentsV2,
@@ -105,8 +110,13 @@ createApplicationCommand({
         await interaction.edit({
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesWithContentFound', { content })}`,
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesWithContentFound', { content })}`,
+                },
+              ],
             },
           ],
           flags: MessageFlags.IsComponentsV2,
@@ -120,8 +130,13 @@ createApplicationCommand({
         await interaction.edit({
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesFound')}`,
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Error')} ${t(language, 'commands.purge.noMessagesFound')}`,
+                },
+              ],
             },
           ],
           flags: MessageFlags.IsComponentsV2,
@@ -139,8 +154,13 @@ createApplicationCommand({
     await interaction.edit({
       components: [
         {
-          type: MessageComponentTypes.TextDisplay,
-          content: `${icon('Success')} ${t(language, 'commands.purge.success', { count: highlight(filtered.length) })}`,
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Success')} ${t(language, 'commands.purge.success', { count: highlight(filtered.length) })}`,
+            },
+          ],
         },
       ],
       flags: MessageFlags.IsComponentsV2,

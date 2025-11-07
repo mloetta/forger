@@ -1,17 +1,20 @@
-import { Collection } from 'discordeno';
+import { Collection, createLogger } from 'discordeno';
 import createEvent from 'helpers/event';
 import { debounce } from 'utils/utils';
 import { getXataClient } from 'utils/xata';
 import { bot } from 'bot/bot';
-import { fetch } from 'bun';
 import type { Message } from 'types/types';
 import { t } from 'utils/i18n';
 
 const messageCreateHandlers = new Collection<string, (message: Message) => Promise<void>>();
 
+const logger = createLogger({ name: 'messageCreate' });
+
 createEvent({
   name: 'messageCreate',
   async run(message) {
+    logger.info(`Received messageCreate event: ${message.id} from ${message.author.username}`);
+
     for (const handler of messageCreateHandlers.values()) {
       await handler(message);
     }

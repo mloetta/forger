@@ -81,8 +81,13 @@ createApplicationCommand({
       await interaction.respond({
         components: [
           {
-            type: MessageComponentTypes.TextDisplay,
-            content: `${icon('Success')} ${t(language, 'commands.sticky_message.stickyMessageDeleted')}`,
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `${icon('Success')} ${t(language, 'commands.sticky_message.stickyMessageDeleted')}`,
+              },
+            ],
           },
         ],
         flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
@@ -92,29 +97,29 @@ createApplicationCommand({
     }
 
     await interaction.respond({
-      title: t(language, 'commands.sticky_message.modal.title'),
+      title: t(language, 'commands.sticky_message.modals.title'),
       customId: 'sticky-message-setup',
       components: [
         {
           type: MessageComponentTypes.TextDisplay,
-          content: t(language, 'commands.sticky_message.modal.header'),
+          content: t(language, 'commands.sticky_message.modals.header'),
         },
         {
           type: MessageComponentTypes.Label,
-          label: t(language, 'commands.sticky_message.modal.stickyMessageTextContent'),
-          description: t(language, 'commands.sticky_message.modal.stickyMessageTextContentDesc'),
+          label: t(language, 'commands.sticky_message.modals.stickyMessageTextContent'),
+          description: t(language, 'commands.sticky_message.modals.stickyMessageTextContentDesc'),
           component: {
             type: MessageComponentTypes.TextInput,
             customId: 'sticky-message-content',
-            placeholder: t(language, 'commands.sticky_message.modal.stickyMessageTextContentPlaceholder'),
+            placeholder: t(language, 'commands.sticky_message.modals.stickyMessageTextContentPlaceholder'),
             style: TextStyles.Short,
             required: false,
           },
         },
         {
           type: MessageComponentTypes.Label,
-          label: t(language, 'commands.sticky_message.modal.stickyMessageFiles'),
-          description: t(language, 'commands.sticky_message.modal.stickyMessageFilesDesc'),
+          label: t(language, 'commands.sticky_message.modals.stickyMessageFiles'),
+          description: t(language, 'commands.sticky_message.modals.stickyMessageFilesDesc'),
           component: {
             type: MessageComponentTypes.FileUpload,
             customId: 'sticky-message-files',
@@ -141,8 +146,13 @@ createApplicationCommand({
         await i.respond({
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modal.stickyMessageEmpty')}`,
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modals.stickyMessageEmpty')}`,
+                },
+              ],
             },
           ],
           flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
@@ -153,41 +163,45 @@ createApplicationCommand({
 
       const stickyFiles = [];
 
-        for (const fileId of stickyFilesIds) {
-          const attachment = i.data.resolved!.attachments!.get(BigInt(fileId));
-          if (!attachment) continue;
+      for (const fileId of stickyFilesIds) {
+        const attachment = i.data.resolved?.attachments?.get(BigInt(fileId));
+        if (!attachment) continue;
 
-          const urlBase64 = await urlToBase64(attachment.url);
+        const urlBase64 = await urlToBase64(attachment.url);
 
-          const StickyFileSchema = Schema.object({
-            base64: Schema.string({ min: 1, default: '' }),
-            url: Schema.string({ min: 1, default: '' }),
-            filename: Schema.string({ min: 1, default: '' }),
-            contentType: Schema.string({ min: 1, default: '' }),
-          });
+        const StickyFileSchema = Schema.object({
+          base64: Schema.string({ min: 1, default: '' }),
+          url: Schema.string({ min: 1, default: '' }),
+          filename: Schema.string({ min: 1, default: '' }),
+          contentType: Schema.string({ min: 1, default: '' }),
+        });
 
-          StickyFileSchema.value.base64.value = urlBase64;
-          StickyFileSchema.value.url.value = attachment.url;
-          StickyFileSchema.value.filename.value = attachment.filename;
-          StickyFileSchema.value.contentType.value = attachment.contentType ?? '';
+        StickyFileSchema.fields.base64.value = urlBase64;
+        StickyFileSchema.fields.url.value = attachment.url;
+        StickyFileSchema.fields.filename.value = attachment.filename;
+        StickyFileSchema.fields.contentType.value = attachment.contentType ?? '';
 
-          StickyFileSchema.validate();
+        StickyFileSchema.validate();
 
-          stickyFiles.push({
-            base64: urlBase64,
-            url: attachment.url,
-            filename: attachment.filename,
-            contentType: attachment.contentType,
-          });
-        }
-
+        stickyFiles.push({
+          base64: urlBase64,
+          url: attachment.url,
+          filename: attachment.filename,
+          contentType: attachment.contentType,
+        });
+      }
 
       if (record.length >= 5 && !record.find((s) => s.channel_id === channelId)) {
         await i.respond({
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modal.stickyMessageLimitReached')}`,
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Warning')} ${t(language, 'commands.sticky_message.modal.stickyMessageLimitReached')}`,
+                },
+              ],
             },
           ],
           flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
@@ -203,12 +217,12 @@ createApplicationCommand({
         files: Schema.array<any[]>([]),
       });
 
-      StickyMessageSchema.value.guild_id.value = guildId;
-      StickyMessageSchema.value.channel_id.value = channelId;
-      StickyMessageSchema.value.content.value = stickyContent ?? '';
-      StickyMessageSchema.value.files.value = stickyFiles;
+      StickyMessageSchema.fields.guild_id.value = guildId;
+      StickyMessageSchema.fields.channel_id.value = channelId;
+      StickyMessageSchema.fields.content.value = stickyContent ?? '';
+      StickyMessageSchema.fields.files.value = stickyFiles;
 
-      StickyMessageSchema.validate()
+      StickyMessageSchema.validate();
 
       const hasSticky = record.find((s) => s.channel_id === channelId);
 
@@ -229,8 +243,13 @@ createApplicationCommand({
       await i.respond({
         components: [
           {
-            type: MessageComponentTypes.TextDisplay,
-            content: `${icon('Success')} ${t(language, 'commands.sticky_message.modal.stickyMessageUpdated')}`,
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `${icon('Success')} ${t(language, 'commands.sticky_message.modals.stickyMessageUpdated')}`,
+              },
+            ],
           },
         ],
         flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,

@@ -5,6 +5,7 @@ import {
   GatewayIntents,
   type Bot,
   DesiredPropertiesBehavior,
+  Permissions,
 } from 'discordeno';
 import type {
   ManagerGetShardInfoFromGuildId,
@@ -74,6 +75,7 @@ const desiredProperties = createDesiredPropertiesObject({
     nick: true,
     permissions: true,
     user: true,
+    roles: true,
   },
   message: {
     author: true,
@@ -110,12 +112,9 @@ const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavi
     desiredProps: {
       guild: ['channels', 'icon', 'id', 'name', 'ownerId', 'roles', 'members'],
       channel: ['guildId', 'id', 'type'],
-      member: ['avatar', 'id', 'joinedAt', 'nick', 'permissions', 'user', 'guildId'],
+      member: ['avatar', 'id', 'joinedAt', 'nick', 'permissions', 'user', 'guildId', 'roles'],
       role: ['color', 'id', 'name', 'permissions', 'guildId'],
       user: ['avatar', 'globalName', 'id', 'publicFlags', 'username'],
-    },
-    cacheOutsideMemory: {
-      default: true,
     },
   });
 
@@ -150,12 +149,12 @@ function overrideGatewayImplementations(bot: CustomBot): void {
     await makeRequest(GATEWAY_URL, {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
+      headers: { Authorization: TOKEN },
       data: {
         type: 'ShardPayload',
         shardId,
         payload,
       } satisfies WorkerShardPayload,
-      headers: { Authorization: TOKEN },
     });
   };
 
@@ -163,11 +162,11 @@ function overrideGatewayImplementations(bot: CustomBot): void {
     await makeRequest(GATEWAY_URL, {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
+      headers: { Authorization: TOKEN },
       data: {
         type: 'EditShardsPresence',
         payload,
       } satisfies WorkerPresenceUpdate,
-      headers: { Authorization: TOKEN },
     });
   };
 }
@@ -176,11 +175,11 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
   const res = (await makeRequest(GATEWAY_URL, {
     method: RequestMethod.POST,
     response: ResponseType.JSON,
+    headers: { Authorization: TOKEN },
     data: {
       type: 'ShardInfoFromGuild',
       guildId: guildId?.toString(),
     } as ManagerGetShardInfoFromGuildId,
-    headers: { Authorization: TOKEN },
   })) as Omit<ShardInfo, 'nonce'>;
 
   if (!res) {
@@ -188,4 +187,11 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
   }
 
   return res;
+}
+
+export function calculatePermissions(
+  memberPerms: Permissions | undefined,
+  rolePerms: Permissions | undefined,
+): Permissions {
+  return new Permissions((memberPerms?.bitfield ?? 0n) | (rolePerms?.bitfield ?? 0n));
 }

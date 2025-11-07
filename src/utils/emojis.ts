@@ -133,19 +133,4 @@ export const Emojis = {
   Pen: '<:Pen:1269699778930020394>',
   Discord: '<:Discord:1403890953529594048>',
   Flag: '<:Flag:1270682918141825138>',
-
-  // Neko!
-  Melting: '<:NekoMelting:1408812587692589146>',
-  Dead: '<:NekoDead:1408812613525307572>',
-  Cool: '<:NekoCool:1408812646198939648>',
-  Crown: '<:NekoCrown:1408812662040690748>',
-  Wise: '<:NekoWise:1408812704352833578>',
-  Sip: '<:NekoSip:1408812752629403830>',
-  Cry: '<:NekoCry:1408812777300037794>',
-  Sweating: '<a:NekoSweating:1408812896615530668>',
-  Police: '<:NekoPolice:1408836607879942324>',
-  Hehe: '<:NekoHehe:1408837989584339115>',
-  Dance: '<a:NekoDance:1408846351621685440>',
-  Sigh: '<:NekoSigh:1409206623481893055>',
-  Awake: '<a:NekoAwake:1409676381318676541>',
 } as const;

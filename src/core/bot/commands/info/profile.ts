@@ -67,8 +67,13 @@ createApplicationCommand({
       await interaction.respond({
         components: [
           {
-            type: MessageComponentTypes.TextDisplay,
-            content: t(language, 'commands.profile.targetNotFound'),
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: t(language, 'commands.profile.targetNotFound'),
+              },
+            ],
           },
         ],
         flags: MessageFlags.IsComponentsV2,

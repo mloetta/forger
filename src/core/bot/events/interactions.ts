@@ -4,18 +4,18 @@ import {
   createLogger,
   InteractionTypes,
   MessageFlags,
-  Permissions,
 } from 'discordeno';
 import type { ApplicationCommand } from 'helpers/command';
 import { RateLimitManager } from 'middlewares/rateLimit';
-import { highlight, icon, smallPill, timestamp } from 'utils/markdown';
+import { highlight, icon, link, smallPill, timestamp } from 'utils/markdown';
 import type { Collector } from 'helpers/collector';
 import { RateLimitType, type ExtraProperties, type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
-import { bot } from 'bot/bot';
+import { bot, calculatePermissions } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
 import { getXataClient } from 'utils/xata';
 import { t } from 'utils/i18n';
+import { SUPPORT_SERVER } from 'core/constants';
 
 export const collectors = new Set<Collector<Interaction>>();
 
@@ -50,16 +50,18 @@ async function handleApplicationCommand(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Melting')} ${t(language, 'events.interactionCreate.commandNotFound')}`,
+      content: `${icon('Warning')} ${t(language, 'events.interactionCreate.commandNotFound', { command: interaction.data.name })}`,
       flags: MessageFlags.Ephemeral,
     });
 
     return;
   }
 
+  const incognito = Boolean(interaction.data.options?.find((option) => option.name === 'incognito')?.value);
+
   let acknowledged = false;
   if (command.acknowledge) {
-    await interaction.defer(command.ephemeral);
+    await interaction.defer(command.ephemeral || incognito);
 
     acknowledged = true;
   }
@@ -83,12 +85,12 @@ async function handleApplicationCommand(interaction: Interaction) {
         case RateLimitType.Channel: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.channelRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.channelRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -98,12 +100,12 @@ async function handleApplicationCommand(interaction: Interaction) {
         case RateLimitType.Guild: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.guildRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.guildRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -113,12 +115,12 @@ async function handleApplicationCommand(interaction: Interaction) {
         case RateLimitType.User: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.userRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Melting')} ${t(language, 'events.interactionCreate.userRateLimited', { time: timestamp(duration, 'R'), command: smallPill(command.name) })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -133,21 +135,48 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.permissions) {
     const botMember = await bot.cache.members.get(bot.id, interaction.guild.id);
-    const botPerms = new Permissions(botMember!.permissions!.bitfield);
+    if (!botMember) return;
 
-    const permissionManager = new PermissionManager(interaction.member?.permissions!, botPerms, command.permissions);
+    const botRoles = botMember.roles;
+
+    let botRolePerms;
+    for (const roleId of botRoles) {
+      const role = await bot.cache.roles.get(roleId);
+      if (!role) continue;
+
+      botRolePerms = role.permissions;
+    }
+
+    if (!interaction.member) return;
+    const member = await bot.cache.members.get(interaction.member.id, interaction.guild.id);
+    if (!member) return;
+
+    const memberRoles = member.roles;
+
+    let memberRolePerms;
+    for (const roleId of memberRoles) {
+      const role = await bot.cache.roles.get(roleId);
+      if (!role) continue;
+
+      memberRolePerms = role.permissions;
+    }
+
+    const botPerms = calculatePermissions(botMember.permissions, botRolePerms);
+    const memberPerms = calculatePermissions(member.permissions, memberRolePerms);
+
+    const permissionManager = new PermissionManager(memberPerms, botPerms, command.permissions);
 
     const { userHasPerm, botHasPerm, missingUserPerms, missingBotPerms } = permissionManager.check();
 
     if (!userHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Police')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Police')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -158,12 +187,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!botHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Police')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Police')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -203,9 +232,13 @@ async function handleApplicationCommand(interaction: Interaction) {
     logger.error(`Command ${command.name} has errored.`, e);
 
     if (acknowledged) {
-      await interaction.edit(`${icon('Dead')} ${t(language, 'events.interactionCreate.commandErrored')}`);
+      await interaction.edit(
+        `${icon('Error')} ${t(language, 'events.interactionCreate.commandErrored', { command: command.name, server: link(SUPPORT_SERVER, t(language, 'generic.supportServer')) })}`,
+      );
     } else {
-      await interaction.respond(`${icon('Dead')} ${t(language, 'events.interactionCreate.commandErrored')}`);
+      await interaction.respond(
+        `${icon('Error')} ${t(language, 'events.interactionCreate.commandErrored', { command: command.name, server: link(SUPPORT_SERVER, t(language, 'generic.supportServer')) })}`,
+      );
     }
 
     return;
@@ -220,7 +253,7 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Melting')} ${t(language, 'events.interactionCreate.commandNotFound')}`,
+      content: `${icon('Warning')} ${t(language, 'events.interactionCreate.commandNotFound', { command: interaction.data.name })}`,
       flags: MessageFlags.Ephemeral,
     });
 

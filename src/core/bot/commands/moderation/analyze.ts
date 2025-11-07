@@ -60,9 +60,6 @@ createApplicationCommand({
     const req = await makeRequest('https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze', {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
-      headers: {
-        'Content-Type': 'application/json',
-      },
       params: {
         key: PERSPECTIVE_API_KEY,
       },

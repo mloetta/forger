@@ -68,58 +68,63 @@ createApplicationCommand({
 
     await interaction.edit({
       components: [
-        guildIcon
-          ? {
-              type: MessageComponentTypes.Section,
-              components: [
-                {
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            guildIcon
+              ? {
+                  type: MessageComponentTypes.Section,
+                  components: [
+                    {
+                      type: MessageComponentTypes.TextDisplay,
+                      content: `${icon('Core')} **${guild.name}** ${pill(`(${guild.id})`)}\n${guild.description ?? ''}`,
+                    },
+                  ],
+                  accessory: {
+                    type: MessageComponentTypes.Thumbnail,
+                    media: {
+                      url: guildIcon,
+                    },
+                  },
+                }
+              : {
                   type: MessageComponentTypes.TextDisplay,
                   content: `${icon('Core')} **${guild.name}** ${pill(`(${guild.id})`)}\n${guild.description ?? ''}`,
                 },
-              ],
-              accessory: {
-                type: MessageComponentTypes.Thumbnail,
-                media: {
-                  url: guildIcon,
-                },
-              },
-            }
-          : {
-              type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Core')} **${guild.name}** ${pill(`(${guild.id})`)}\n${guild.description ?? ''}`,
+            {
+              type: MessageComponentTypes.Separator,
+              spacing: SeparatorSpacingSize.Large,
+              divider: true,
             },
-        {
-          type: MessageComponentTypes.Separator,
-          spacing: SeparatorSpacingSize.Large,
-          divider: true,
-        },
-        {
-          type: MessageComponentTypes.TextDisplay,
-          content: `${smallIconPill('Members', `${members} ${t(language, 'commands.server.members')}`)} ${smallIconPill('Boost', `${boosts} ${t(language, 'commands.server.boost')}`)}\n${smallIconPill('Roles', `${roles} ${t(language, 'commands.server.roles')}`)} ${smallIconPill('Emoji', `${expressions}, ${t(language, 'commands.server.expressions')}`)}\n\n${iconPill('Calendar', `${t(language, 'commands.server.createdAt')} ${timestamp(guildCreatedAt, 'D')}`)}\n${icon('Owner')} <@${guildOwnerId}>\n${iconPill('Globe', guildLocale)}`,
-        },
-        {
-          type: MessageComponentTypes.Separator,
-          spacing: SeparatorSpacingSize.Large,
-          divider: true,
-        },
-        {
-          type: MessageComponentTypes.TextDisplay,
-          content: `${iconPill('Channel', t(language, 'commands.server.channels'))}\n${codeblock('python', `${t(language, 'commands.server.total')} ${channels}\n${t(language, 'commands.server.categories')} ${categories}\n${t(language, 'commands.server.textChannels')} ${textChannels}\n${t(language, 'commands.server.voiceChannels')} ${voiceChannels}\n${t(language, 'commands.server.announcementChannels')} ${announcementChannels}\n${t(language, 'commands.server.stageChannels')} ${stageChannels}\n${t(language, 'commands.server.forumChannels')} ${forumChannels}`)}`,
-        },
-        ...(guildBanner
-          ? [
-              {
-                type: MessageComponentTypes.MediaGallery,
-                items: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${smallIconPill('Members', `${members} ${t(language, 'commands.server.members')}`)} ${smallIconPill('Boost', `${boosts} ${t(language, 'commands.server.boost')}`)}\n${smallIconPill('Roles', `${roles} ${t(language, 'commands.server.roles')}`)} ${smallIconPill('Emoji', `${expressions}, ${t(language, 'commands.server.expressions')}`)}\n\n${iconPill('Calendar', `${t(language, 'commands.server.createdAt')} ${timestamp(guildCreatedAt, 'D')}`)}\n${icon('Owner')} <@${guildOwnerId}>\n${iconPill('Globe', guildLocale)}`,
+            },
+            {
+              type: MessageComponentTypes.Separator,
+              spacing: SeparatorSpacingSize.Large,
+              divider: true,
+            },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${iconPill('Channel', t(language, 'commands.server.channels'))}\n${codeblock('python', `${t(language, 'commands.server.total')} ${channels}\n${t(language, 'commands.server.categories')} ${categories}\n${t(language, 'commands.server.textChannels')} ${textChannels}\n${t(language, 'commands.server.voiceChannels')} ${voiceChannels}\n${t(language, 'commands.server.announcementChannels')} ${announcementChannels}\n${t(language, 'commands.server.stageChannels')} ${stageChannels}\n${t(language, 'commands.server.forumChannels')} ${forumChannels}`)}`,
+            },
+            ...(guildBanner
+              ? [
                   {
-                    media: {
-                      url: guildBanner,
-                    },
-                  },
-                ],
-              } satisfies MediaGalleryComponent,
-            ]
-          : []),
+                    type: MessageComponentTypes.MediaGallery,
+                    items: [
+                      {
+                        media: {
+                          url: guildBanner,
+                        },
+                      },
+                    ],
+                  } satisfies MediaGalleryComponent,
+                ]
+              : []),
+          ],
+        },
       ],
     });
   },
