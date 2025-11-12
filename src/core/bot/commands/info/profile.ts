@@ -16,7 +16,7 @@ import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import type { Emojis } from 'utils/emojis';
 import { t } from 'utils/i18n';
-import { icon, iconPill, link, pill, smallPill, timestamp } from 'utils/markdown';
+import { icon, iconPill, link, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import or from 'utils/utils';
 
@@ -39,6 +39,11 @@ createApplicationCommand({
     category: ApplicationCommandCategory.Info,
     scope: ApplicationCommandScope.Global,
   },
+  rateLimit: {
+    type: RateLimitType.User,
+    duration: 3,
+    limit: 1,
+  },
   options: [
     {
       type: ApplicationCommandOptionTypes.User,
@@ -52,13 +57,8 @@ createApplicationCommand({
       },
     },
   ],
-  rateLimit: {
-    type: RateLimitType.User,
-    limit: 1,
-    duration: 5,
-  },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
     const target = await bot.helpers.getUser(or(options?.target?.user.id, interaction.user.id));
@@ -308,13 +308,13 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${iconPill('Calendar', t(language, 'commands.profile.accountCreatedAt'))}\n${timestamp(createdAt, 'D')}`,
+                content: `${iconPill('Calendar', t(language, 'commands.profile.accountCreatedAt'))}\n${timestamp(createdAt, TimestampStyle.LongDate)}`,
               },
               ...(member
                 ? [
                     {
                       type: MessageComponentTypes.TextDisplay,
-                      content: `${iconPill('Greenie', t(language, 'commands.profile.memberJoinedAt'))}\n${timestamp(joinedAt, 'D')}`,
+                      content: `${iconPill('Greenie', t(language, 'commands.profile.memberJoinedAt'))}\n${timestamp(joinedAt, TimestampStyle.LongDate)}`,
                     } satisfies TextDisplayComponent,
                   ]
                 : []),

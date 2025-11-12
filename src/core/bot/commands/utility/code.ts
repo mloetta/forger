@@ -20,8 +20,8 @@ createApplicationCommand({
   },
   rateLimit: {
     type: RateLimitType.User,
-    limit: 1,
     duration: 5,
+    limit: 1,
   },
   options: [
     {
@@ -51,7 +51,7 @@ createApplicationCommand({
     },
   ],
   acknowledge: true,
-  async autocomplete(bot, interaction, options) {
+  async autocomplete(bot, interaction, options, extras) {
     const focused = interaction.data?.options?.find((opt) => opt.focused)?.value?.toString();
 
     if (!focused) return;

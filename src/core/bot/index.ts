@@ -1,11 +1,13 @@
 import type { DiscordGatewayPayload, GatewayDispatchEventNames } from 'discordeno';
 import { EVENT_SERVER_PORT } from 'core/variables';
-import { bot } from './bot';
+import { bot, processReminders } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
 import { createI18n } from 'utils/i18n';
 import { readDirectory } from 'utils/utils';
 import { join } from 'path';
+import cron from 'node-cron';
+import { redis } from 'utils/redis';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
@@ -31,8 +33,8 @@ app.post('/', async (req, res) => {
   try {
     await handleGatewayEvent(body.payload, body.shardId);
     res.status(200).send();
-  } catch (error) {
-    bot.logger.error('There was an error handling the incoming gateway command', error);
+  } catch (e) {
+    bot.logger.error('There was an error handling the incoming gateway command', e);
     res.status(500).send();
   }
 });
@@ -40,6 +42,11 @@ app.post('/', async (req, res) => {
 await app.listen({ host: app.config.host, port: Number(EVENT_SERVER_PORT) });
 
 bot.logger.info(`Bot event handler is listening on port ${EVENT_SERVER_PORT}`);
+
+// Process reminders every minute
+cron.schedule('* * * * *', async () => {
+  await processReminders(bot, redis);
+});
 
 async function handleGatewayEvent(payload: DiscordGatewayPayload, shardId: number): Promise<void> {
   bot.events.raw?.(payload, shardId);

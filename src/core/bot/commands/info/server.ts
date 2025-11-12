@@ -31,11 +31,11 @@ createApplicationCommand({
   },
   rateLimit: {
     type: RateLimitType.User,
+    duration: 3,
     limit: 1,
-    duration: 5,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
     const guild = interaction.guild;

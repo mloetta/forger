@@ -39,6 +39,7 @@
         "banner": "What should my new banner look like?",
         "bannerDesc": "This is the banner that appears on my guild profile",
         "placeholder": "Leave blank to use the default value",
+        "invalidFormat": "The provided file is not a valid images",
         "profileUpdated": "Profile updated successfully",
         "noChanges": "No profile changes were made"
       }
@@ -99,32 +100,59 @@
     "code": {
       "invalidLanguage": "An invalid language was provided"
     },
+    "color": {
+      "invalidColor": "An invalid color was provided",
+      "convertedSuccessfully": "Color converted successfully"
+    },
+    "remindme": {
+      "reminderCreated": "Reminder created successfully\n-# You will be reminded at {{date}}"
+    },
     "sticky_message": {
-      "noStickyMessageFound": "No sticky message found on this channel",
+      "stickyMessageNotFound": "No sticky message found on this channel",
       "stickyMessageDeleted": "Sticky message deleted successfully",
       "modals": {
         "title": "Sticky Message Setup",
         "header": "## Configure the sticky message module for the actual channel",
         "stickyMessageTextContent": "Should the sticky message include text?",
         "stickyMessageTextContentDesc": "Provide the content for the sticky message",
-        "stickyMessageTextContentPlaceholder": "Leave blank to use the default text content",
+        "stickyMessageTextContentPlaceholder": "Leave blank if you dont want to include text",
         "stickyMessageFiles": "Should the sticky message include files?",
         "stickyMessageFilesDesc": "Upload up to 4 files to include in the message",
-        "stickyMessageEmpty": "Sticky message couldn’t be sent because there’s no content to display",
+        "stickyMessageEmpty": "Sticky message couldn’t be saved because there’s no content to display",
         "stickyMessageLimitReached": "Your guild has reached the maximum limit of 5 sticky messages",
-        "stickyMessageUpdated": "Sticky message updated successfully"
+        "stickyMessageSaved": "Sticky message saved successfully"
+      }
+    },
+    "tag": {
+      "tagNotFound": "Tag: {{name}} was not found",
+      "tagDeleted": "Tag: {{name}} was deleted successfully",
+      "warn": "-# This tag was invoked by <@{{user}}>",
+      "success": "Tag: {{name}} was sent successfully",
+      "modals": {
+        "guildTitle": "Guild Tag Creation",
+        "guildHeader": "## Create a tag for your guild",
+        "userTitle": "User Tag Creation",
+        "userHeader": "## Create a tag for yourself",
+        "tagTextContent": "Should the tag include text?",
+        "tagTextContentDesc": "Provide the content for the tag",
+        "tagTextContentPlaceholder": "Leave blank if you don't want to include text",
+        "tagFiles": "Should the tag include files?",
+        "tagFilesDesc": "Upload up to 4 files to include in the message",
+        "tagEmpty": "Tag: {{name}} couldn't be saved because there's no content to display",
+        "tagSaved": "Tag: {{name}} saved successfully"
       }
     }
   },
   "events": {
     "interactionCreate": {
       "commandNotFound": "The command: {{command}} was not found",
+      "agreement_terms_accepted": "Terms of Service and Privacy Policy accepted! Thank you for your acceptance\n-# Please re-run the command to use it",
       "guildRateLimited": "This guild has reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}.",
       "channelRateLimited": "This channel has reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}.",
       "userRateLimited": "You have reached the limit of {{limit}} uses of {{command}} per {{time}}. Please try again in {{cooldown}}",
       "missingAuthorPerms": "You lack the following permissions: {{perms}} required to use this command",
       "missingBotPerms": "I lack the following permissions: {{perms}} required to perform this action",
-      "commandErrored": "The command: {{command}} has encountered an error. Please try again later\n-#If you believe this is a bug, please report it to our {{server}}"
+      "commandErrored": "The command: {{command}} has encountered an error. Please try again later\n-# If you believe this is a bug, please report it to our {{server}}"
     },
     "messageCreate": {
       "stickyMessage": {

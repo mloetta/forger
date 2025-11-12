@@ -1,13 +1,13 @@
 import { bot, type CustomBot } from 'bot/bot';
 import {
   type ApplicationCommandOptionTypes,
+  type Camelize,
   type CreateApplicationCommand,
   type DiscordApplicationCommandOption,
   type ParsedInteractionOption,
 } from 'discordeno';
 import type {
   Attachment,
-  Camelize,
   Channel,
   CommandPermission,
   Details,

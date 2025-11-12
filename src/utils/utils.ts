@@ -85,12 +85,6 @@ export function CRC32(string: string): string {
   return hash.toString(16).padStart(8, '0');
 }
 
-export function componentCustomId(customId: string, ...args: any[]): string {
-  if (args.length) return `${customId}-${args.map((arg) => String(arg)).join(',')}`;
-
-  return customId;
-}
-
 export function closestMatch(input: string, strings: readonly string[]): string | null {
   if (typeof input !== 'string') throw new TypeError('Input must be a string.');
   if (!Array.isArray(strings)) throw new TypeError('Strings must be an array.');

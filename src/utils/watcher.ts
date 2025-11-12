@@ -46,8 +46,8 @@ export default class FolderWatcher {
       if (stats.isFile()) return ItemType.FILE;
       if (stats.isDirectory()) return ItemType.DIRECTORY;
       if (stats.isSymbolicLink()) return ItemType.SYMLINK;
-    } catch (err) {
-      console.error(`Error getting item type for file: ${file}`, err);
+    } catch (e) {
+      console.error(`Error getting item type for file: ${file}`, e);
     }
 
     return ItemType.UNKNOWN;

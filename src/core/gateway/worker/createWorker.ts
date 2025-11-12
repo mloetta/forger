@@ -37,18 +37,15 @@ export function createWorker(workerId: number): Worker {
           type: 'AllowIdentify',
           shardId: message.shardId,
         } satisfies WorkerMessage);
-
         break;
       }
       case 'ShardInfo': {
         shardInfoRequests.get(message.nonce)?.(message);
         shardInfoRequests.delete(message.nonce);
-
         break;
       }
       case 'ShardIdentified': {
         logger.info(`Shard #${message.shardId} identified`);
-
         break;
       }
       default: {

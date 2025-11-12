@@ -2,7 +2,8 @@ import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowf
 import { t } from 'utils/i18n';
 import { getShardInfoFromGuild } from 'bot/bot';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope } from 'types/types';
+import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { icon } from 'utils/markdown';
 
 createApplicationCommand({
   name: 'ping',
@@ -20,8 +21,13 @@ createApplicationCommand({
     category: ApplicationCommandCategory.Core,
     scope: ApplicationCommandScope.Global,
   },
+  rateLimit: {
+    type: RateLimitType.User,
+    duration: 3,
+    limit: 1,
+  },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
     // Gateway
@@ -33,11 +39,11 @@ createApplicationCommand({
     const restLatency = Date.now() - snowflakeToTimestamp(interaction.id);
 
     await interaction.edit(
-      t(language, 'commands.ping.response', {
+      `${icon('NeutralPing')} ${t(language, 'commands.ping.response', {
         shard,
         gatewayLatency,
         restLatency,
-      }),
+      })}`,
     );
   },
 });

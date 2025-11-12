@@ -43,8 +43,8 @@ export class Collector<Type> extends EventEmitter {
       if (this.#max && this.#collected.length >= this.#max) {
         this.stop('max');
       }
-    } catch (err) {
-      this.emit('error', err);
+    } catch (e) {
+      this.emit('error', e);
     }
   }
 

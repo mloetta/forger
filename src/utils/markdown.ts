@@ -96,8 +96,18 @@ export function iconLinkPill(icon: keyof typeof Emojis, url: string, content: an
   return url;
 }
 
+export enum TimestampStyle {
+  ShortTime = 't',
+  LongTime = 'T',
+  ShortDate = 'd',
+  LongDate = 'D',
+  ShortDateAndTime = 'f',
+  LongDateAndTime = 'F',
+  RelativeTime = 'R',
+}
+
 /** Returns a Discord timestamp markdown */
-export function timestamp(time: number, flag: string = 't'): string {
+export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.ShortTime): string {
   return `<t:${Math.floor(time / 1000)}:${flag}>`;
 }
 

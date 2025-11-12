@@ -17,6 +17,8 @@ import { GATEWAY_URL, REST_URL, TOKEN } from 'core/variables';
 import type { ApplicationCommand } from 'helpers/command';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import { createProxyCache } from 'dd-cache-proxy';
+import type { RedisType } from 'types/types';
+import { timestamp, TimestampStyle } from 'utils/markdown';
 
 const desiredProperties = createDesiredPropertiesObject({
   attachment: {
@@ -194,4 +196,32 @@ export function calculatePermissions(
   rolePerms: Permissions | undefined,
 ): Permissions {
   return new Permissions((memberPerms?.bitfield ?? 0n) | (rolePerms?.bitfield ?? 0n));
+}
+
+export async function processReminders(bot: CustomBot, redis: RedisType) {
+  const now = Date.now();
+
+  const expired = await redis.zRangeByScore('reminders', 0, now);
+
+  for (const reminderId of expired) {
+    try {
+      const data = await redis.hGetAll(`reminder:${reminderId}`);
+      if (!data || !data.userId) continue;
+
+      const user = await bot.helpers.getUser(data.userId);
+      const dm = await bot.helpers.getDmChannel(user.id);
+      await bot.helpers.sendMessage(dm.id, {
+        content: `${data.reason}\n-# Reminder created at ${timestamp(Number(data.createdAt), TimestampStyle.LongDate)}`,
+      });
+    } catch (e) {
+      bot.logger.error(`Failed to send reminder ${reminderId}:`, e);
+    } finally {
+      await redis.zRem('reminders', reminderId);
+      await redis.del(`reminder:${reminderId}`);
+    }
+  }
+}
+
+export function getVoiceStatesForChannel(voiceStates: Collection<bigint, any>, channelId: bigint) {
+  return voiceStates.filter((vs) => vs.channelId === channelId);
 }

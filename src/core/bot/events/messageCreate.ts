@@ -8,6 +8,8 @@ import { t } from 'utils/i18n';
 
 const messageCreateHandlers = new Collection<string, (message: Message) => Promise<void>>();
 
+const debouncedChannels = new Collection<string, ReturnType<typeof debounce>>();
+
 const logger = createLogger({ name: 'messageCreate' });
 
 createEvent({
@@ -27,25 +29,24 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
   const language = (await bot.helpers.getGuild(message.guildId)).preferredLocale;
 
   const xata = getXataClient();
-  const debouncedChannels = new Collection<string, ReturnType<typeof debounce>>();
 
-  const channelId = message.channelId.toString();
-  const guildId = message.guildId.toString();
+  const channelId = message.channelId;
+  const guildId = message.guildId;
 
-  if (!debouncedChannels.has(channelId)) {
+  if (!debouncedChannels.has(channelId.toString())) {
     debouncedChannels.set(
-      channelId,
+      channelId.toString(),
       debounce(async () => {
         const sticky = await xata.db.sticky_messages
-          .filter('guild_id', guildId)
-          .filter('channel_id', channelId)
+          .filter('guild_id', guildId.toString())
+          .filter('channel_id', channelId.toString())
           .getFirst();
 
         if (!sticky) return;
 
         if (sticky.message_id) {
           try {
-            await bot.helpers.deleteMessage(BigInt(channelId), BigInt(sticky.message_id));
+            await bot.helpers.deleteMessage(channelId, sticky.message_id);
           } catch (e) {
             bot.logger.error('Error deleting sticky message:', e);
           }
@@ -65,7 +66,7 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
           );
         }
 
-        const sent = await bot.helpers.sendMessage(BigInt(channelId), {
+        const sent = await bot.helpers.sendMessage(channelId, {
           content: `${sticky.content ?? ''}\n${t(language, 'events.messageCreate.stickyMessage.warn')}`,
           attachments:
             sticky.files?.map((f: any, i: number) => ({
@@ -82,5 +83,5 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
     );
   }
 
-  debouncedChannels.get(channelId)!();
+  debouncedChannels.get(channelId.toString())!();
 });

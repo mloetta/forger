@@ -31,6 +31,11 @@ createApplicationCommand({
     category: ApplicationCommandCategory.Info,
     scope: ApplicationCommandScope.Global,
   },
+  rateLimit: {
+    type: RateLimitType.User,
+    duration: 3,
+    limit: 1,
+  },
   options: [
     {
       type: ApplicationCommandOptionTypes.Role,
@@ -45,13 +50,8 @@ createApplicationCommand({
       required: true,
     },
   ],
-  rateLimit: {
-    type: RateLimitType.User,
-    limit: 1,
-    duration: 5,
-  },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
     const role = options.role;

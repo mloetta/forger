@@ -12,6 +12,7 @@ import { formatTime, readableFileSize } from 'utils/utils';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
 import { getShardInfoFromGuild } from 'bot/bot';
+import { INVITE_LINK, SUPPORT_SERVER } from 'core/constants';
 
 createApplicationCommand({
   name: 'stats',
@@ -34,11 +35,11 @@ createApplicationCommand({
   },
   rateLimit: {
     type: RateLimitType.User,
-    limit: 1,
     duration: 3,
+    limit: 1,
   },
   acknowledge: true,
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const app = await bot.helpers.getApplicationInfo();
     const shardData = await getShardInfoFromGuild(interaction.guild.id);
 
@@ -74,14 +75,14 @@ createApplicationCommand({
                   label: 'Support Server',
                   emoji: iconAsEmoji('Discord'),
                   style: ButtonStyles.Link,
-                  url: 'https://discord.gg/7b234YFhmn',
+                  url: SUPPORT_SERVER,
                 },
                 {
                   type: MessageComponentTypes.Button,
                   label: 'Add Pocket-Tool',
                   emoji: iconAsEmoji('Link'),
                   style: ButtonStyles.Link,
-                  url: 'https://discord.com/oauth2/authorize?client_id=1418168974285340683',
+                  url: INVITE_LINK,
                 },
               ],
             },

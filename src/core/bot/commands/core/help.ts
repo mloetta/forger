@@ -1,4 +1,5 @@
 import { collectors } from 'bot/events/interactions';
+import { INVITE_LINK, SUPPORT_SERVER } from 'core/constants';
 import {
   ButtonStyles,
   ChannelTypes,
@@ -19,7 +20,6 @@ import { t } from 'utils/i18n';
 import { icon, iconAsEmoji, link } from 'utils/markdown';
 import { Schema } from 'utils/schema';
 import or from 'utils/utils';
-import { getXataClient } from 'utils/xata';
 
 createApplicationCommand({
   name: 'help',
@@ -99,7 +99,7 @@ createApplicationCommand({
                 ],
                 accessory: {
                   type: MessageComponentTypes.Button,
-                  customId: isCustomized ? 'reset-customization' : 'customize',
+                  customId: isCustomized ? 'reset_customization' : 'customize',
                   label: isCustomized
                     ? t(language, 'commands.help.buttons.reset')
                     : t(language, 'commands.help.buttons.customize'),
@@ -128,14 +128,14 @@ createApplicationCommand({
                     type: MessageComponentTypes.Button,
                     label: t(language, 'buttons.support'),
                     emoji: iconAsEmoji('Discord'),
-                    url: 'https://discord.gg/7b234YFhmn',
+                    url: SUPPORT_SERVER,
                     style: ButtonStyles.Link,
                   },
                   {
                     type: MessageComponentTypes.Button,
                     label: t(language, 'buttons.invite'),
                     emoji: iconAsEmoji('Link'),
-                    url: 'https://discord.com/oauth2/authorize?client_id=1240033877917962392',
+                    url: INVITE_LINK,
                     style: ButtonStyles.Link,
                   },
                   {
@@ -159,17 +159,25 @@ createApplicationCommand({
       collector.onCollect(async (i) => {
         if (!i.data) return;
 
-        if (i.type === InteractionTypes.ModalSubmit && i.data.customId === 'customization-modal') {
+        if (i.type === InteractionTypes.ModalSubmit && i.data.customId === 'customization_modal') {
           const newName = or(i.data.components?.[1]?.component?.value, null);
           const newAboutMe = or(i.data.components?.[2]?.component?.value, null);
           const newAvatarId = or(i.data.components?.[3]?.component?.value, null);
           const newBannerId = or(i.data.components?.[4]?.component?.value, null);
-          const newAvatar = newAvatarId
-            ? await urlToBase64(i.data.resolved!.attachments!.get(BigInt(newAvatarId))!.url)
-            : null;
-          const newBanner = newBannerId
-            ? await urlToBase64(i.data.resolved!.attachments!.get(BigInt(newBannerId))!.url)
-            : null;
+          const newAvatar = newAvatarId ? i.data.resolved?.attachments?.get(BigInt(newAvatarId)) : null;
+          const newBanner = newBannerId ? i.data.resolved?.attachments?.get(BigInt(newBannerId)) : null;
+
+          if (!newAvatar?.contentType?.startsWith('image/') || !newBanner?.contentType?.startsWith('image/')) {
+            await i.respond({
+              content: `${icon('Error')} ${t(language, 'commands.help.modals.invalidFormat')}`,
+              flags: MessageFlags.Ephemeral,
+            });
+
+            return;
+          }
+
+          const newAvatarBase64 = await urlToBase64(newAvatar.url);
+          const newBannerBase64 = await urlToBase64(newBanner.url);
 
           const BotProfileSchema = Schema.object({
             name: Schema.string({ min: 0, default: '' }),
@@ -180,8 +188,8 @@ createApplicationCommand({
 
           BotProfileSchema.fields.name.value = newName ?? '';
           BotProfileSchema.fields.aboutMe.value = newAboutMe ?? '';
-          BotProfileSchema.fields.avatarUrl.value = newAvatar ?? '';
-          BotProfileSchema.fields.bannerUrl.value = newBanner ?? '';
+          BotProfileSchema.fields.avatarUrl.value = newAvatarBase64 ?? '';
+          BotProfileSchema.fields.bannerUrl.value = newBannerBase64 ?? '';
 
           BotProfileSchema.validate();
 
@@ -189,36 +197,36 @@ createApplicationCommand({
             await bot.helpers.editBotMember(i.guild.id, {
               nick: newName,
               bio: newAboutMe,
-              avatar: newAvatar,
-              banner: newBanner,
+              avatar: newAvatarBase64,
+              banner: newBannerBase64,
             });
 
             if (record) {
               await extras.xata.db.bot_guild_profile.update(record.id, {
                 nick: newName,
                 about_me: newAboutMe,
-                avatar_url: newAvatar,
-                banner_url: newBanner,
+                avatar_url: newAvatarBase64,
+                banner_url: newBannerBase64,
               });
             } else {
               await extras.xata.db.bot_guild_profile.create({
                 guild_id: i.guild.id.toString(),
                 nick: newName,
                 about_me: newAboutMe,
-                avatar_url: newAvatar,
-                banner_url: newBanner,
+                avatar_url: newAvatarBase64,
+                banner_url: newBannerBase64,
               });
             }
 
             if (newName || newAboutMe || newAvatar || newBanner) {
               await i.respond({
-                content: t(language, 'commands.help.modals.profileUpdated'),
+                content: `${icon('Success')} ${t(language, 'commands.help.modals.profileUpdated')}`,
                 flags: MessageFlags.Ephemeral,
               });
             }
           } else {
             await i.respond({
-              content: t(language, 'commands.help.modals.noChanges'),
+              content: `${icon('Success')} ${t(language, 'commands.help.modals.noChanges')}`,
               flags: MessageFlags.Ephemeral,
             });
           }
@@ -232,9 +240,9 @@ createApplicationCommand({
         if (i.data.customId === 'customize') {
           if (!i.member?.permissions?.has('ADMINISTRATOR')) {
             await i.respond({
-              title: t(language, 'commands.help.buttons.missingPerm', {
+              content: `${icon('Error')} ${t(language, 'commands.help.buttons.missingPerm', {
                 perm: 'ADMINISTRATOR',
-              }),
+              })}`,
               flags: MessageFlags.Ephemeral,
             });
 
@@ -243,7 +251,7 @@ createApplicationCommand({
 
           await i.respond({
             title: t(language, 'commands.help.modals.title'),
-            customId: 'customization-modal',
+            customId: 'customization_modal',
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
@@ -255,7 +263,7 @@ createApplicationCommand({
                 description: t(language, 'commands.help.modals.nameDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
-                  customId: 'new-name-input',
+                  customId: 'new_name_input',
                   placeholder: t(language, 'commands.help.modals.placeholder'),
                   style: TextStyles.Short,
                   required: false,
@@ -267,7 +275,7 @@ createApplicationCommand({
                 description: t(language, 'commands.help.modals.aboutMeDesc'),
                 component: {
                   type: MessageComponentTypes.TextInput,
-                  customId: 'new-about-input',
+                  customId: 'new_about_input',
                   placeholder: t(language, 'commands.help.modals.placeholder'),
                   style: TextStyles.Paragraph,
                   required: false,
@@ -279,7 +287,7 @@ createApplicationCommand({
                 description: t(language, 'commands.help.modals.avatarDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
-                  customId: 'new-avatar',
+                  customId: 'new_avatar',
                   maxValues: 1,
                   required: false,
                 },
@@ -290,14 +298,14 @@ createApplicationCommand({
                 description: t(language, 'commands.help.modals.bannerDesc'),
                 component: {
                   type: MessageComponentTypes.FileUpload,
-                  customId: 'new-banner',
+                  customId: 'new_banner',
                   maxValues: 1,
                   required: false,
                 },
               },
             ],
           });
-        } else if (i.data.customId === 'reset-customization') {
+        } else if (i.data.customId === 'reset_customization') {
           await bot.helpers.editBotMember(i.guild.id, {
             nick: null,
             avatar: null,
@@ -317,9 +325,9 @@ createApplicationCommand({
 
           if (!i.member?.permissions?.has('MANAGE_WEBHOOKS')) {
             await i.respond({
-              content: t(language, 'commands.help.buttons.missingPerm', {
+              content: `${icon('Error')} ${t(language, 'commands.help.buttons.missingPerm', {
                 perm: 'MANAGE_WEBHOOKS',
-              }),
+              })}`,
               flags: MessageFlags.Ephemeral,
             });
             return;
@@ -386,7 +394,7 @@ createApplicationCommand({
                   ],
                   accessory: {
                     type: MessageComponentTypes.Button,
-                    customId: isCustomized ? 'reset-customization' : 'customize',
+                    customId: isCustomized ? 'reset_customization' : 'customize',
                     label: isCustomized
                       ? t(language, 'commands.help.buttons.reset')
                       : t(language, 'commands.help.buttons.customize'),
@@ -489,14 +497,14 @@ createApplicationCommand({
                     type: MessageComponentTypes.Button,
                     label: t(language, 'buttons.support'),
                     emoji: iconAsEmoji('Discord'),
-                    url: 'https://discord.gg/7b234YFhmn',
+                    url: SUPPORT_SERVER,
                     style: ButtonStyles.Link,
                   },
                   {
                     type: MessageComponentTypes.Button,
                     label: t(language, 'buttons.invite'),
                     emoji: iconAsEmoji('Link'),
-                    url: 'https://discord.com/oauth2/authorize?client_id=1240033877917962392',
+                    url: INVITE_LINK,
                     style: ButtonStyles.Link,
                   },
                 ],

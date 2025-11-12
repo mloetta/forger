@@ -66,12 +66,10 @@ export function makeRequest<T extends ResponseType>(url: string, options: Option
                   case ResponseType.JSON: {
                     const text = buffer.toString('utf-8').trim();
                     resolve(text ? (JSON.parse(text) as Response[T]) : ({} as Response[T]));
-
                     break;
                   }
                   case ResponseType.BUFFER: {
                     resolve(buffer as Response[T]);
-
                     break;
                   }
                   default: {
@@ -99,8 +97,8 @@ export function makeRequest<T extends ResponseType>(url: string, options: Option
       }
 
       req.end();
-    } catch (err) {
-      reject(err);
+    } catch (e) {
+      reject(e);
     }
   });
 }

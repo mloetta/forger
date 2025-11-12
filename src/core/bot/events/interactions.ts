@@ -1,14 +1,8 @@
-import {
-  Collection,
-  commandOptionsParser,
-  createLogger,
-  InteractionTypes,
-  MessageFlags,
-} from 'discordeno';
+import { Collection, commandOptionsParser, createLogger, InteractionTypes, MessageFlags } from 'discordeno';
 import type { ApplicationCommand } from 'helpers/command';
 import { RateLimitManager } from 'middlewares/rateLimit';
-import { highlight, icon, link, smallPill, timestamp } from 'utils/markdown';
-import type { Collector } from 'helpers/collector';
+import { highlight, icon, link, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
+import { Collector } from 'helpers/collector';
 import { RateLimitType, type ExtraProperties, type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot, calculatePermissions } from 'bot/bot';
@@ -16,6 +10,7 @@ import { PermissionManager } from 'middlewares/permission';
 import { getXataClient } from 'utils/xata';
 import { t } from 'utils/i18n';
 import { SUPPORT_SERVER } from 'core/constants';
+import { redis } from 'utils/redis';
 
 export const collectors = new Set<Collector<Interaction>>();
 
@@ -70,12 +65,16 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   let rateLimitManager: RateLimitManager | undefined;
   if (command.rateLimit) {
-    if (command.rateLimit.type === RateLimitType.Channel) {
-      rateLimitManager = new RateLimitManager(rateLimits, interaction.channel.id!);
-    } else if (command.rateLimit.type === RateLimitType.Guild) {
-      rateLimitManager = new RateLimitManager(rateLimits, interaction.guild.id);
-    } else {
-      rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
+    switch (command.rateLimit.type) {
+      case RateLimitType.Channel:
+        rateLimitManager = new RateLimitManager(rateLimits, interaction.channel.id!);
+        break;
+      case RateLimitType.Guild:
+        rateLimitManager = new RateLimitManager(rateLimits, interaction.guild.id);
+        break;
+      case RateLimitType.User:
+        rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
+        break;
     }
 
     const { limited, duration } = rateLimitManager.check();
@@ -85,46 +84,43 @@ async function handleApplicationCommand(interaction: Interaction) {
         case RateLimitType.Channel: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
-
           break;
         }
         case RateLimitType.Guild: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
-
           break;
         }
         case RateLimitType.User: {
           if (acknowledged) {
             await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, 'R') })}`,
+              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
               flags: MessageFlags.Ephemeral,
             });
           }
-
           break;
         }
       }
@@ -219,6 +215,7 @@ async function handleApplicationCommand(interaction: Interaction) {
 
     const extras = {
       xata,
+      redis,
     } satisfies ExtraProperties;
 
     await command.run(bot, interaction, commandOptionsParser(interaction), extras);
@@ -266,6 +263,7 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
 
   const extras = {
     xata,
+    redis,
   } satisfies ExtraProperties;
 
   await command.autocomplete(bot, interaction, commandOptionsParser(interaction), extras);

@@ -28,12 +28,10 @@ app.post('/', async (req, res) => {
   switch (data.type) {
     case 'ShardPayload': {
       await gateway.sendPayload(data.shardId, data.payload);
-
       break;
     }
     case 'EditShardsPresence': {
       await gateway.editBotStatus(data.payload);
-
       break;
     }
     case 'ShardInfoFromGuild': {
@@ -65,7 +63,6 @@ app.post('/', async (req, res) => {
         shardId: shardInfo.shardId,
         rtt: shardInfo.rtt,
       } satisfies Omit<ShardInfo, 'nonce'>);
-
       break;
     }
     default: {

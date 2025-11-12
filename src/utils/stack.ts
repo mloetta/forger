@@ -29,8 +29,8 @@ export default class CallStack {
 
       if (!(output instanceof Promise)) data.resolve(output);
       else await output.then((output: any) => data.resolve(output)).catch((output: any) => data.reject(output));
-    } catch (error) {
-      data.reject(error);
+    } catch (e) {
+      data.reject(e);
     }
 
     this.stack.shift();

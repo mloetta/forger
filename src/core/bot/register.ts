@@ -4,6 +4,7 @@ import { bot } from './bot';
 import { omit, readDirectory } from 'utils/utils';
 import { join } from 'path';
 import type { ApplicationCommandOption } from 'helpers/command';
+import 'utils/process';
 
 const rest = createRestManager({ token: TOKEN });
 const logger = createLogger({ name: 'Application Commands' });
@@ -28,11 +29,33 @@ const commands = bot.commands.array().map((cmd) => {
 
   if (!base.options) base.options = [];
 
-  base.options.push({
+  const incognitoOption: ApplicationCommandOption = {
     type: ApplicationCommandOptionTypes.Boolean,
     name: 'incognito',
     description: 'Whether the response should only be visible to you',
-  } satisfies ApplicationCommandOption);
+  };
+
+  let hasSubOrGroup = false;
+
+  for (const option of base.options) {
+    if (option.type === ApplicationCommandOptionTypes.SubCommandGroup && option.options) {
+      hasSubOrGroup = true;
+      for (const sub of option.options) {
+        if (sub.type === ApplicationCommandOptionTypes.SubCommand) {
+          if (!sub.options) sub.options = [];
+          sub.options.push(incognitoOption);
+        }
+      }
+    } else if (option.type === ApplicationCommandOptionTypes.SubCommand) {
+      hasSubOrGroup = true;
+      if (!option.options) option.options = [];
+      option.options.push(incognitoOption);
+    }
+  }
+
+  if (!hasSubOrGroup) {
+    base.options.push(incognitoOption);
+  }
 
   return base;
 });

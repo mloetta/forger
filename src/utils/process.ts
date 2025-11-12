@@ -6,8 +6,11 @@
   });
 
   // Standard crash
-  process.on('uncaughtException', (err) => {
-    console.log(`UNCAUGHT EXCEPTION: ${err}`);
+  process.on('uncaughtException', (e) => {
+    console.log('UNCAUGHT EXCEPTION:', e);
+    if (e && e.cause) {
+      console.log('CAUSE:', e.cause);
+    }
   });
 
   // Killed process
@@ -17,10 +20,10 @@
   });
 
   // Standard crash
-  process.on('unhandledRejection', (err: any) => {
-    console.log('UNHANDLED REJECTION:', err);
-    if (err && err.cause) {
-      console.log('CAUSE:', err.cause);
+  process.on('unhandledRejection', (e: any) => {
+    console.log('UNHANDLED REJECTION:', e);
+    if (e && e.cause) {
+      console.log('CAUSE:', e.cause);
     }
   });
 

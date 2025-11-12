@@ -40,8 +40,8 @@ export const setupRestAnalyticsHooks = (rest: RestManager, logger: RestManager['
     try {
       await influx.flush();
       logger.info('Influx - events saved!');
-    } catch (error) {
-      logger.error('Influx - error saving events!', error);
+    } catch (e) {
+      logger.error('Influx - error saving events!', e);
     }
   }, 30 * 1000 /* 30s */);
 };

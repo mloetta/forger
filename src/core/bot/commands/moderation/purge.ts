@@ -36,8 +36,8 @@ createApplicationCommand({
   },
   rateLimit: {
     type: RateLimitType.Channel,
-    limit: 1,
     duration: 5,
+    limit: 1,
   },
   options: [
     {
@@ -66,7 +66,7 @@ createApplicationCommand({
       },
     },
   ],
-  async run(bot, interaction, options) {
+  async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
     const amount = options.amount;

@@ -38,7 +38,6 @@ parentPort.on('message', async (message: WorkerMessage) => {
         type: 'ShardIdentified',
         shardId: message.shardId,
       } satisfies ManagerMessage);
-
       break;
     }
     case 'PrepareShard': {
@@ -60,7 +59,6 @@ parentPort.on('message', async (message: WorkerMessage) => {
         type: 'ShardPrepared',
         shardId: message.shardId,
       } satisfies ManagerMessage);
-
       break;
     }
     case 'SwitchShards': {
@@ -97,20 +95,17 @@ parentPort.on('message', async (message: WorkerMessage) => {
       });
 
       await Promise.all(promises);
-
       break;
     }
     case 'AllowIdentify': {
       identifyPromises.get(message.shardId)?.();
       identifyPromises.delete(message.shardId);
-
       break;
     }
     case 'ShardPayload': {
       const shard = shards.get(message.shardId);
       if (!shard) return;
       await shard.send(message.payload);
-
       break;
     }
     case 'EditShardsPresence': {
@@ -126,7 +121,6 @@ parentPort.on('message', async (message: WorkerMessage) => {
         });
       });
       await Promise.all(promises);
-
       break;
     }
     case 'GetShardInfo': {
@@ -138,7 +132,6 @@ parentPort.on('message', async (message: WorkerMessage) => {
       } satisfies ManagerMessage;
 
       parentPort.postMessage(status);
-
       break;
     }
     default:

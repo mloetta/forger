@@ -29,7 +29,7 @@ createApplicationCommand({
   contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Guild,
+    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -51,16 +51,21 @@ createApplicationCommand({
       descriptionLocalizations: {
         'pt-BR': 'A mensagem persistente deve ser excluída?',
       },
-      required: false,
     },
   ],
   async run(bot, interaction, options, extras) {
+    if (!interaction.guildId || !interaction.channelId) return;
+
     const language = interaction.locale!;
 
-    const record = await extras.xata.db.sticky_messages.filter('guild_id', interaction.guild.id.toString()).getAll();
+    const userId = interaction.user.id;
+    const guildId = interaction.guildId;
+    const channelId = interaction.channelId;
+
+    const record = await extras.xata.db.sticky_messages.filter('guild_id', guildId.toString()).getAll();
 
     if (options.delete === true) {
-      const exists = record.find((r) => r.channel_id === interaction.channel.id?.toString());
+      const exists = record.find((r) => r.channel_id === channelId.toString());
 
       if (!exists) {
         await interaction.respond({
@@ -110,7 +115,7 @@ createApplicationCommand({
           description: t(language, 'commands.sticky_message.modals.stickyMessageTextContentDesc'),
           component: {
             type: MessageComponentTypes.TextInput,
-            customId: 'sticky-message-content',
+            customId: 'sticky_message_content',
             placeholder: t(language, 'commands.sticky_message.modals.stickyMessageTextContentPlaceholder'),
             style: TextStyles.Short,
             required: false,
@@ -122,7 +127,7 @@ createApplicationCommand({
           description: t(language, 'commands.sticky_message.modals.stickyMessageFilesDesc'),
           component: {
             type: MessageComponentTypes.FileUpload,
-            customId: 'sticky-message-files',
+            customId: 'sticky_message_files',
             maxValues: 4,
             required: false,
           },
@@ -130,14 +135,11 @@ createApplicationCommand({
       ],
     });
 
-    const collector = new Collector<Interaction>({ max: 1 });
+    const collector = new Collector<Interaction>({ max: 1, filter: (i) => i.user.id === userId });
     collectors.add(collector);
 
     collector.onCollect(async (i) => {
       if (!i.data) return;
-
-      const channelId = i.channelId!.toString();
-      const guildId = i.guildId!.toString();
 
       const stickyContent = or(i.data.components?.[1]?.component?.value, null);
       const stickyFilesIds = or(i.data.components?.[2]?.component?.values, []);
@@ -191,7 +193,7 @@ createApplicationCommand({
         });
       }
 
-      if (record.length >= 5 && !record.find((s) => s.channel_id === channelId)) {
+      if (record.length >= 5 && !record.find((s) => s.channel_id === channelId.toString())) {
         await i.respond({
           components: [
             {
@@ -217,14 +219,14 @@ createApplicationCommand({
         files: Schema.array<any[]>([]),
       });
 
-      StickyMessageSchema.fields.guild_id.value = guildId;
-      StickyMessageSchema.fields.channel_id.value = channelId;
+      StickyMessageSchema.fields.guild_id.value = guildId.toString();
+      StickyMessageSchema.fields.channel_id.value = channelId.toString();
       StickyMessageSchema.fields.content.value = stickyContent ?? '';
       StickyMessageSchema.fields.files.value = stickyFiles;
 
       StickyMessageSchema.validate();
 
-      const hasSticky = record.find((s) => s.channel_id === channelId);
+      const hasSticky = record.find((s) => s.channel_id === channelId.toString());
 
       if (hasSticky) {
         await extras.xata.db.sticky_messages.update(hasSticky.id, {
@@ -233,8 +235,8 @@ createApplicationCommand({
         });
       } else {
         await extras.xata.db.sticky_messages.create({
-          guild_id: guildId,
-          channel_id: channelId,
+          guild_id: guildId.toString(),
+          channel_id: channelId.toString(),
           content: stickyContent,
           files: stickyFiles,
         });
@@ -247,7 +249,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Success')} ${t(language, 'commands.sticky_message.modals.stickyMessageUpdated')}`,
+                content: `${icon('Success')} ${t(language, 'commands.sticky_message.modals.stickyMessageSaved')}`,
               },
             ],
           },
