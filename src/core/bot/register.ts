@@ -1,12 +1,12 @@
 import { ApplicationCommandOptionTypes, createLogger, createRestManager } from 'discordeno';
-import { TOKEN } from 'core/variables';
+import { BOT_TOKEN } from 'core/variables';
 import { bot } from './bot';
 import { omit, readDirectory } from 'utils/utils';
 import { join } from 'path';
 import type { ApplicationCommandOption } from 'helpers/command';
 import 'utils/process';
 
-const rest = createRestManager({ token: TOKEN });
+const rest = createRestManager({ token: BOT_TOKEN });
 const logger = createLogger({ name: 'Application Commands' });
 
 logger.info('Refreshing application (/) commands');

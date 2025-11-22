@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { Worker } from 'worker_threads';
-import { TOKEN, EVENT_SERVER_URL } from 'core/variables';
+import { BOT_TOKEN, BOT_SERVER_URL } from 'core/variables';
 import { gateway, logger } from 'gateway/gateway';
 import type { ManagerMessage, ShardInfo, WorkerCreateData, WorkerMessage } from './types';
 
@@ -14,14 +14,14 @@ export function createWorker(workerId: number): Worker {
     workerData: {
       connectionData: {
         intents: gateway.intents,
-        token: TOKEN,
+        token: BOT_TOKEN,
         url: gateway.url,
         version: gateway.version,
         totalShards: gateway.totalShards,
       },
-      eventHandler: {
-        urls: [EVENT_SERVER_URL],
-        authentication: TOKEN,
+      bot: {
+        urls: [BOT_SERVER_URL],
+        authorization: BOT_TOKEN,
       },
       workerId,
     } satisfies WorkerCreateData,

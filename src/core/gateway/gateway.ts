@@ -1,7 +1,7 @@
 import type { Worker } from 'worker_threads';
 import { createGatewayManager, createLogger, createRestManager, GatewayIntents } from 'discordeno';
 import type { ManagerMessage, WorkerMessage } from './worker/types';
-import { REST_URL, TOKEN } from 'core/variables';
+import { REST_URL, BOT_TOKEN } from 'core/variables';
 import { createWorker } from './worker/createWorker';
 
 export const workers = new Map<number, Worker>();
@@ -9,15 +9,15 @@ export const workers = new Map<number, Worker>();
 export const logger = createLogger({ name: 'GATEWAY' });
 
 const rest = createRestManager({
-  token: TOKEN,
+  token: BOT_TOKEN,
   proxy: {
     baseUrl: REST_URL,
-    authorization: TOKEN,
+    authorization: BOT_TOKEN,
   },
 });
 
 export const gateway = createGatewayManager({
-  token: TOKEN,
+  token: BOT_TOKEN,
   intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
   connection: await rest.getGatewayBot(),
   shardsPerWorker: 16,

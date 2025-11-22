@@ -501,7 +501,7 @@ createApplicationCommand({
 
         const collector = new Collector<Interaction>({
           max: 1,
-          filter: (i) => i.user.id === userId && i.data?.customId === 'user_tag_creation'
+          filter: (i) => i.user.id === userId && i.data?.customId === 'user_tag_creation',
         });
         collectors.add(collector);
 

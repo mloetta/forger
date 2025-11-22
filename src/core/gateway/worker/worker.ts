@@ -180,7 +180,7 @@ function createShard(shardId: number): DiscordenoShard {
 async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize<DiscordGatewayPayload>) {
   const data = { payload, shardId: shard.id };
 
-  const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length];
+  const url = workerData.bot.urls[shard.id % workerData.bot.urls.length];
   if (!url) {
     logger.error('No url found to send events to');
 
@@ -191,6 +191,6 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
     method: RequestMethod.POST,
     response: ResponseType.JSON,
     data,
-    headers: { Authorization: workerData.eventHandler.authentication },
+    headers: { Authorization: workerData.bot.authorization },
   }).catch((error) => logger.error('Failed to send events to the bot code', error));
 }

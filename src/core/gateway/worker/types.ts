@@ -61,9 +61,9 @@ export interface WorkerCreateData {
     version: number;
     totalShards: number;
   };
-  eventHandler: {
+  bot: {
     urls: string[];
-    authentication: string;
+    authorization: string;
   };
   workerId: number;
 }

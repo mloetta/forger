@@ -23,23 +23,71 @@ export function readableFileSize(bytes: number, micro = false, precision = 1): s
   return `${bytes.toFixed(precision)} ${readableFileSizeUnits[unit]}`;
 }
 
-export function formatTime(duration: number | string) {
-  const total = Math.floor(Number(duration) / 1000);
-  const days = Math.floor(total / (24 * 60 * 60));
-  const hours = Math.floor((total % (24 * 60 * 60)) / (60 * 60));
-  const minutes = Math.floor((total % (60 * 60)) / 60);
-  const seconds = total % 60;
-  const milliseconds = Math.floor((Number(duration) % 1000) / 100);
+export function msToReadableTime(duration: number | string): string {
+  let totalMs = Number(duration);
+  if (isNaN(totalMs) || totalMs < 0) throw new Error(`Invalid duration: ${duration}`);
 
-  const parts = [];
+  const units = [
+    { label: 'w', ms: 7 * 24 * 60 * 60 * 1000 },
+    { label: 'd', ms: 24 * 60 * 60 * 1000 },
+    { label: 'h', ms: 60 * 60 * 1000 },
+    { label: 'm', ms: 60 * 1000 },
+    { label: 's', ms: 1000 },
+  ];
 
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0) parts.push(`${seconds}s`);
-  if (milliseconds > 0) parts.push(`${milliseconds}ms`);
+  const parts: string[] = [];
+
+  for (const unit of units) {
+    const value = Math.floor(totalMs / unit.ms);
+    if (value > 0) {
+      parts.push(`${value}${unit.label}`);
+      totalMs -= value * unit.ms;
+    }
+  }
+
+  if (parts.length === 0) return '0s';
 
   return parts.join(' ');
+}
+
+export function readableTimeToMs(input: string): number {
+  if (typeof input !== 'string' || input.trim() === '') {
+    throw new Error(`Invalid format: ${input}`);
+  }
+
+  const regex = /(\d+(?:\.\d+)?)([smhdw])/gi;
+  let totalMs = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(input)) !== null) {
+    if (!match[1] || !match[2]) throw new Error(`Invalid format: ${input}`);
+
+    const value = parseFloat(match[1]);
+    const unit = match[2].toLowerCase();
+
+    switch (unit) {
+      case 's':
+        totalMs += value * 1000;
+        break;
+      case 'm':
+        totalMs += value * 60 * 1000;
+        break;
+      case 'h':
+        totalMs += value * 60 * 60 * 1000;
+        break;
+      case 'd':
+        totalMs += value * 24 * 60 * 60 * 1000;
+        break;
+      case 'w':
+        totalMs += value * 7 * 24 * 60 * 60 * 1000;
+        break;
+      default:
+        throw new Error(`Invalid unit: ${unit}`);
+    }
+  }
+
+  if (totalMs === 0) throw new Error(`Invalid format: ${input}`);
+  return totalMs;
 }
 
 export function timestamp() {

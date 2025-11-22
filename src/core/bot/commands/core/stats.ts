@@ -8,7 +8,7 @@ import {
 } from 'discordeno';
 import os from 'os';
 import { iconAsEmoji, iconPill } from 'utils/markdown';
-import { formatTime, readableFileSize } from 'utils/utils';
+import { msToReadableTime, readableFileSize } from 'utils/utils';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { getShardInfoFromGuild } from 'bot/bot';
@@ -59,7 +59,7 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Shard #${shard}\n${iconPill('Reply01', 'Guilds')}: ${guilds}\n${iconPill('Reply02', 'Installations')}: ${installations}\n${iconPill('Reply02', 'Shards')}: ${shards}\n${iconPill('Reply02', 'Memory Usage')}: ${readableFileSize(usedMem)}\n${iconPill('Reply02', 'Uptime')}: ${formatTime(uptime)}\n${iconPill('Reply04', 'Latency')}: ${latency}ms`,
+              content: `## Shard #${shard}\n${iconPill('Reply01', 'Guilds')}: ${guilds}\n${iconPill('Reply02', 'Installations')}: ${installations}\n${iconPill('Reply02', 'Shards')}: ${shards}\n${iconPill('Reply02', 'Memory Usage')}: ${readableFileSize(usedMem)}\n${iconPill('Reply02', 'Uptime')}: ${msToReadableTime(uptime * 1000)}\n${iconPill('Reply04', 'Latency')}: ${latency}ms`,
             },
             {
               type: MessageComponentTypes.Separator,

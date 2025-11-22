@@ -12,7 +12,7 @@ import type {
   WorkerPresenceUpdate,
   WorkerShardPayload,
 } from 'gateway/worker/types';
-import { GATEWAY_URL, REST_URL, TOKEN } from 'core/variables';
+import { GATEWAY_URL, REST_URL, BOT_TOKEN } from 'core/variables';
 import type { ApplicationCommand } from 'helpers/command';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import { createProxyCache } from 'dd-cache-proxy';
@@ -134,14 +134,14 @@ const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavi
 
 const rawBot = getProxyCacheBot(
   createBot({
-    token: TOKEN,
+    token: BOT_TOKEN,
     intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
     desiredProperties,
     desiredPropertiesBehavior: DesiredPropertiesBehavior.ChangeType,
     rest: {
       proxy: {
         baseUrl: REST_URL,
-        authorization: TOKEN,
+        authorization: BOT_TOKEN,
       },
     },
   }),
@@ -164,7 +164,7 @@ function overrideGatewayImplementations(bot: CustomBot): void {
     await makeRequest(GATEWAY_URL, {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
-      headers: { Authorization: TOKEN },
+      headers: { Authorization: BOT_TOKEN },
       data: {
         type: 'ShardPayload',
         shardId,
@@ -177,7 +177,7 @@ function overrideGatewayImplementations(bot: CustomBot): void {
     await makeRequest(GATEWAY_URL, {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
-      headers: { Authorization: TOKEN },
+      headers: { Authorization: BOT_TOKEN },
       data: {
         type: 'EditShardsPresence',
         payload,
@@ -190,7 +190,7 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
   const res = (await makeRequest(GATEWAY_URL, {
     method: RequestMethod.POST,
     response: ResponseType.JSON,
-    headers: { Authorization: TOKEN },
+    headers: { Authorization: BOT_TOKEN },
     data: {
       type: 'ShardInfoFromGuild',
       guildId: guildId?.toString(),

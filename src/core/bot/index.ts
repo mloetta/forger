@@ -1,5 +1,5 @@
-import { createLogger, LogLevels, type DiscordGatewayPayload, type GatewayDispatchEventNames } from 'discordeno';
-import { EVENT_SERVER_PORT } from 'core/variables';
+import { type DiscordGatewayPayload, type GatewayDispatchEventNames } from 'discordeno';
+import { BOT_SERVER_PORT } from 'core/variables';
 import { bot, processReminders } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
@@ -8,7 +8,6 @@ import { readDirectory } from 'utils/utils';
 import { join } from 'path';
 import cron from 'node-cron';
 import { redis } from 'utils/redis';
-import FolderWatcher from 'utils/watcher';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
@@ -40,9 +39,9 @@ app.post('/', async (req, res) => {
   }
 });
 
-await app.listen({ host: app.config.host, port: Number(EVENT_SERVER_PORT) });
+await app.listen({ host: app.config.host, port: Number(BOT_SERVER_PORT) });
 
-bot.logger.info(`Bot event handler is listening on port ${EVENT_SERVER_PORT}`);
+bot.logger.info(`Bot event handler is listening on port ${BOT_SERVER_PORT}`);
 
 // Process reminders every minute
 cron.schedule('* * * * *', async () => {

@@ -3,6 +3,7 @@ import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon } from 'utils/markdown';
+import { readableTimeToMs } from 'utils/utils';
 
 createApplicationCommand({
   name: 'remindme',
@@ -35,14 +36,14 @@ createApplicationCommand({
       required: true,
     },
     {
-      type: ApplicationCommandOptionTypes.Integer,
+      type: ApplicationCommandOptionTypes.String,
       name: 'time',
       nameLocalizations: {
         'pt-BR': 'tempo',
       },
-      description: 'The time for the reminder in milliseconds',
+      description: 'The reminder time, e.g., 10m',
       descriptionLocalizations: {
-        'pt-BR': 'O tempo do lembrete em milissegundos',
+        'pt-BR': 'Tempo do lembrete, por exemplo 10m',
       },
       required: true,
     },
@@ -52,7 +53,7 @@ createApplicationCommand({
     const language = interaction.locale!;
 
     const reason = options.reason;
-    const time = options.time;
+    const time = readableTimeToMs(options.time);
 
     const userId = interaction.user.id;
 
