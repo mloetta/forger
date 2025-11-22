@@ -50,6 +50,7 @@ export function timestamp() {
   const hours = now.getHours().toString().padStart(2, '0');
   const minutes = now.getMinutes().toString().padStart(2, '0');
   const seconds = now.getSeconds().toString().padStart(2, '0');
+
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
@@ -82,6 +83,7 @@ export function CRC32(string: string): string {
   }
 
   const hash = -(crc + 1) >>> 0;
+
   return hash.toString(16).padStart(8, '0');
 }
 

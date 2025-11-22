@@ -22,32 +22,32 @@ import type {
   User,
 } from 'types/types';
 
-export default function createApplicationCommand<const TOptions extends ApplicationCommandOptions>(
-  command: ApplicationCommand<TOptions>,
+export default function createApplicationCommand<const T extends ApplicationCommandOptions>(
+  command: ApplicationCommand<T>,
 ): void {
   bot.commands.set(command.name, command as ApplicationCommand);
 }
 
-export interface ApplicationCommand<TOptions extends ApplicationCommandOptions = ApplicationCommandOptions>
+export interface ApplicationCommand<T extends ApplicationCommandOptions = ApplicationCommandOptions>
   extends CreateApplicationCommand {
   details: Details;
   preconditions?: Precondition;
   rateLimit?: RateLimit;
   permissions?: CommandPermission;
-  options?: TOptions;
+  options?: T;
   acknowledge?: boolean;
   ephemeral?: boolean;
   dev?: boolean;
   run: (
     bot: CustomBot,
     interaction: Interaction,
-    options: GetApplicationCommandOptions<TOptions>,
+    options: GetApplicationCommandOptions<T>,
     extras: ExtraProperties,
   ) => any;
   autocomplete?: (
     bot: CustomBot,
     interaction: Interaction,
-    options: GetApplicationCommandOptions<TOptions>,
+    options: GetApplicationCommandOptions<T>,
     extras: ExtraProperties,
   ) => any;
 }

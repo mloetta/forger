@@ -26,6 +26,7 @@ export function highlight(content: any): string {
 export function codeblock(type: string, content: any): string {
   if (!Array.isArray(content)) content = [content];
   if (!content.length) return '```' + type + '```';
+
   return '```' + type + '\n' + _escapeCodeblock(content.join('\n')) + '```';
 }
 
@@ -89,6 +90,7 @@ export function linkPill(url: string, content: any = '', tooltip: string = ''): 
 /** Returns a pill link with an icon */
 export function iconLinkPill(icon: keyof typeof Emojis, url: string, content: any = '', tooltip = ''): string {
   if (tooltip.length) tooltip = ` '${tooltip}'`;
+
   if (content) {
     return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
   }
@@ -114,11 +116,13 @@ export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.Sh
 /** Trims a string to a max length, optionally replacing newlines with spaces */
 export function stringwrap(content = '', length: number, newlines = true): string {
   if (!newlines) content = content.replace(/\n/g, ' ');
+
   if (content.length > length) {
     let c = content.slice(0, length) + '...';
     while (c.endsWith(' ...')) c = c.slice(0, -4) + '...';
     return c;
   }
+
   return content;
 }
 
@@ -131,23 +135,28 @@ export function stringwrapPreserveWords(content = '', length: number, newLines =
   while (c.join(' ').length + (c.length - 1) > length - 1) {
     c.pop();
   }
+
   return c.join(' ') + '...';
 }
 
 /** Returns a citation superscript optionally linking to a URL */
 export function citation(number = 1, url: string, tooltip: string = ''): string {
   const Superscript = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+
   let formatted = '';
   for (const n of number.toString().split('')) {
     formatted += Superscript[parseInt(n)];
   }
+
   if (url) {
     if (tooltip.length) {
       if (tooltip.endsWith(' ')) tooltip = tooltip.slice(0, -1);
       tooltip = ` '${tooltip.replace(/["*]/g, '')}'`;
     }
+
     return `[⁽${formatted}⁾](${url.replace(/\)/g, '\\)')}${tooltip})`;
   }
+
   return `⁽${formatted}⁾`;
 }
 

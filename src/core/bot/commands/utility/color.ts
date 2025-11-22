@@ -18,7 +18,7 @@ import {
   MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon, smallPill } from 'utils/markdown';
 
@@ -39,7 +39,6 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -83,7 +82,7 @@ createApplicationCommand({
       hex = convertToHex(hsl, true);
       rgb = convertToRgb(hsl, true);
     } else {
-      await interaction.respond({
+      await interaction.edit({
         components: [
           {
             type: MessageComponentTypes.Container,
@@ -109,7 +108,7 @@ createApplicationCommand({
     const buffer = canvas.toBuffer('image/png');
     if (!buffer) return;
 
-    await interaction.respond({
+    await interaction.edit({
       components: [
         {
           type: MessageComponentTypes.Container,

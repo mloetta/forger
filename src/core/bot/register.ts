@@ -57,10 +57,14 @@ const commands = bot.commands.array().map((cmd) => {
     base.options.push(incognitoOption);
   }
 
-  return base;
+  return { ...base, dev: !!cmd.dev };
 });
 
-await rest.upsertGlobalApplicationCommands(commands);
+const globalCommands = commands.filter((c) => c.dev === false).map((c) => omit(c, ['dev']));
+const guildCommands = commands.filter((c) => c.dev === true).map((c) => omit(c, ['dev']));
+
+await rest.upsertGlobalApplicationCommands(globalCommands);
+await rest.upsertGuildApplicationCommands('1193589991012577300', guildCommands);
 
 logger.info('Successfully reloaded application (/) commands');
 

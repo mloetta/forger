@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { workerData as _workerData, parentPort } from 'worker_threads';
 import {
+  type Camelize,
   createLogger,
   DiscordenoShard,
   type DiscordGatewayPayload,
@@ -8,7 +9,6 @@ import {
   ShardSocketCloseCodes,
 } from 'discordeno';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
-import type { Camelize } from 'types/types.js';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request.js';
 
 assert(parentPort);
@@ -183,6 +183,7 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
   const url = workerData.eventHandler.urls[shard.id % workerData.eventHandler.urls.length];
   if (!url) {
     logger.error('No url found to send events to');
+
     return;
   }
 

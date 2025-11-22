@@ -58,6 +58,7 @@ messageCreateHandlers.set('stickyMessage', async (message) => {
             sticky.files.map(async (file: any) => {
               const res = await fetch(file.url);
               const arrayBuffer = await res.arrayBuffer();
+
               return {
                 name: file.filename,
                 blob: new Blob([arrayBuffer], { type: file.contentType }),

@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionTypes, Collection, MessageComponentTypes, MessageFlags } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { codeblock, icon, stringwrapPreserveWords } from 'utils/markdown';
 import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
@@ -16,7 +16,6 @@ createApplicationCommand({
   },
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -69,7 +68,10 @@ createApplicationCommand({
 
     const filtered = langs.filter((lang: string) => lang.toLowerCase().startsWith(focused.toLowerCase())).slice(0, 25);
 
-    const choices = filtered.map((lang: string) => ({ name: lang, value: lang }));
+    const choices = filtered.map((lang: string) => ({
+      name: lang,
+      value: lang,
+    }));
 
     await interaction.respond({ choices });
   },

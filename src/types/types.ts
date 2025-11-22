@@ -21,12 +21,16 @@ export type ExtractDesiredBehavior<T> = T extends DiscordenoBot<infer _Props, in
 export type Events = Required<typeof bot.events>;
 export type User = typeof bot.transformers.$inferredTypes.user;
 export type Member = typeof bot.transformers.$inferredTypes.member;
+export type CachedMember = typeof bot.cache.$inferredTypes.member;
 export type Channel = typeof bot.transformers.$inferredTypes.channel;
 export type Role = typeof bot.transformers.$inferredTypes.role;
+export type CachedRole = typeof bot.cache.$inferredTypes.role;
 export type Attachment = typeof bot.transformers.$inferredTypes.attachment;
 export type Interaction = typeof bot.transformers.$inferredTypes.interaction;
 export type Message = typeof bot.transformers.$inferredTypes.message;
 export type Guild = typeof bot.transformers.$inferredTypes.guild;
+export type CachedGuild = typeof bot.cache.$inferredTypes.guild;
+export type CachedChannel = typeof bot.cache.$inferredTypes.channel;
 
 // Command stuff
 export enum ApplicationCommandCategory {
@@ -38,14 +42,8 @@ export enum ApplicationCommandCategory {
   Dev = 'Dev',
 }
 
-export enum ApplicationCommandScope {
-  Global = 'Global',
-  Guild = 'Guild',
-}
-
 export interface Details {
   category: ApplicationCommandCategory;
-  scope: ApplicationCommandScope;
   summary?: string;
   usage?: string;
   examples?: string[];

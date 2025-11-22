@@ -5,7 +5,7 @@ import { highlight, icon, link, smallPill, timestamp, TimestampStyle } from 'uti
 import { Collector } from 'helpers/collector';
 import { RateLimitType, type ExtraProperties, type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
-import { bot, calculatePermissions } from 'bot/bot';
+import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
 import { getXataClient } from 'utils/xata';
 import { t } from 'utils/i18n';
@@ -52,6 +52,8 @@ async function handleApplicationCommand(interaction: Interaction) {
     return;
   }
 
+  if (command.dev && interaction.user.id !== BigInt('782946852278501407')) return;
+
   const incognito = Boolean(interaction.data.options?.find((option) => option.name === 'incognito')?.value);
 
   let acknowledged = false;
@@ -66,15 +68,18 @@ async function handleApplicationCommand(interaction: Interaction) {
   let rateLimitManager: RateLimitManager | undefined;
   if (command.rateLimit) {
     switch (command.rateLimit.type) {
-      case RateLimitType.Channel:
+      case RateLimitType.Channel: {
         rateLimitManager = new RateLimitManager(rateLimits, interaction.channel.id!);
         break;
-      case RateLimitType.Guild:
+      }
+      case RateLimitType.Guild: {
         rateLimitManager = new RateLimitManager(rateLimits, interaction.guild.id);
         break;
-      case RateLimitType.User:
+      }
+      case RateLimitType.User: {
         rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
         break;
+      }
     }
 
     const { limited, duration } = rateLimitManager.check();
@@ -130,49 +135,34 @@ async function handleApplicationCommand(interaction: Interaction) {
   }
 
   if (command.permissions) {
-    const botMember = await bot.cache.members.get(bot.id, interaction.guild.id);
-    if (!botMember) return;
+    if (!interaction.guildId) return;
+    const cachedGuild = await bot.cache.guilds.get(interaction.guildId);
+    if (!cachedGuild) return;
 
-    const botRoles = botMember.roles;
+    if (!interaction.channelId) return;
+    const cachedChannel = await bot.cache.channels.get(interaction.channelId);
+    if (!cachedChannel) return;
 
-    let botRolePerms;
-    for (const roleId of botRoles) {
-      const role = await bot.cache.roles.get(roleId);
-      if (!role) continue;
-
-      botRolePerms = role.permissions;
-    }
+    const client = await bot.cache.members.get(bot.id, interaction.guild.id);
+    if (!client) return;
 
     if (!interaction.member) return;
-    const member = await bot.cache.members.get(interaction.member.id, interaction.guild.id);
-    if (!member) return;
+    const author = await bot.cache.members.get(interaction.member.id, interaction.guild.id);
+    if (!author) return;
 
-    const memberRoles = member.roles;
+    const permissionManager = new PermissionManager(cachedGuild, cachedChannel, author, client, command.permissions);
 
-    let memberRolePerms;
-    for (const roleId of memberRoles) {
-      const role = await bot.cache.roles.get(roleId);
-      if (!role) continue;
+    const { authorHasPerm, clientHasPerm, missingAuthorPerms, missingClientPerms } = permissionManager.check();
 
-      memberRolePerms = role.permissions;
-    }
-
-    const botPerms = calculatePermissions(botMember.permissions, botRolePerms);
-    const memberPerms = calculatePermissions(member.permissions, memberRolePerms);
-
-    const permissionManager = new PermissionManager(memberPerms, botPerms, command.permissions);
-
-    const { userHasPerm, botHasPerm, missingUserPerms, missingBotPerms } = permissionManager.check();
-
-    if (!userHasPerm) {
+    if (!authorHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perms: highlight(missingAuthorPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perm: highlight(missingUserPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perms: highlight(missingAuthorPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -180,15 +170,15 @@ async function handleApplicationCommand(interaction: Interaction) {
       return;
     }
 
-    if (!botHasPerm) {
+    if (!clientHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingClientPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingBotPerms.join(', ')) })}`,
+          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingClientPerms.join(', ')) })}`,
           flags: MessageFlags.Ephemeral,
         });
       }

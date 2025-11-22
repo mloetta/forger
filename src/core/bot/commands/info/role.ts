@@ -10,7 +10,7 @@ import {
 } from 'discordeno';
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import List from 'utils/list';
 import { icon, iconAsEmoji, iconPill, pill, smallPill } from 'utils/markdown';
@@ -29,7 +29,6 @@ createApplicationCommand({
   contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Info,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -167,6 +166,7 @@ createApplicationCommand({
       const permText = cat.permissions
         .map((perm) => {
           const hasPerm = permissions.has(perm);
+
           return `${hasPerm ? icon('Success') : icon('Error')} ${perm}`;
         })
         .join('\n');

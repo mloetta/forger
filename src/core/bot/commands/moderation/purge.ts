@@ -7,7 +7,7 @@ import {
   MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { highlight, icon } from 'utils/markdown';
 
@@ -20,15 +20,10 @@ createApplicationCommand({
   descriptionLocalizations: {
     'pt-BR': 'Deleta mensagens no canal atual',
   },
-  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
-  contexts: [
-    DiscordInteractionContextType.BotDm,
-    DiscordInteractionContextType.Guild,
-    DiscordInteractionContextType.PrivateChannel,
-  ],
+  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall],
+  contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Moderation,
-    scope: ApplicationCommandScope.Global,
   },
   permissions: {
     author: ['MANAGE_MESSAGES'],
@@ -66,6 +61,7 @@ createApplicationCommand({
       },
     },
   ],
+  acknowledge: true,
   async run(bot, interaction, options, extras) {
     const language = interaction.locale!;
 
@@ -101,7 +97,9 @@ createApplicationCommand({
       return;
     }
 
-    const messages = await bot.helpers.getMessages(interaction.channel.id!, { limit: amount + 1 });
+    const messages = await bot.helpers.getMessages(interaction.channel.id!, {
+      limit: amount + 1,
+    });
     let filtered = messages;
 
     if (content) {
@@ -147,7 +145,7 @@ createApplicationCommand({
     }
 
     await bot.helpers.deleteMessages(
-      interaction.channel.id!,
+      interaction.channelId!,
       filtered.map((msg) => msg.id),
     );
 

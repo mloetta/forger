@@ -1,6 +1,8 @@
 import { collectors } from 'bot/events/interactions';
 import {
   ApplicationCommandOptionTypes,
+  DiscordApplicationIntegrationType,
+  DiscordInteractionContextType,
   MessageComponentTypes,
   MessageFlags,
   TextStyles,
@@ -8,7 +10,7 @@ import {
 } from 'discordeno';
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon, pill } from 'utils/markdown';
 import { Schema } from 'utils/schema';
@@ -21,9 +23,14 @@ createApplicationCommand({
   descriptionLocalizations: {
     'pt-BR': 'Envie ou gerencie suas tags ou as tags do seu servidor',
   },
+  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
+  contexts: [
+    DiscordInteractionContextType.BotDm,
+    DiscordInteractionContextType.Guild,
+    DiscordInteractionContextType.PrivateChannel,
+  ],
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -211,7 +218,7 @@ createApplicationCommand({
         }
 
         await bot.helpers.sendMessage(channelId, {
-          content: `${tag.content ?? ''}\n${t(language, 'commands.tag.warn', { user: interaction.user.id })}`,
+          content: `${tag.content ?? ''}\n${t(language, 'commands.tag.warn', { user: userId })}`,
           attachments:
             tag.files?.map((f: any, i: number) => ({
               id: i,
@@ -269,11 +276,14 @@ createApplicationCommand({
           ],
         });
 
-        const collector = new Collector<Interaction>({ max: 1, filter: (i) => i.user.id === userId });
+        const collector = new Collector<Interaction>({
+          max: 1,
+          filter: (i) => i.user.id === userId && i.data?.customId === 'guild_tag_creation',
+        });
         collectors.add(collector);
 
         collector.onCollect(async (i) => {
-          if (!i.data || i.data.customId !== 'guild_tag_creation') return;
+          if (!i.data) return;
 
           const tagContent = or(i.data.components?.[1]?.component?.value, null);
           const tagFileIds = or(i.data.components?.[2]?.component?.values, []);
@@ -363,7 +373,7 @@ createApplicationCommand({
         });
       }
     } else if (options.user) {
-      if (!interaction.user.id || !interaction.channelId) return;
+      if (!userId || !interaction.channelId) return;
 
       const channelId = interaction.channelId;
 
@@ -421,6 +431,7 @@ createApplicationCommand({
             tag.files.map(async (file: any) => {
               const res = await fetch(file.url);
               const arrayBuffer = await res.arrayBuffer();
+
               return {
                 name: file.filename,
                 blob: new Blob([arrayBuffer], { type: file.contentType }),
@@ -430,7 +441,7 @@ createApplicationCommand({
         }
 
         await bot.helpers.sendMessage(channelId, {
-          content: `${tag.content ?? ''}\n${t(language, 'commands.tag.warn', { user: interaction.user.id })}`,
+          content: `${tag.content ?? ''}\n${t(language, 'commands.tag.warn', { user: userId })}`,
           attachments:
             tag.files?.map((f: any, i: number) => ({
               id: i,
@@ -488,11 +499,14 @@ createApplicationCommand({
           ],
         });
 
-        const collector = new Collector<Interaction>({ max: 1, filter: (i) => i.user.id === userId });
+        const collector = new Collector<Interaction>({
+          max: 1,
+          filter: (i) => i.user.id === userId && i.data?.customId === 'user_tag_creation'
+        });
         collectors.add(collector);
 
         collector.onCollect(async (i) => {
-          if (!i.data || i.data.customId !== 'user_tag_creation') return;
+          if (!i.data) return;
 
           const tagContent = or(i.data.components?.[1]?.component?.value, null);
           const tagFileIds = or(i.data.components?.[2]?.component?.values, []);

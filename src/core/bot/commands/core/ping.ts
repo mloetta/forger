@@ -2,7 +2,7 @@ import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowf
 import { t } from 'utils/i18n';
 import { getShardInfoFromGuild } from 'bot/bot';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { icon } from 'utils/markdown';
 
 createApplicationCommand({
@@ -19,7 +19,6 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,

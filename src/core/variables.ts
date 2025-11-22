@@ -20,4 +20,6 @@ export const INFLUX_URL = env.get('influx_url');
 export const INFLUX_TOKEN = env.get('influx_token');
 export const INFLUX_ORG = env.get('influx_org');
 export const INFLUX_BUCKET = env.get('influx_bucket');
+export const GOOGLE_API_KEY = env.get('google_api_key', true);
 export const PERSPECTIVE_API_KEY = env.get('perspective_api_key', true);
+export const EMOJI_KITCHEN_API_KEY = env.get('emoji_kitchen_api_key', true);

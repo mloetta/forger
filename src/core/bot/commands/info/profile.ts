@@ -13,7 +13,7 @@ import {
   type TextDisplayComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import type { Emojis } from 'utils/emojis';
 import { t } from 'utils/i18n';
 import { icon, iconPill, link, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
@@ -37,7 +37,6 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Info,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -64,7 +63,7 @@ createApplicationCommand({
     const target = await bot.helpers.getUser(or(options?.target?.user.id, interaction.user.id));
 
     if (!target) {
-      await interaction.respond({
+      await interaction.edit({
         components: [
           {
             type: MessageComponentTypes.Container,
@@ -108,7 +107,9 @@ createApplicationCommand({
         GATEWAY_MESSAGE_CONTENT: t(language, 'commands.profile.GATEWAY_MESSAGE_CONTENT'),
         GATEWAY_MESSAGE_CONTENT_LIMITED: t(language, 'commands.profile.GATEWAY_MESSAGE_CONTENT_LIMITED'),
         EMBEDDED_FIRST_PARTY: t(language, 'commands.profile.EMBEDDED_FIRST_PARTY'),
-        HAS_SLASH_COMMAND: t(language, 'commands.profile.HAS_SLASH_COMMAND', { slash: icon('Slash') }),
+        HAS_SLASH_COMMAND: t(language, 'commands.profile.HAS_SLASH_COMMAND', {
+          slash: icon('Slash'),
+        }),
       };
 
       const app = (await makeRequest(`https://discord.com/api/v10/applications/${target.id}/rpc`, {
@@ -131,6 +132,7 @@ createApplicationCommand({
           ],
           flags: MessageFlags.IsComponentsV2,
         });
+
         return;
       }
 

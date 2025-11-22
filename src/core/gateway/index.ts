@@ -20,6 +20,7 @@ app.get('/timecheck', (_req, res) => {
 app.post('/', async (req, res) => {
   if (!req.body) {
     res.status(400).send({ message: 'Invalid body' });
+
     return;
   }
 
@@ -42,6 +43,7 @@ app.post('/', async (req, res) => {
 
       if (!worker) {
         await res.status(400).send({ error: `worker for shard ${shardId} not found` });
+
         return;
       }
 

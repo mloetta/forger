@@ -10,7 +10,7 @@ import {
 } from 'discordeno';
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon } from 'utils/markdown';
 import { Schema } from 'utils/schema';
@@ -29,7 +29,6 @@ createApplicationCommand({
   contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -58,7 +57,6 @@ createApplicationCommand({
 
     const language = interaction.locale!;
 
-    const userId = interaction.user.id;
     const guildId = interaction.guildId;
     const channelId = interaction.channelId;
 
@@ -135,7 +133,10 @@ createApplicationCommand({
       ],
     });
 
-    const collector = new Collector<Interaction>({ max: 1, filter: (i) => i.user.id === userId });
+    const collector = new Collector<Interaction>({
+      max: 1,
+      filter: (i) => i.user.id === interaction.user.id && i.data?.customId === 'sticky-message-setup',
+    });
     collectors.add(collector);
 
     collector.onCollect(async (i) => {

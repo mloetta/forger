@@ -1,4 +1,4 @@
-import type { DiscordGatewayPayload, GatewayDispatchEventNames } from 'discordeno';
+import { createLogger, LogLevels, type DiscordGatewayPayload, type GatewayDispatchEventNames } from 'discordeno';
 import { EVENT_SERVER_PORT } from 'core/variables';
 import { bot, processReminders } from './bot';
 import { buildFastifyApp } from './fastify';
@@ -8,6 +8,7 @@ import { readDirectory } from 'utils/utils';
 import { join } from 'path';
 import cron from 'node-cron';
 import { redis } from 'utils/redis';
+import FolderWatcher from 'utils/watcher';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
@@ -15,8 +16,8 @@ interface GatewayEvent {
 }
 
 // Import commands and events
-await readDirectory(join(__dirname, './events'));
-await readDirectory(join(__dirname, './commands'));
+await readDirectory(join(__dirname, 'events'));
+await readDirectory(join(__dirname, 'commands'));
 
 // Initialize i18n
 await createI18n();

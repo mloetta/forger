@@ -10,9 +10,9 @@ import {
   type MediaGalleryComponent,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
-import { codeblock, icon, iconPill, pill, smallIconPill, timestamp } from 'utils/markdown';
+import { codeblock, icon, iconPill, pill, smallIconPill, timestamp, TimestampStyle } from 'utils/markdown';
 
 createApplicationCommand({
   name: 'server',
@@ -27,7 +27,6 @@ createApplicationCommand({
   contexts: [DiscordInteractionContextType.Guild],
   details: {
     category: ApplicationCommandCategory.Info,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -98,7 +97,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `${smallIconPill('Members', `${members} ${t(language, 'commands.server.members')}`)} ${smallIconPill('Boost', `${boosts} ${t(language, 'commands.server.boost')}`)}\n${smallIconPill('Roles', `${roles} ${t(language, 'commands.server.roles')}`)} ${smallIconPill('Emoji', `${expressions}, ${t(language, 'commands.server.expressions')}`)}\n\n${iconPill('Calendar', `${t(language, 'commands.server.createdAt')} ${timestamp(guildCreatedAt, 'D')}`)}\n${icon('Owner')} <@${guildOwnerId}>\n${iconPill('Globe', guildLocale)}`,
+              content: `${smallIconPill('Members', `${members} ${t(language, 'commands.server.members')}`)} ${smallIconPill('Boost', `${boosts} ${t(language, 'commands.server.boost')}`)}\n${smallIconPill('Roles', `${roles} ${t(language, 'commands.server.roles')}`)} ${smallIconPill('Emoji', `${expressions}, ${t(language, 'commands.server.expressions')}`)}\n\n${iconPill('Calendar', `${t(language, 'commands.server.createdAt')} ${timestamp(guildCreatedAt, TimestampStyle.LongDate)}`)}\n${icon('Owner')} <@${guildOwnerId}>\n${iconPill('Globe', guildLocale)}`,
             },
             {
               type: MessageComponentTypes.Separator,

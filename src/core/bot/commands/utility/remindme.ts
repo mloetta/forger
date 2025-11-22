@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon } from 'utils/markdown';
 
@@ -15,7 +15,6 @@ createApplicationCommand({
   },
   details: {
     category: ApplicationCommandCategory.Utility,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,

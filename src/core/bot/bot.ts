@@ -5,7 +5,6 @@ import {
   GatewayIntents,
   type Bot,
   DesiredPropertiesBehavior,
-  Permissions,
 } from 'discordeno';
 import type {
   ManagerGetShardInfoFromGuildId,
@@ -30,6 +29,7 @@ const desiredProperties = createDesiredPropertiesObject({
     guildId: true,
     id: true,
     type: true,
+    parentId: true,
   },
   component: {
     component: true,
@@ -78,6 +78,7 @@ const desiredProperties = createDesiredPropertiesObject({
     permissions: true,
     user: true,
     roles: true,
+    communicationDisabledUntil: true,
   },
   message: {
     author: true,
@@ -94,6 +95,7 @@ const desiredProperties = createDesiredPropertiesObject({
     name: true,
     permissions: true,
     toggles: true,
+    position: true,
   },
   user: {
     avatar: true,
@@ -109,13 +111,23 @@ const desiredProperties = createDesiredPropertiesObject({
 
 interface BotDesiredProperties extends Required<typeof desiredProperties> {}
 
-const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavior.RemoveKey>) =>
+const getProxyCacheBot = (bot: Bot<BotDesiredProperties, DesiredPropertiesBehavior.ChangeType>) =>
   createProxyCache(bot, {
     desiredProps: {
       guild: ['channels', 'icon', 'id', 'name', 'ownerId', 'roles', 'members'],
-      channel: ['guildId', 'id', 'type'],
-      member: ['avatar', 'id', 'joinedAt', 'nick', 'permissions', 'user', 'guildId', 'roles'],
-      role: ['color', 'id', 'name', 'permissions', 'guildId'],
+      channel: ['guildId', 'id', 'type', 'parentId', 'internalOverwrites'],
+      member: [
+        'avatar',
+        'id',
+        'joinedAt',
+        'nick',
+        'permissions',
+        'user',
+        'guildId',
+        'roles',
+        'communicationDisabledUntil',
+      ],
+      role: ['color', 'id', 'name', 'permissions', 'guildId', 'position'],
       user: ['avatar', 'globalName', 'id', 'publicFlags', 'username'],
     },
   });
@@ -125,6 +137,7 @@ const rawBot = getProxyCacheBot(
     token: TOKEN,
     intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
     desiredProperties,
+    desiredPropertiesBehavior: DesiredPropertiesBehavior.ChangeType,
     rest: {
       proxy: {
         baseUrl: REST_URL,
@@ -191,13 +204,6 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
   return res;
 }
 
-export function calculatePermissions(
-  memberPerms: Permissions | undefined,
-  rolePerms: Permissions | undefined,
-): Permissions {
-  return new Permissions((memberPerms?.bitfield ?? 0n) | (rolePerms?.bitfield ?? 0n));
-}
-
 export async function processReminders(bot: CustomBot, redis: RedisType) {
   const now = Date.now();
 
@@ -220,8 +226,4 @@ export async function processReminders(bot: CustomBot, redis: RedisType) {
       await redis.del(`reminder:${reminderId}`);
     }
   }
-}
-
-export function getVoiceStatesForChannel(voiceStates: Collection<bigint, any>, channelId: bigint) {
-  return voiceStates.filter((vs) => vs.channelId === channelId);
 }

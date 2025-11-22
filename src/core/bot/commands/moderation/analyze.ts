@@ -6,7 +6,7 @@ import {
   MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType } from 'types/types';
 import { formatAnsi, type ColorsType } from 'utils/ansi';
 import { t } from 'utils/i18n';
 import { codeblock, highlight, iconPill, link } from 'utils/markdown';
@@ -30,7 +30,6 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Moderation,
-    scope: ApplicationCommandScope.Global,
   },
   rateLimit: {
     type: RateLimitType.User,

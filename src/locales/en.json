@@ -13,7 +13,7 @@
       "response": "Pong!\n-# Gateway (Shard #{{shard}}): **{{gatewayLatency}}ms** ・ REST: **{{restLatency}}ms**"
     },
     "help": {
-      "header": "# Welcome to Pocket Tool!\nYou can view all the available command on the **{{website}}**",
+      "header": "# Welcome to Pocket Tool!\nYou can view all the available commands by typing **` / `**, then clicking on my profile",
       "locale": "## How to change slash command language?\nSlash commands are available in multiple languages and will automatically match your **{{langSettings}}**",
       "langSettings": "Discord Language Settings",
       "customization": "## How to customize Pocket Tool?",
@@ -61,7 +61,7 @@
       "TOS": "Terms of Service",
       "privacyPolicy": "Privacy Policy",
       "display": "Display",
-      "accountCreated": "Created at",
+      "accountCreatedAt": "Created at",
       "memberJoinedAt": "Joined at"
     },
     "role": {
@@ -103,6 +103,11 @@
     "color": {
       "invalidColor": "An invalid color was provided",
       "convertedSuccessfully": "Color converted successfully"
+    },
+    "emoji": {
+      "invalidEmojis": "The input does not contain any valid emojis",
+      "mixNotAvailable": "No emoji mix available for this combination",
+      "emojiCreatedAt": "Created at"
     },
     "remindme": {
       "reminderCreated": "Reminder created successfully\n-# You will be reminded at {{date}}"

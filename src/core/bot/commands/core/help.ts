@@ -5,7 +5,6 @@ import {
   ChannelTypes,
   DiscordApplicationIntegrationType,
   DiscordInteractionContextType,
-  InteractionTypes,
   MessageComponentTypes,
   MessageFlags,
   SeparatorSpacingSize,
@@ -15,7 +14,7 @@ import {
 import { Collector } from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
 import { isInCachedGuild } from 'types/typeguards';
-import { ApplicationCommandCategory, ApplicationCommandScope, RateLimitType, type Interaction } from 'types/types';
+import { ApplicationCommandCategory, RateLimitType, type Interaction } from 'types/types';
 import { t } from 'utils/i18n';
 import { icon, iconAsEmoji, link } from 'utils/markdown';
 import { Schema } from 'utils/schema';
@@ -38,7 +37,6 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
-    scope: ApplicationCommandScope.Guild,
   },
   rateLimit: {
     type: RateLimitType.User,
@@ -153,13 +151,13 @@ createApplicationCommand({
         flags: MessageFlags.IsComponentsV2,
       });
 
-      const collector = new Collector<Interaction>();
+      const collector = new Collector<Interaction>({ filter: (i) => i.user.id === interaction.user.id });
       collectors.add(collector);
 
       collector.onCollect(async (i) => {
         if (!i.data) return;
 
-        if (i.type === InteractionTypes.ModalSubmit && i.data.customId === 'customization_modal') {
+        if (i.data.customId === 'customization_modal') {
           const newName = or(i.data.components?.[1]?.component?.value, null);
           const newAboutMe = or(i.data.components?.[2]?.component?.value, null);
           const newAvatarId = or(i.data.components?.[3]?.component?.value, null);
@@ -319,6 +317,7 @@ createApplicationCommand({
             content: t(language, 'commands.help.modals.resetCustomization'),
             flags: MessageFlags.Ephemeral,
           });
+
           return;
         } else if (i.data.customId === 'follow_updates') {
           await i.deferEdit();
@@ -330,6 +329,7 @@ createApplicationCommand({
               })}`,
               flags: MessageFlags.Ephemeral,
             });
+
             return;
           }
 
@@ -340,7 +340,7 @@ createApplicationCommand({
           if (source.type !== ChannelTypes.GuildAnnouncement) return;
 
           if (channel.type !== ChannelTypes.GuildText) {
-            await i.edit(t(language, 'commands.help.buttons.wrongChannel'));
+            await i.respond(t(language, 'commands.help.buttons.wrongChannel'));
 
             return;
           }

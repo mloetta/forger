@@ -79,6 +79,7 @@ export default class FolderWatcher {
   public watcherEvent(path: string, event: 'change' | 'rename', filename: string | null) {
     if (!filename) {
       console.error(`Filename is null for path: ${path}`);
+
       return;
     }
 

@@ -1,38 +1,41 @@
 import { EventEmitter } from 'events';
 
-export interface CollectorOptions<Type> {
-  filter?: (item: Type) => boolean | Promise<boolean>;
+export interface CollectorOptions<T> {
+  filter?: (item: T) => boolean | Promise<boolean>;
   duration?: number;
   max?: number;
 }
 
-export class Collector<Type> extends EventEmitter {
-  #filter?: (item: Type) => boolean | Promise<boolean>;
-  #collected: Type[] = [];
+export class Collector<T> extends EventEmitter {
+  #filter?: (item: T) => boolean | Promise<boolean>;
+  #collected: T[] = [];
   #timeout?: NodeJS.Timeout;
   #stopped = false;
   #max?: number;
 
-  constructor(options: CollectorOptions<Type> = {}) {
+  constructor(options: CollectorOptions<T> = {}) {
     super();
     this.#filter = options.filter;
     this.#max = options.max;
+
     if (options.duration) {
       this.#timeout = setTimeout(() => this.stop('time'), options.duration);
     }
   }
 
-  public onCollect(callback: (item: Type) => unknown): this {
+  public onCollect(callback: (item: T) => unknown): this {
     this.on('collect', callback);
+
     return this;
   }
 
-  public onEnd(callback: (collected: Type[], reason: string) => unknown): this {
+  public onEnd(callback: (collected: T[], reason: string) => unknown): this {
     this.on('end', callback);
+
     return this;
   }
 
-  public async collect(item: Type): Promise<void> {
+  public async collect(item: T): Promise<void> {
     try {
       const pass = this.#filter ? await this.#filter(item) : true;
       if (!pass) return;
@@ -57,7 +60,7 @@ export class Collector<Type> extends EventEmitter {
     this.removeAllListeners();
   }
 
-  public setFilter(filter: (item: Type) => boolean | Promise<boolean>): void {
+  public setFilter(filter: (item: T) => boolean | Promise<boolean>): void {
     this.#filter = filter;
   }
 }

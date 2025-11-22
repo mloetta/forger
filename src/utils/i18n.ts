@@ -21,6 +21,7 @@ export async function createI18n() {
     });
 
     logger.info('i18n initialized successfully');
+
     return i18next;
   } catch (e) {
     logger.info('Failed to initialize i18n:', e);
