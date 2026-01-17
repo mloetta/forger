@@ -2,17 +2,15 @@ import { Collection, commandOptionsParser, createLogger, InteractionTypes, Messa
 import type { ApplicationCommand } from 'helpers/command';
 import { RateLimitManager } from 'middlewares/rateLimit';
 import { highlight, icon, link, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
-import { Collector } from 'helpers/collector';
-import { RateLimitType, type ExtraProperties, type Interaction } from 'types/types';
+import type { CollectorType } from 'helpers/collector';
+import { RateLimitType, type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
-import { getXataClient } from 'utils/xata';
 import { t } from 'utils/i18n';
 import { SUPPORT_SERVER } from 'core/constants';
-import { redis } from 'utils/redis';
 
-export const collectors = new Set<Collector<Interaction>>();
+export const collectors = new Set<CollectorType<Interaction>>();
 
 const logger = createLogger({ name: 'interactionCreate' });
 
@@ -23,16 +21,16 @@ createEvent({
       `Received interactionCreate event: ${interaction.id} (${interaction.type}) from ${interaction.user.username}`,
     );
 
-    for (const collector of collectors) {
-      await collector.collect(interaction);
-    }
-
     if (!interaction.data) return;
 
     if (interaction.type === InteractionTypes.ApplicationCommand) {
       await handleApplicationCommand(interaction);
     } else if (interaction.type === InteractionTypes.ApplicationCommandAutocomplete) {
       await handleApplicationCommandAutocomplete(interaction);
+    } else if ([InteractionTypes.MessageComponent, InteractionTypes.ModalSubmit].includes(interaction.type)) {
+      for (const collector of collectors) {
+        await collector.collect(interaction);
+      }
     }
   },
 });
@@ -69,14 +67,20 @@ async function handleApplicationCommand(interaction: Interaction) {
   if (command.rateLimit) {
     switch (command.rateLimit.type) {
       case RateLimitType.Channel: {
-        rateLimitManager = new RateLimitManager(rateLimits, interaction.channel.id!);
+        if (!interaction.channelId) return;
+
+        rateLimitManager = new RateLimitManager(rateLimits, interaction.channelId);
         break;
       }
       case RateLimitType.Guild: {
-        rateLimitManager = new RateLimitManager(rateLimits, interaction.guild.id);
+        if (!interaction.guildId) return;
+
+        rateLimitManager = new RateLimitManager(rateLimits, interaction.guildId);
         break;
       }
       case RateLimitType.User: {
+        if (!interaction.user.id) return;
+
         rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
         break;
       }
@@ -143,11 +147,11 @@ async function handleApplicationCommand(interaction: Interaction) {
     const cachedChannel = await bot.cache.channels.get(interaction.channelId);
     if (!cachedChannel) return;
 
-    const client = await bot.cache.members.get(bot.id, interaction.guild.id);
+    const client = await bot.cache.members.get(bot.id, interaction.guildId);
     if (!client) return;
 
     if (!interaction.member) return;
-    const author = await bot.cache.members.get(interaction.member.id, interaction.guild.id);
+    const author = await bot.cache.members.get(interaction.member.id, interaction.guildId);
     if (!author) return;
 
     const permissionManager = new PermissionManager(cachedGuild, cachedChannel, author, client, command.permissions);
@@ -201,14 +205,7 @@ async function handleApplicationCommand(interaction: Interaction) {
       }
     }
 
-    const xata = getXataClient();
-
-    const extras = {
-      xata,
-      redis,
-    } satisfies ExtraProperties;
-
-    await command.run(bot, interaction, commandOptionsParser(interaction), extras);
+    await command.run(bot, interaction, commandOptionsParser(interaction));
 
     if (command.rateLimit && rateLimitManager) {
       const { duration, limit } = command.rateLimit;
@@ -249,12 +246,5 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
 
   if (!command.autocomplete) return;
 
-  const xata = getXataClient();
-
-  const extras = {
-    xata,
-    redis,
-  } satisfies ExtraProperties;
-
-  await command.autocomplete(bot, interaction, commandOptionsParser(interaction), extras);
+  await command.autocomplete(bot, interaction, commandOptionsParser(interaction));
 }

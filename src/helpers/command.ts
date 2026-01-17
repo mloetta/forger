@@ -13,7 +13,6 @@ import type {
   Details,
   ExtractDesiredBehavior,
   ExtractDesiredProps,
-  ExtraProperties,
   Interaction,
   Member,
   Precondition,
@@ -28,8 +27,9 @@ export default function createApplicationCommand<const T extends ApplicationComm
   bot.commands.set(command.name, command as ApplicationCommand);
 }
 
-export interface ApplicationCommand<T extends ApplicationCommandOptions = ApplicationCommandOptions>
-  extends CreateApplicationCommand {
+export interface ApplicationCommand<
+  T extends ApplicationCommandOptions = ApplicationCommandOptions,
+> extends CreateApplicationCommand {
   details: Details;
   preconditions?: Precondition;
   rateLimit?: RateLimit;
@@ -38,18 +38,8 @@ export interface ApplicationCommand<T extends ApplicationCommandOptions = Applic
   acknowledge?: boolean;
   ephemeral?: boolean;
   dev?: boolean;
-  run: (
-    bot: CustomBot,
-    interaction: Interaction,
-    options: GetApplicationCommandOptions<T>,
-    extras: ExtraProperties,
-  ) => any;
-  autocomplete?: (
-    bot: CustomBot,
-    interaction: Interaction,
-    options: GetApplicationCommandOptions<T>,
-    extras: ExtraProperties,
-  ) => any;
+  run: (bot: CustomBot, interaction: Interaction, options: GetApplicationCommandOptions<T>) => any;
+  autocomplete?: (bot: CustomBot, interaction: Interaction, options: GetApplicationCommandOptions<T>) => any;
 }
 
 export type ApplicationCommandOption = Camelize<DiscordApplicationCommandOption>;

@@ -1,9 +1,7 @@
-# Pocket Tool
+# Forger
 
-Multi-purpose lightweight bot
+Greatest The Forge discord bot, built with ❤️ by [mloetta](https://gitlab.com/mloetta).
 
-[invite today](https://discord.com/oauth2/authorize?client_id=1418168974285340683)
+[Invite today](https://discord.com/oauth2/authorize?client_id=1461873695688491190)
 
-## legal
-
-Pocket Tool © 2025 by the Keystone Team is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
+Forger © 2026 by the Keystone Team is licensed under the MIT License. See [LICENSE](LICENSE) for more details.

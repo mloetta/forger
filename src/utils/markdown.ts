@@ -2,7 +2,7 @@ import { Emojis } from './emojis';
 
 /** Escapes backticks in a string to avoid breaking codeblocks. */
 function _escapeCodeblock(content: any): string {
-  return content.toString().replace(/`/g, 'ˋ');
+  return String(content ?? '').replace(/`/g, 'ˋ');
 }
 
 /** Resolves an internal emoji/icon from the Emojis object. */
@@ -120,7 +120,7 @@ export function link(url: string, masked: string, tooltip: string = '', embed: b
  * @param tooltip - The tooltip to display when hovering over the link.
  * @param embed - Whether to embed the link.
  */
-export function linkPill(url: string, content: any = '', tooltip: string = '', embed: boolean = false): string {
+export function linkPill(url: string, content: any = '', tooltip: string = ''): string {
   if (tooltip.length) tooltip = ` '${tooltip}'`;
   if (content) return `[**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
 
@@ -133,20 +133,10 @@ export function linkPill(url: string, content: any = '', tooltip: string = '', e
  * @param url - The URL to link to.
  * @param content - The content to wrap in a pill.
  * @param tooltip - The tooltip to display when hovering over the link.
- * @param embed - Whether to embed the link.
  */
-export function iconLinkPill(
-  icon: keyof typeof Emojis,
-  url: string,
-  content: any = '',
-  tooltip = '',
-  embed: boolean = false,
-): string {
+export function iconLinkPill(icon: keyof typeof Emojis, url: string, content: any = '', tooltip: string = ''): string {
   if (tooltip.length) tooltip = ` '${tooltip}'`;
-
-  if (content) {
-    return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
-  }
+  if (content) return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
 
   return url;
 }
@@ -178,7 +168,7 @@ export function timestamp(time: number, flag: TimestampStyle = TimestampStyle.Sh
  * @param length - The maximum length of the string.
  * @param newlines - Whether to replace newlines with spaces.
  */
-export function stringwrap(content = '', length: number, newlines = true): string {
+export function stringwrap(content = '', length: number, newlines: boolean = true): string {
   if (!newlines) content = content.replace(/\n/g, ' ');
 
   if (content.length > length) {
@@ -198,7 +188,7 @@ export function stringwrap(content = '', length: number, newlines = true): strin
  * @param length - The maximum length of the string.
  * @param newLines - Whether to replace newlines with spaces.
  */
-export function stringwrapPreserveWords(content = '', length: number, newLines = true): string {
+export function stringwrapPreserveWords(content = '', length: number, newLines: boolean = true): string {
   if (!newLines) content = content.replace(/\n/g, ' ');
   if (content.length <= length) return content;
 
@@ -259,4 +249,13 @@ export function inline(cols: string[][], options?: { spacing?: number }): string
   let lines = cols.map((row) => row.map((cell, i) => (cell ?? '').padEnd(lengths[i]! + spacing, ' ')).join(''));
 
   return lines;
+}
+
+/** Returns a favicon URL.
+ *
+ * @param url - The URL to get the favicon for.
+ * @param size - The size of the favicon.
+ */
+export function favicon(url: string, size: number = 256): string {
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(url)}&sz=${size}`;
 }

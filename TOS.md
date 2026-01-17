@@ -1,44 +1,35 @@
-# Terms of Service for Pocket Tool
+# Terms of Service (TOS) – Forger
 
-_Last updated: November 9, 2025_
+**1. Acceptance of Terms**  
+By using Forger (the “Bot”), whether in Discord servers or as a User App on your personal account, you agree to these Terms of Service (“Terms”). If you do not agree, do not use the Bot.
 
-**1. Acceptance of Terms**
-By using Pocket Tool (the "Bot") or any related web services, you agree to these Terms of Service ("Terms"). If you do not agree, do not use the Bot.
+**2. Bot Purpose**  
+Forger provides functionalities to improve user experience, caching, and internal analytics to enhance performance, regardless of whether it is used in servers or individually.
 
-**2. Eligibility**
+**3. Rules of Use**  
+- You may not use the Bot for illegal activities or to harm other users.  
+- You may not attempt to reverse-engineer or manipulate the Bot.  
+- You are responsible for any content you share while interacting with the Bot.
 
-- You must be at least 13 years old to use the Bot.
-- You must comply with Discord's Terms of Service and Community Guidelines.
+**4. Data Collection**  
+Forger collects only:  
+- Discord Guild ID (if used in a server)  
+- Channel ID (if used in a server)  
+- Username  
 
-**3. Use of the Bot**
+This data is used **exclusively for internal analytics** and caching to improve the Bot’s performance.
 
-- You may not use the Bot for illegal, harmful, or abusive activities.
-- You are responsible for any content you submit or actions you take using the Bot.
-- You may not attempt to interfere with or disrupt the Bot's operation, including reverse engineering or exploiting vulnerabilities.
+**5. Intellectual Property**  
+All content and software of the Bot are owned by the Bot developer. You may not copy, distribute, or claim ownership of any part of Forger.
 
-**4. Data and Privacy**
+**6. Limitation of Liability**  
+Forger is provided "as-is". The developer is not responsible for data loss, server issues, or any damages resulting from the use of the Bot.
 
-- By using the Bot, you consent to the collection and use of data as described in our Privacy Policy.
-- We take reasonable measures to protect your data, but we do not guarantee absolute security.
+**7. Modifications**  
+The developer may modify these Terms at any time. Continued use of the Bot after changes constitutes acceptance of the new Terms.
 
-**5. Service Availability**
+**8. Termination**  
+The developer may suspend or ban users who violate these Terms.
 
-- The Bot is provided "as is" and may be modified, suspended, or discontinued at any time without notice.
-- We are not responsible for any loss or damage resulting from unavailability or malfunction of the Bot.
-
-**6. Limitation of Liability**
-
-- We are not liable for any direct, indirect, incidental, or consequential damages arising from your use of the Bot.
-- Use the Bot at your own risk.
-
-**7. Third-Party Services**
-
-- The Bot may interact with third-party services (e.g., Discord, Top.gg). We are not responsible for their content, policies, or practices.
-
-**8. Changes to Terms**
-
-- We may update these Terms at any time. Continued use of the Bot after changes constitutes acceptance of the updated Terms.
-
-**9. Contact**
-
-- For questions or concerns regarding these Terms, contact the bot owner via Discord or the support server.
+**9. Governing Law**  
+These Terms are governed by the laws of [Your Country/State].

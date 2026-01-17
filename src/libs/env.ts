@@ -20,7 +20,7 @@ export default new (class Env {
     return this.#cache.has(key);
   }
 
-  public get(key: string, required = false) {
+  public get(key: string, required: boolean = false) {
     if (required && !this.has(key)) {
       throw new Error(`Env error: '${key}' is required`);
     }

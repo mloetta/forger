@@ -1,4 +1,4 @@
-import env from '../utils/env';
+import env from 'libs/env';
 
 export const BOT_TOKEN = env.get('bot_token', true);
 export const BOT_ID = env.get('bot_id', true);
@@ -10,16 +10,8 @@ export const GATEWAY_PORT = env.get('gateway_port', true);
 export const GATEWAY_URL = env.get('gateway_url', true);
 export const SHARD_SERVER_PORT = env.get('shard_server_port', true);
 export const SHARD_SERVER_URL = env.get('shard_server_url', true);
-export const XATA_API_KEY = env.get('xata_api_key', true);
-export const XATA_BRANCH = env.get('xata_branch', true);
-export const REDIS_PASSWORD = env.get('redis_password', true);
-export const REDIS_HOST = env.get('redis_host', true);
-export const REDIS_PORT = env.get('redis_port', true);
 export const INFLUX_ENABLE = env.get('influx_enable', true);
 export const INFLUX_URL = env.get('influx_url');
 export const INFLUX_TOKEN = env.get('influx_token');
 export const INFLUX_ORG = env.get('influx_org');
 export const INFLUX_BUCKET = env.get('influx_bucket');
-export const GOOGLE_API_KEY = env.get('google_api_key', true);
-export const PERSPECTIVE_API_KEY = env.get('perspective_api_key', true);
-export const EMOJI_KITCHEN_API_KEY = env.get('emoji_kitchen_api_key', true);

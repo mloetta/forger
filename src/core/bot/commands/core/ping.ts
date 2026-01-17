@@ -26,11 +26,11 @@ createApplicationCommand({
     limit: 1,
   },
   acknowledge: true,
-  async run(bot, interaction, options, extras) {
+  async run(bot, interaction, options) {
     const language = interaction.locale!;
 
     // Gateway
-    const shardInfo = await getShardInfoFromGuild(interaction.guild.id);
+    const shardInfo = await getShardInfoFromGuild(interaction.guild!.id);
     const shard = shardInfo.shardId;
     const gatewayLatency = shardInfo.rtt === -1 ? 'N/A' : shardInfo.rtt;
 

@@ -64,7 +64,7 @@ const globalCommands = commands.filter((c) => c.dev === false).map((c) => omit(c
 const guildCommands = commands.filter((c) => c.dev === true).map((c) => omit(c, ['dev']));
 
 await rest.upsertGlobalApplicationCommands(globalCommands);
-await rest.upsertGuildApplicationCommands('1193589991012577300', guildCommands);
+await rest.upsertGuildApplicationCommands('1457032144349302900', guildCommands);
 
 logger.info('Successfully reloaded application (/) commands');
 

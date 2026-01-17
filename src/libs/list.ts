@@ -1,13 +1,17 @@
 export default class List<T> extends Array<T> {
-  public looping = false;
-  #current;
-  #pointer;
+  public looping: boolean = false;
+  #current: T;
+  #pointer: number;
 
   constructor(...items: T[]) {
     super(...items);
 
+    if (items.length === 0) {
+      throw new Error('List must have at least one item');
+    }
+
     this.#pointer = 0;
-    this.#current = items[this.#pointer];
+    this.#current = items[this.#pointer]!;
   }
 
   public get current() {
@@ -31,7 +35,7 @@ export default class List<T> extends Array<T> {
       index = Math.min(Math.max(index, 0), this.length - 1);
     }
 
-    this.#current = this[index];
+    this.#current = this[index]!;
     this.#pointer = index;
 
     return this;
@@ -54,10 +58,10 @@ export default class List<T> extends Array<T> {
   }
 
   public getNext() {
-    return this[this.#pointer + 1]!;
+    return this[this.#pointer + 1];
   }
 
   public getPrevious() {
-    return this[this.#pointer - 1]!;
+    return this[this.#pointer - 1];
   }
 }

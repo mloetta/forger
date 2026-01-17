@@ -1,66 +1,74 @@
-import { EventEmitter } from 'events';
+import { Collection } from 'discordeno';
+import EventListener from 'libs/listener';
 
 export interface CollectorOptions<T> {
+  key: string;
   filter?: (item: T) => boolean | Promise<boolean>;
   duration?: number;
   max?: number;
 }
 
-export class Collector<T> extends EventEmitter {
-  #filter?: (item: T) => boolean | Promise<boolean>;
-  #collected: T[] = [];
-  #timeout?: NodeJS.Timeout;
-  #stopped = false;
-  #max?: number;
+export interface CollectorEvents<T> {
+  collect: [T];
+  dispose: [string];
+}
 
-  constructor(options: CollectorOptions<T> = {}) {
-    super();
-    this.#filter = options.filter;
-    this.#max = options.max;
+export type CollectorType<T> = ReturnType<typeof createCollector<T>>;
 
-    if (options.duration) {
-      this.#timeout = setTimeout(() => this.stop('time'), options.duration);
-    }
-  }
+export interface CollectorData<T> {
+  id: string;
+  key: string;
+  max?: number;
+  filter?: (item: T) => boolean | Promise<boolean>;
+  listener: EventListener<CollectorEvents<T>>;
+}
 
-  public onCollect(callback: (item: T) => unknown): this {
-    this.on('collect', callback);
+const collectors = new Collection<string, CollectorData<any>>();
 
-    return this;
-  }
+export function createCollector<T>(options: CollectorOptions<T>) {
+  const id = `${options.key}_${Date.now()}`;
+  const collected: T[] = [];
+  let stopped = false;
+  let timeout: NodeJS.Timeout | undefined;
 
-  public onEnd(callback: (collected: T[], reason: string) => unknown): this {
-    this.on('end', callback);
+  const listener = new EventListener() as any as EventListener<CollectorEvents<T>> & {
+    collect(item: T): Promise<void>;
+    dispose(reason?: string): void;
+  };
 
-    return this;
-  }
+  if (options.duration) timeout = setTimeout(() => listener.dispose('time'), options.duration);
 
-  public async collect(item: T): Promise<void> {
-    try {
-      const pass = this.#filter ? await this.#filter(item) : true;
-      if (!pass) return;
+  listener.collect = async (item: T) => {
+    if (stopped) return;
 
-      this.#collected.push(item);
-      this.emit('collect', item);
+    const pass = options.filter ? await options.filter(item) : true;
+    if (!pass) return;
 
-      if (this.#max && this.#collected.length >= this.#max) {
-        this.stop('max');
-      }
-    } catch (e) {
-      this.emit('error', e);
-    }
-  }
+    collected.push(item);
+    listener.emit('collect', item);
 
-  public stop(reason: string = 'manual'): void {
-    if (this.#stopped) return;
-    this.#stopped = true;
+    if (options.max && collected.length >= options.max) listener.dispose('max');
+  };
 
-    if (this.#timeout) clearTimeout(this.#timeout);
-    this.emit('end', this.#collected, reason);
-    this.removeAllListeners();
-  }
+  listener.dispose = (reason: string = 'unknown') => {
+    if (stopped) return;
+    stopped = true;
 
-  public setFilter(filter: (item: T) => boolean | Promise<boolean>): void {
-    this.#filter = filter;
-  }
+    if (timeout) clearTimeout(timeout);
+
+    listener.emit('dispose', reason);
+    listener.removeAllListeners();
+
+    collectors.delete(id);
+  };
+
+  collectors.set(id, {
+    id,
+    key: options.key,
+    max: options.max,
+    filter: options.filter,
+    listener,
+  });
+
+  return listener;
 }

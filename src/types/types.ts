@@ -1,8 +1,6 @@
 import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
 import type { bot } from 'bot/bot';
 import type { RateLimitManager } from 'middlewares/rateLimit';
-import type { XataClient } from 'utils/xata';
-import type { redis } from 'utils/redis';
 
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
@@ -35,11 +33,7 @@ export type CachedChannel = typeof bot.cache.$inferredTypes.channel;
 // Command stuff
 export enum ApplicationCommandCategory {
   Core = 'Core',
-  Info = 'Info',
-  Moderation = 'Moderation',
-  Utility = 'Utility',
-  Web = 'Web',
-  Dev = 'Dev',
+  Forge = 'Forge',
 }
 
 export interface Details {
@@ -71,11 +65,5 @@ export interface Precondition {
   fail(context: any): void;
 }
 
-export interface ExtraProperties {
-  xata: XataClient;
-  redis: RedisType;
-}
-
 // Custom types
 export type RateLimitManagerType = Collection<bigint, RateLimitManager>;
-export type RedisType = typeof redis;

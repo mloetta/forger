@@ -1,13 +1,11 @@
 import { type DiscordGatewayPayload, type GatewayDispatchEventNames } from 'discordeno';
 import { BOT_SERVER_PORT } from 'core/variables';
-import { bot, processReminders } from './bot';
+import { bot } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
 import { createI18n } from 'utils/i18n';
 import { readDirectory } from 'utils/utils';
 import { join } from 'path';
-import cron from 'node-cron';
-import { redis } from 'utils/redis';
 
 interface GatewayEvent {
   payload: DiscordGatewayPayload;
@@ -42,11 +40,6 @@ app.post('/', async (req, res) => {
 await app.listen({ host: app.config.host, port: Number(BOT_SERVER_PORT) });
 
 bot.logger.info(`Bot event handler is listening on port ${BOT_SERVER_PORT}`);
-
-// Process reminders every minute
-cron.schedule('* * * * *', async () => {
-  await processReminders(bot, redis);
-});
 
 async function handleGatewayEvent(payload: DiscordGatewayPayload, shardId: number): Promise<void> {
   bot.events.raw?.(payload, shardId);
