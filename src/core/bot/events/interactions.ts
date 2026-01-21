@@ -1,13 +1,19 @@
-import { Collection, commandOptionsParser, createLogger, InteractionTypes, MessageFlags } from 'discordeno';
+import {
+  ButtonStyles,
+  commandOptionsParser,
+  createLogger,
+  InteractionTypes,
+  MessageComponentTypes,
+  MessageFlags,
+} from 'discordeno';
 import type { ApplicationCommand } from 'helpers/command';
-import { RateLimitManager } from 'middlewares/rateLimit';
-import { highlight, icon, link, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
+import { check } from 'middlewares/cooldown';
+import { codeblock, highlight, icon, link, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
 import type { CollectorType } from 'helpers/collector';
-import { RateLimitType, type Interaction } from 'types/types';
+import { type Interaction } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
-import { t } from 'utils/i18n';
 import { SUPPORT_SERVER } from 'core/constants';
 
 export const collectors = new Set<CollectorType<Interaction>>();
@@ -38,12 +44,10 @@ createEvent({
 async function handleApplicationCommand(interaction: Interaction) {
   if (!interaction.data) return;
 
-  const language = interaction.locale!;
-
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Warning')} ${t(language, 'events.interactionCreate.commandNotFound', { command: interaction.data.name })}`,
+      content: `${icon('Warning')} The command: ${highlight(interaction.data.name)} was not found`,
       flags: MessageFlags.Ephemeral,
     });
 
@@ -61,77 +65,22 @@ async function handleApplicationCommand(interaction: Interaction) {
     acknowledged = true;
   }
 
-  const rateLimits = new Collection<bigint, RateLimitManager>();
+  if (command.details.cooldown) {
+    const result = check(interaction.user.id, command.name, command.details.cooldown);
 
-  let rateLimitManager: RateLimitManager | undefined;
-  if (command.rateLimit) {
-    switch (command.rateLimit.type) {
-      case RateLimitType.Channel: {
-        if (!interaction.channelId) return;
+    if (!result.executable) {
+      const expires = Date.now() + result.remaining * 1000;
 
-        rateLimitManager = new RateLimitManager(rateLimits, interaction.channelId);
-        break;
-      }
-      case RateLimitType.Guild: {
-        if (!interaction.guildId) return;
-
-        rateLimitManager = new RateLimitManager(rateLimits, interaction.guildId);
-        break;
-      }
-      case RateLimitType.User: {
-        if (!interaction.user.id) return;
-
-        rateLimitManager = new RateLimitManager(rateLimits, interaction.user.id);
-        break;
-      }
-    }
-
-    const { limited, duration } = rateLimitManager.check();
-
-    if (limited) {
-      switch (command.rateLimit.type) {
-        case RateLimitType.Channel: {
-          if (acknowledged) {
-            await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          } else {
-            await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.channelRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          }
-          break;
-        }
-        case RateLimitType.Guild: {
-          if (acknowledged) {
-            await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          } else {
-            await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.guildRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          }
-          break;
-        }
-        case RateLimitType.User: {
-          if (acknowledged) {
-            await interaction.edit({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          } else {
-            await interaction.respond({
-              content: `${icon('Warning')} ${t(language, 'events.interactionCreate.userRateLimited', { limit: command.rateLimit.limit, command: smallPill(command.name), time: timestamp(duration, TimestampStyle.RelativeTime) })}`,
-              flags: MessageFlags.Ephemeral,
-            });
-          }
-          break;
-        }
+      if (command.acknowledge) {
+        await interaction.edit({
+          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(expires, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          flags: MessageFlags.Ephemeral,
+        });
+      } else {
+        await interaction.respond({
+          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(expires, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          flags: MessageFlags.Ephemeral,
+        });
       }
 
       return;
@@ -161,12 +110,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!authorHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perms: highlight(missingAuthorPerms.join(', ')) })}`,
+          content: `${icon('Warning')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingAuthorPerms', { perms: highlight(missingAuthorPerms.join(', ')) })}`,
+          content: `${icon('Warning')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -177,12 +126,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!clientHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingClientPerms.join(', ')) })}`,
+          content: `${icon('Warning')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} ${t(language, 'events.interactionCreate.missingBotPerms', { perm: highlight(missingClientPerms.join(', ')) })}`,
+          content: `${icon('Warning')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -206,23 +155,81 @@ async function handleApplicationCommand(interaction: Interaction) {
     }
 
     await command.run(bot, interaction, commandOptionsParser(interaction));
-
-    if (command.rateLimit && rateLimitManager) {
-      const { duration, limit } = command.rateLimit;
-
-      rateLimitManager.apply(duration, limit);
-    }
   } catch (e) {
     logger.error(`Command ${command.name} has errored.`, e);
 
     if (acknowledged) {
-      await interaction.edit(
-        `${icon('Error')} ${t(language, 'events.interactionCreate.commandErrored', { command: command.name, server: link(SUPPORT_SERVER, t(language, 'generic.supportServer')) })}`,
-      );
+      await interaction.edit({
+        components: [
+          {
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `${icon('Error')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+              },
+              {
+                type: MessageComponentTypes.Separator,
+              },
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: codeblock('ts', e instanceof Error ? e.message : e),
+              },
+              {
+                type: MessageComponentTypes.Separator,
+              },
+              {
+                type: MessageComponentTypes.ActionRow,
+                components: [
+                  {
+                    type: MessageComponentTypes.Button,
+                    style: ButtonStyles.Link,
+                    label: 'Support Server',
+                    url: SUPPORT_SERVER,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
     } else {
-      await interaction.respond(
-        `${icon('Error')} ${t(language, 'events.interactionCreate.commandErrored', { command: command.name, server: link(SUPPORT_SERVER, t(language, 'generic.supportServer')) })}`,
-      );
+      await interaction.respond({
+        components: [
+          {
+            type: MessageComponentTypes.Container,
+            components: [
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `${icon('Error')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+              },
+              {
+                type: MessageComponentTypes.Separator,
+              },
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: codeblock('ts', e instanceof Error ? e.message : e),
+              },
+              {
+                type: MessageComponentTypes.Separator,
+              },
+              {
+                type: MessageComponentTypes.ActionRow,
+                components: [
+                  {
+                    type: MessageComponentTypes.Button,
+                    style: ButtonStyles.Link,
+                    label: 'Support Server',
+                    url: SUPPORT_SERVER,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        flags: MessageFlags.IsComponentsV2,
+      });
     }
 
     return;
@@ -232,12 +239,10 @@ async function handleApplicationCommand(interaction: Interaction) {
 async function handleApplicationCommandAutocomplete(interaction: Interaction) {
   if (!interaction.data) return;
 
-  const language = interaction.locale!;
-
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Warning')} ${t(language, 'events.interactionCreate.commandNotFound', { command: interaction.data.name })}`,
+      content: `${icon('Warning')} The command: ${interaction.data.name} was not found`,
       flags: MessageFlags.Ephemeral,
     });
 

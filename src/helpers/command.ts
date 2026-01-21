@@ -16,7 +16,6 @@ import type {
   Interaction,
   Member,
   Precondition,
-  RateLimit,
   Role,
   User,
 } from 'types/types';
@@ -32,7 +31,6 @@ export interface ApplicationCommand<
 > extends CreateApplicationCommand {
   details: Details;
   preconditions?: Precondition;
-  rateLimit?: RateLimit;
   permissions?: CommandPermission;
   options?: T;
   acknowledge?: boolean;

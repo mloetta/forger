@@ -14,33 +14,64 @@ import { decimalToFraction } from 'utils/utils';
 createApplicationCommand({
   name: 'ore',
   description: 'View ore details',
+  details: {
+    category: ApplicationCommandCategory.Forge,
+    cooldown: 5,
+  },
   integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
   contexts: [
     DiscordInteractionContextType.BotDm,
     DiscordInteractionContextType.Guild,
     DiscordInteractionContextType.PrivateChannel,
   ],
-  details: {
-    category: ApplicationCommandCategory.Forge,
-  },
   options: [
     {
       name: 'ore',
       description: 'Pick an ore to view',
       type: ApplicationCommandOptionTypes.String,
       required: true,
+      autocomplete: true,
     },
   ],
   acknowledge: true,
-  async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9999/ores`, {
+  async autocomplete(bot, interaction, options) {
+    const focused =
+      interaction.data?.options
+        ?.find((opt) => opt.focused)
+        ?.value?.toString()
+        .toLowerCase() ?? '';
+
+    const res = await makeRequest('http://localhost:9999/ores', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
         'x-api-key': BOT_TOKEN,
       },
+    });
+
+    const choices = res
+      .filter((ore: any) => {
+        if (!focused) return true;
+
+        return ore.name.toLowerCase().includes(focused);
+      })
+      .slice(0, 25)
+      .map((ore: any) => ({
+        name: ore.name,
+        value: ore.name,
+      }));
+
+    return interaction.respond({ choices });
+  },
+  async run(bot, interaction, options) {
+    const res = await makeRequest(`http://localhost:9999/ores`, {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
       params: {
         name: options.ore,
+      },
+      headers: {
+        'x-api-key': BOT_TOKEN,
       },
     });
 
@@ -58,7 +89,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n-# ${res.trait}` : `\n-# *${res.trait.type}*\n-# *${res.trait.min}*\n-# *${res.trait.max}*`}`,
+                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
                 },
               ],
               accessory: {

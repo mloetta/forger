@@ -22,7 +22,7 @@ export type Response = {
 };
 
 export type Options<T extends ResponseType> = {
-  data?: any;
+  body?: any;
   method?: RequestMethod;
   response?: T;
   params?: { [key: string]: any };
@@ -92,8 +92,8 @@ export function makeRequest<T extends ResponseType>(url: string, options: Option
         reject(new Error('Request timed out'));
       });
 
-      if (options.data && options.method !== RequestMethod.GET) {
-        req.write(JSON.stringify(options.data));
+      if (options.body && options.method !== RequestMethod.GET) {
+        req.write(JSON.stringify(options.body));
       }
 
       req.end();

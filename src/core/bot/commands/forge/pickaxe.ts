@@ -13,33 +13,64 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 createApplicationCommand({
   name: 'pickaxe',
   description: 'View pickaxe details',
+  details: {
+    category: ApplicationCommandCategory.Forge,
+    cooldown: 5,
+  },
   integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
   contexts: [
     DiscordInteractionContextType.BotDm,
     DiscordInteractionContextType.Guild,
     DiscordInteractionContextType.PrivateChannel,
   ],
-  details: {
-    category: ApplicationCommandCategory.Forge,
-  },
   options: [
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'pickaxe',
       description: 'Pick a pickaxe to view',
       required: true,
+      autocomplete: true,
     },
   ],
   acknowledge: true,
-  async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9999/pickaxes`, {
+  async autocomplete(bot, interaction, options) {
+    const focused =
+      interaction.data?.options
+        ?.find((opt) => opt.focused)
+        ?.value?.toString()
+        .toLowerCase() ?? '';
+
+    const res = await makeRequest('http://localhost:9999/pickaxes', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
         'x-api-key': BOT_TOKEN,
       },
+    });
+
+    const choices = res
+      .filter((pickaxe: any) => {
+        if (!focused) return true;
+
+        return pickaxe.name.toLowerCase().includes(focused);
+      })
+      .slice(0, 25)
+      .map((pickaxe: any) => ({
+        name: pickaxe.name,
+        value: pickaxe.name,
+      }));
+
+    return interaction.respond({ choices });
+  },
+  async run(bot, interaction, options) {
+    const res = await makeRequest(`http://localhost:9999/pickaxes`, {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
       params: {
         name: options.pickaxe,
+      },
+      headers: {
+        'x-api-key': BOT_TOKEN,
       },
     });
 
@@ -50,7 +81,7 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name} - ${res.ore}\n-# ${res.rarity}`,
+              content: `# ${res.name} (${res.ore})\n-# ${res.rarity}`,
             },
             {
               type: MessageComponentTypes.Section,
@@ -81,6 +112,7 @@ createApplicationCommand({
                   res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots}**` : null,
                   res.rune_price !== undefined ? `- Rune Price: **$${res.rune_price.toLocaleString('en-US')}**` : null,
                   res.price !== undefined ? `- Price: **$${res.price.toLocaleString('en-US')}**` : null,
+                  res.tickets !== undefined ? `- Tickets: **${res.tickets.toLocaleString('en-US')}**` : null,
                   res.goblin_price !== undefined
                     ? `- Goblin Price: **$${res.goblin_price.toLocaleString('en-US')}**`
                     : null,

@@ -249,8 +249,11 @@ export function decimalToFraction(value: number, maxDenominator = 1000000): stri
     }
   }
 
-  const numeratorStr = numerator.toLocaleString('en-US');
-  const denominatorStr = denominator.toLocaleString('en-US');
+  const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+  const divisor = gcd(numerator, denominator);
 
-  return `${numeratorStr}/${denominatorStr}`;
+  const formattedNumerator = (numerator / divisor).toLocaleString('en-US');
+  const formattedDenominator = (denominator / divisor).toLocaleString('en-US');
+
+  return `${formattedNumerator}/${formattedDenominator}`;
 }

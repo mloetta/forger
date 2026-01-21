@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "pocket-tool",
+      "name": "forger",
       "dependencies": {
         "@fastify/env": "^5.0.3",
         "@fastify/helmet": "^13.0.2",
@@ -14,8 +14,6 @@
         "dd-cache-proxy": "^2.7.0",
         "discordeno": "22.0.1-next.9255e29",
         "fastify": "^5.6.1",
-        "i18next": "^25.5.3",
-        "i18next-fs-backend": "^2.6.0",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -27,8 +25,6 @@
     },
   },
   "packages": {
-    "@babel/runtime": ["@babel/runtime@7.28.6", "", {}, "sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA=="],
-
     "@discordeno/bot": ["@discordeno/bot@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/gateway": "22.0.1-next.9255e29", "@discordeno/rest": "22.0.1-next.9255e29", "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29" } }, "sha512-xBP82Wys5kj4gaEe4hybTMWd6secT2TM2xtLfkscGG7AhncsvuYpyTxmYWE0imaII+k1dYqUmM1dK0tTbRElrg=="],
 
     "@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29", "ws": "^8.19.0" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-Hlt1NaBWYmQbVVcgfUbxhRviCd8C112BXlStjzHD9BF/uLAx6ghrHCat5d8waIkohoAVo0Ni1PIW/vKBRcGY5Q=="],
@@ -142,10 +138,6 @@
     "fzstd": ["fzstd@0.1.1", "", {}, "sha512-dkuVSOKKwh3eas5VkJy1AW1vFpet8TA/fGmVA5krThl8YcOVE/8ZIoEA1+U1vEn5ckxxhLirSdY837azmbaNHA=="],
 
     "helmet": ["helmet@8.1.0", "", {}, "sha512-jOiHyAZsmnr8LqoPGmCjYAaiuWwjAPLgY8ZX2XrmHawt99/u1y6RgrZMTeoPfpUbV96HOalYgz1qzkRbw54Pmg=="],
-
-    "i18next": ["i18next@25.7.4", "", { "dependencies": { "@babel/runtime": "^7.28.4" }, "peerDependencies": { "typescript": "^5" }, "optionalPeers": ["typescript"] }, "sha512-hRkpEblXXcXSNbw8mBNq9042OEetgyB/ahc/X17uV/khPwzV+uB8RHceHh3qavyrkPJvmXFKXME2Sy1E0KjAfw=="],
-
-    "i18next-fs-backend": ["i18next-fs-backend@2.6.1", "", {}, "sha512-eYWTX7QT7kJ0sZyCPK6x1q+R63zvNKv2D6UdbMf15A8vNb2ZLyw4NNNZxPFwXlIv/U+oUtg8SakW6ZgJZcoqHQ=="],
 
     "ipaddr.js": ["ipaddr.js@2.3.0", "", {}, "sha512-Zv/pA+ciVFbCSBBjGfaKUya/CcGmUHzTydLMaTwrUUEM2DIEO3iZvueGxmacvmN50fGpGVKeTXpb2LcYQxeVdg=="],
 

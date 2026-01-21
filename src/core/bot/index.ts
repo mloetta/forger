@@ -3,7 +3,6 @@ import { BOT_SERVER_PORT } from 'core/variables';
 import { bot } from './bot';
 import { buildFastifyApp } from './fastify';
 import 'utils/process';
-import { createI18n } from 'utils/i18n';
 import { readDirectory } from 'utils/utils';
 import { join } from 'path';
 
@@ -15,9 +14,6 @@ interface GatewayEvent {
 // Import commands and events
 await readDirectory(join(__dirname, 'events'));
 await readDirectory(join(__dirname, 'commands'));
-
-// Initialize i18n
-await createI18n();
 
 const app = await buildFastifyApp();
 

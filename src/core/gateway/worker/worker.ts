@@ -190,7 +190,7 @@ async function handleShardMessageEvent(shard: DiscordenoShard, payload: Camelize
   await makeRequest(url, {
     method: RequestMethod.POST,
     response: ResponseType.JSON,
-    data,
+    body: data,
     headers: { Authorization: workerData.bot.authorization },
   }).catch((error) => logger.error('Failed to send events to the bot code', error));
 }

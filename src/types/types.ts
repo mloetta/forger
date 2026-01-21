@@ -1,6 +1,5 @@
 import type { Bot as DiscordenoBot, Collection, PermissionStrings } from 'discordeno';
 import type { bot } from 'bot/bot';
-import type { RateLimitManager } from 'middlewares/rateLimit';
 
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
@@ -41,18 +40,7 @@ export interface Details {
   summary?: string;
   usage?: string;
   examples?: string[];
-}
-
-export enum RateLimitType {
-  Channel = 'Channel',
-  Guild = 'Guild',
-  User = 'User',
-}
-
-export interface RateLimit {
-  type: RateLimitType;
-  limit: number;
-  duration: number;
+  cooldown?: number;
 }
 
 export interface CommandPermission {
@@ -64,6 +52,3 @@ export interface Precondition {
   run(context: any): boolean | Promise<boolean>;
   fail(context: any): void;
 }
-
-// Custom types
-export type RateLimitManagerType = Collection<bigint, RateLimitManager>;

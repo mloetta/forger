@@ -165,7 +165,7 @@ function overrideGatewayImplementations(bot: CustomBot): void {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: { Authorization: BOT_TOKEN },
-      data: {
+      body: {
         type: 'ShardPayload',
         shardId,
         payload,
@@ -178,7 +178,7 @@ function overrideGatewayImplementations(bot: CustomBot): void {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       headers: { Authorization: BOT_TOKEN },
-      data: {
+      body: {
         type: 'EditShardsPresence',
         payload,
       } satisfies WorkerPresenceUpdate,
@@ -191,7 +191,7 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
     method: RequestMethod.POST,
     response: ResponseType.JSON,
     headers: { Authorization: BOT_TOKEN },
-    data: {
+    body: {
       type: 'ShardInfoFromGuild',
       guildId: guildId?.toString(),
     } as ManagerGetShardInfoFromGuildId,

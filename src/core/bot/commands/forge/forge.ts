@@ -1,0 +1,221 @@
+import { BOT_TOKEN } from 'core/variables';
+import {
+  ApplicationCommandOptionTypes,
+  DiscordApplicationIntegrationType,
+  DiscordInteractionContextType,
+  MessageComponentTypes,
+  MessageFlags,
+  type ActionRow,
+} from 'discordeno';
+import createApplicationCommand from 'helpers/command';
+import { ApplicationCommandCategory } from 'types/types';
+import { stringwrapPreserveWords } from 'utils/markdown';
+import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
+
+createApplicationCommand({
+  name: 'forge',
+  description: 'Forge a weapon or armor using a recipe',
+  details: {
+    category: ApplicationCommandCategory.Forge,
+    cooldown: 5,
+  },
+  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
+  contexts: [
+    DiscordInteractionContextType.BotDm,
+    DiscordInteractionContextType.Guild,
+    DiscordInteractionContextType.PrivateChannel,
+  ],
+  options: [
+    {
+      type: ApplicationCommandOptionTypes.String,
+      name: 'recipe',
+      description: 'Recipe to forge (e.g., 3 gargantuan, 3 golem heart, 3 voidstar)',
+      required: true,
+    },
+    {
+      type: ApplicationCommandOptionTypes.String,
+      name: 'category',
+      description: 'Category of the item (e.g., Gauntlet, Heavy Armor)',
+      required: true,
+      autocomplete: true,
+    },
+    {
+      type: ApplicationCommandOptionTypes.String,
+      name: 'variant',
+      description: "Variant of the item (e.g., Dark Knight Gauntlets, Goblin's Crown)",
+      required: true,
+      autocomplete: true,
+    },
+  ],
+  acknowledge: true,
+  async autocomplete(bot, interaction, options) {
+    const focused =
+      interaction.data?.options
+        ?.find((opt) => opt.focused)
+        ?.value?.toString()
+        .toLowerCase() ?? '';
+
+    const [weaponsRes, armorsRes] = await Promise.all([
+      makeRequest('http://localhost:9999/weapons', {
+        method: RequestMethod.GET,
+        response: ResponseType.JSON,
+        headers: { 'x-api-key': BOT_TOKEN },
+      }),
+      makeRequest('http://localhost:9999/armors', {
+        method: RequestMethod.GET,
+        response: ResponseType.JSON,
+        headers: { 'x-api-key': BOT_TOKEN },
+      }),
+    ]);
+
+    if (interaction.data?.options?.some((opt) => opt.name === 'category' && opt.focused)) {
+      const categories = [...new Set([...weaponsRes.map((w: any) => w.type), ...armorsRes.map((a: any) => a.type)])];
+
+      const choices = categories
+        .filter((cat) => !focused || cat.toLowerCase().includes(focused))
+        .slice(0, 25)
+        .map((cat) => ({ name: cat, value: cat }));
+
+      return interaction.respond({ choices });
+    }
+
+    if (interaction.data?.options?.some((opt) => opt.name === 'variant' && opt.focused)) {
+      const category = options.category;
+      if (!category) return interaction.respond({ choices: [] });
+
+      let totalOres = 0;
+      if (options.recipe) {
+        const regex = /(\d+)\s+([a-zA-Z ]+)/g;
+        let match;
+        while ((match = regex.exec(options.recipe)) !== null) {
+          const quantity = parseInt(match[1]!, 10);
+          totalOres += quantity;
+        }
+      }
+
+      const variants = [
+        ...weaponsRes
+          .filter((w: any) => w.type === category)
+          .flatMap((w: any) =>
+            Object.values(w.variants)
+              .filter((v: any) => totalOres >= v.min_ores)
+              .map((v: any) => ({ name: v.name, value: v.name })),
+          ),
+        ...armorsRes
+          .filter((a: any) => a.type === category)
+          .flatMap((a: any) =>
+            Object.values(a.variants)
+              .filter((v: any) => totalOres >= v.min_ores)
+              .map((v: any) => ({ name: v.name, value: v.name })),
+          ),
+      ];
+
+      const choices = variants.filter((v) => !focused || v.name.toLowerCase().includes(focused)).slice(0, 25);
+
+      return interaction.respond({ choices });
+    }
+  },
+  async run(bot, interaction, options) {
+    const armorsRes = await makeRequest('http://localhost:9999/armors', {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
+      headers: { 'x-api-key': BOT_TOKEN },
+    });
+
+    let mode: 'Weapon' | 'Armor' = 'Weapon';
+    if (armorsRes.some((a: any) => a.type === options.category)) mode = 'Armor';
+
+    const res = await makeRequest('http://localhost:9999/forge', {
+      method: RequestMethod.POST,
+      response: ResponseType.JSON,
+      body: {
+        recipe: options.recipe,
+        category: options.category,
+        variant: options.variant,
+        mode,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': BOT_TOKEN,
+      },
+    });
+
+    if (res.error) {
+      await interaction.edit({ content: `Error: ${res.error}`, flags: MessageFlags.Ephemeral });
+      return;
+    }
+
+    await interaction.edit({
+      components: [
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `# ${res.name}`,
+            },
+            {
+              type: MessageComponentTypes.Section,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `> ${res.recipe}\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage}%)*`).join('\n')}`,
+                },
+              ],
+              accessory: {
+                type: MessageComponentTypes.Thumbnail,
+                media: { url: res.image },
+              },
+            },
+            ...(res.traits && res.traits.length > 0
+              ? [
+                  {
+                    type: MessageComponentTypes.ActionRow,
+                    components: [
+                      {
+                        type: MessageComponentTypes.StringSelect,
+                        customId: 'active-traits',
+                        placeholder: 'Active Traits',
+                        options: res.traits.map((item: any) => ({
+                          label: item.ore,
+                          value: item.ore.toLowerCase().replace(/\s+/g, '_'),
+                          description: stringwrapPreserveWords(item.trait, 100),
+                        })),
+                      },
+                    ],
+                  } satisfies ActionRow,
+                ]
+              : []),
+            { type: MessageComponentTypes.Separator },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: (() => {
+                const lines = [
+                  `## Information`,
+                  res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi}**` : null,
+                  res.base_damage !== undefined
+                    ? `- Base Damage: **${res.base_damage.toLocaleString('en-US')}**`
+                    : null,
+                  res.attack_speed !== undefined
+                    ? `- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}**`
+                    : null,
+                  res.effective_dps !== undefined
+                    ? `- Effective DPS: **${res.effective_dps.toLocaleString('en-US')}**`
+                    : null,
+                  res.avg_damage_per_hit !== undefined
+                    ? `- Average Damage per Hit: **${res.avg_damage_per_hit.toLocaleString('en-US')}**`
+                    : null,
+                  res.defense !== undefined ? `- Defense: **${res.defense.toLocaleString('en-US')}**` : null,
+                  `- Total Ores: **${res.total_ores.toLocaleString('en-US')}**`,
+                ].filter(Boolean);
+
+                return lines.join('\n');
+              })(),
+            },
+          ],
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2,
+    });
+  },
+});
