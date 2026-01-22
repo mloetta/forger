@@ -14,7 +14,7 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 
 createApplicationCommand({
   name: 'forge',
-  description: 'Forge a weapon or armor using a recipe',
+  description: 'Forge a weapon or armor',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -154,7 +154,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage}%)*`).join('\n')}`,
+                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
                 },
               ],
               accessory: {
@@ -187,12 +187,12 @@ createApplicationCommand({
               content: (() => {
                 const lines = [
                   `## Information`,
-                  res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi}**` : null,
+                  res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi.toLocaleString('en-US')}x**` : null,
                   res.base_damage !== undefined
                     ? `- Base Damage: **${res.base_damage.toLocaleString('en-US')}**`
                     : null,
                   res.attack_speed !== undefined
-                    ? `- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}**`
+                    ? `- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}s**`
                     : null,
                   res.effective_dps !== undefined
                     ? `- Effective DPS: **${res.effective_dps.toLocaleString('en-US')}**`

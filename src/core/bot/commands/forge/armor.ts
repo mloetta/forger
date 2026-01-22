@@ -12,8 +12,8 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
-  name: 'ore',
-  description: 'View ore details',
+  name: 'armor',
+  description: 'View weapon details',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -26,9 +26,9 @@ createApplicationCommand({
   ],
   options: [
     {
-      name: 'ore',
-      description: 'Pick an ore to view',
       type: ApplicationCommandOptionTypes.String,
+      name: 'armor',
+      description: 'Pick an armor to view',
       required: true,
       autocomplete: true,
     },
@@ -41,7 +41,7 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9999/ores', {
+    const res = await makeRequest('http://localhost:9999/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -49,26 +49,23 @@ createApplicationCommand({
       },
     });
 
-    const choices = res
-      .filter((ore: any) => {
-        if (!focused) return true;
+    const variants = res.flatMap((armor: any) =>
+      armor.variants.map((variant: any) => ({
+        name: variant.name,
+        value: variant.name,
+      })),
+    );
 
-        return ore.name.toLowerCase().includes(focused);
-      })
-      .slice(0, 25)
-      .map((ore: any) => ({
-        name: ore.name,
-        value: ore.name,
-      }));
+    const choices = variants.filter((v: any) => !focused || v.name.toLowerCase().includes(focused)).slice(0, 25);
 
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9999/ores`, {
+    const res = await makeRequest(`http://localhost:9999/armors`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        name: options.ore,
+        name: options.armor,
       },
       headers: {
         'x-api-key': BOT_TOKEN,
@@ -81,15 +78,11 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name}\n-# ${res.rarity}`,
-            },
-            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
+                  content: `# ${res.name} (${res.type})`,
                 },
               ],
               accessory: {
@@ -104,12 +97,11 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.StringSelect,
-                  customId: 'ore-location',
+                  customId: 'armor-location',
                   placeholder: 'Obtainable From',
-                  options: res.obtainable_from.map((item: any) => ({
-                    label: item.area,
-                    value: item.area.toLowerCase().replace(/\s+/g, '_'),
-                    description: item.from.join(', '),
+                  options: res.from.map((item: any) => ({
+                    label: item,
+                    value: item.toLowerCase().replace(/\s+/g, '_'),
                   })),
                 },
               ],
@@ -119,7 +111,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information\n- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**\n- Price: **$${res.price.toLocaleString('en-US')}**`,
+              content: `## Information\n- Health: **${res.health.toLocaleString('en-US', { style: 'percent' })}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Base Price: **$${res.base_price.toLocaleString('en-US')}**`,
             },
           ],
         },

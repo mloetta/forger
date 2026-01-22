@@ -109,7 +109,7 @@ createApplicationCommand({
                     {
                       label: res.highest_mineable.name,
                       value: res.highest_mineable.name.toLowerCase().replace(/\s+/g, '_'),
-                      description: `Minimum Base Damage Required: ${res.highest_mineable.minimum_base_damage}`,
+                      description: `Minimum Base Damage Required: ${res.highest_mineable.minimum_base_damage.toLocaleString('en-US')}`,
                     },
                   ],
                 },
@@ -124,9 +124,13 @@ createApplicationCommand({
                 const lines = [
                   `## Information`,
                   `- Mine Power: **${res.mine_power}**`,
-                  res.mine_speed !== undefined ? `- Mine Speed: **${res.mine_speed}%**` : null,
-                  res.luck_boost !== undefined ? `- Luck Boost: **${res.luck_boost}%**` : null,
-                  res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots}**` : null,
+                  res.mine_speed !== undefined
+                    ? `- Mine Speed: **${res.mine_speed.toLocaleString('en-US', { style: 'percent' })}**`
+                    : null,
+                  res.luck_boost !== undefined
+                    ? `- Luck Boost: **${res.luck_boost.toLocaleString('en-US', { style: 'percent' })}**`
+                    : null,
+                  res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots.toLocaleString('en-US')}**` : null,
                   res.rune_price !== undefined ? `- Rune Price: **$${res.rune_price.toLocaleString('en-US')}**` : null,
                   res.price !== undefined ? `- Price: **$${res.price.toLocaleString('en-US')}**` : null,
                   res.tickets !== undefined ? `- Tickets: **${res.tickets.toLocaleString('en-US')}**` : null,
