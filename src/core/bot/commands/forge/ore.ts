@@ -105,7 +105,7 @@ createApplicationCommand({
                 {
                   type: MessageComponentTypes.StringSelect,
                   customId: 'ore-location',
-                  placeholder: 'Mining Zones',
+                  placeholder: 'Obtainable From',
                   options: res.obtainable_from.map((item: any) => ({
                     label: item.area,
                     value: item.area.toLowerCase().replace(/\s+/g, '_'),

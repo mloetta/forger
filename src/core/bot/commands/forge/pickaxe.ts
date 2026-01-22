@@ -99,6 +99,23 @@ createApplicationCommand({
               },
             },
             {
+              type: MessageComponentTypes.ActionRow,
+              components: [
+                {
+                  type: MessageComponentTypes.StringSelect,
+                  customId: 'highest-mineable',
+                  placeholder: 'Highest Mineable Rock',
+                  options: [
+                    {
+                      label: res.highest_mineable.name,
+                      value: res.highest_mineable.name.toLowerCase().replace(/\s+/g, '_'),
+                      description: `Minimum Base Damage Required: ${res.highest_mineable.minimum_base_damage}`,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               type: MessageComponentTypes.Separator,
             },
             {

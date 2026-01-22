@@ -140,11 +140,6 @@ createApplicationCommand({
       },
     });
 
-    if (res.error) {
-      await interaction.edit({ content: `Error: ${res.error}`, flags: MessageFlags.Ephemeral });
-      return;
-    }
-
     await interaction.edit({
       components: [
         {
@@ -159,7 +154,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `> ${res.recipe}\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage}%)*`).join('\n')}`,
+                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage}%)*`).join('\n')}`,
                 },
               ],
               accessory: {
