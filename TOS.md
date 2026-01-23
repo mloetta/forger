@@ -24,11 +24,13 @@ This data is used **exclusively for internal analytics** and caching to improve 
 **5. Intellectual Property**  
 All content and software of the Bot are owned by the Bot developer. You may not copy, distribute, or claim ownership of any part of Forger.
 
-**6. Limitation of Liability**  
-Forger is provided "as-is". The developer is not responsible for data loss, server issues, or any damages resulting from the use of the Bot.
+**6. Limitation of Liability  
+Forger is provided on an “as-is” basis. The developer makes reasonable efforts to maintain the Bot’s stability, security, and functionality; however, uninterrupted or error-free operation is not guaranteed.  
+The developer shall not be held liable for indirect, incidental, or consequential damages resulting from the use of the Bot, including temporary service interruptions or issues caused by factors outside the developer’s reasonable control.
 
-**7. Modifications**  
-The developer may modify these Terms at any time. Continued use of the Bot after changes constitutes acceptance of the new Terms.
+**7. Modifications  
+The developer may update these Terms from time to time to reflect improvements, legal requirements, or operational changes. When reasonably possible, material changes will be communicated to users.  
+Continued use of the Bot after the updated Terms take effect constitutes acceptance of the revised Terms.
 
 **8. Termination**  
 The developer may suspend or ban users who violate these Terms.
