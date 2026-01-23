@@ -6,11 +6,9 @@ import {
   MessageComponentTypes,
   MessageFlags,
 } from 'discordeno';
-import type { ApplicationCommand } from 'helpers/command';
 import { check } from 'middlewares/cooldown';
-import { codeblock, highlight, icon, link, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
-import type { CollectorType } from 'helpers/collector';
-import { type Interaction } from 'types/types';
+import { codeblock, highlight, icon, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
+import type { Interaction, CollectorType, ApplicationCommand } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
@@ -69,7 +67,7 @@ async function handleApplicationCommand(interaction: Interaction) {
     const result = check(interaction.user.id, command.name, command.details.cooldown);
 
     if (!result.executable) {
-      const expires = Date.now() + result.remaining * 1000;
+      const expires = Date.now() + result.remaining;
 
       if (command.acknowledge) {
         await interaction.edit({
@@ -89,18 +87,18 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.permissions) {
     if (!interaction.guildId) return;
-    const cachedGuild = await bot.cache.guilds.get(interaction.guildId);
+    const cachedGuild = await bot.rest.getGuild(interaction.guildId);
     if (!cachedGuild) return;
 
     if (!interaction.channelId) return;
-    const cachedChannel = await bot.cache.channels.get(interaction.channelId);
+    const cachedChannel = await bot.rest.getChannel(interaction.channelId);
     if (!cachedChannel) return;
 
-    const client = await bot.cache.members.get(bot.id, interaction.guildId);
+    const client = await bot.rest.getMember(interaction.guildId, bot.id);
     if (!client) return;
 
     if (!interaction.member) return;
-    const author = await bot.cache.members.get(interaction.member.id, interaction.guildId);
+    const author = await bot.rest.getMember(interaction.guildId, interaction.member.id);
     if (!author) return;
 
     const permissionManager = new PermissionManager(cachedGuild, cachedChannel, author, client, command.permissions);

@@ -15,12 +15,12 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
-    cooldown: 5,
+    cooldown: 3,
   },
   acknowledge: true,
   async run(bot, interaction, options) {
     // Gateway
-    const shardInfo = await getShardInfoFromGuild(interaction.guild?.id);
+    const shardInfo = await getShardInfoFromGuild(interaction.guildId);
     const shard = shardInfo.shardId;
     const gatewayLatency = shardInfo.rtt === -1 ? 'N/A' : shardInfo.rtt;
 
