@@ -88,31 +88,13 @@ createApplicationCommand({
       const category = options.category;
       if (!category) return interaction.respond({ choices: [] });
 
-      let totalOres = 0;
-      if (options.recipe) {
-        const regex = /(\d+)\s+([a-zA-Z ]+)/g;
-        let match;
-        while ((match = regex.exec(options.recipe)) !== null) {
-          const quantity = parseInt(match[1]!, 10);
-          totalOres += quantity;
-        }
-      }
-
       const variants = [
         ...weaponsRes
           .filter((w: any) => w.type === category)
-          .flatMap((w: any) =>
-            Object.values(w.variants)
-              .filter((v: any) => totalOres >= v.min_ores)
-              .map((v: any) => ({ name: v.name, value: v.name })),
-          ),
+          .flatMap((w: any) => Object.values(w.variants).map((v: any) => ({ name: v.name, value: v.name }))),
         ...armorsRes
           .filter((a: any) => a.type === category)
-          .flatMap((a: any) =>
-            Object.values(a.variants)
-              .filter((v: any) => totalOres >= v.min_ores)
-              .map((v: any) => ({ name: v.name, value: v.name })),
-          ),
+          .flatMap((a: any) => Object.values(a.variants).map((v: any) => ({ name: v.name, value: v.name }))),
       ];
 
       const choices = variants.filter((v) => !focused || v.name.toLowerCase().includes(focused)).slice(0, 25);
