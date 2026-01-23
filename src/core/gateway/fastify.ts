@@ -29,7 +29,7 @@ export async function buildFastifyApp(): Promise<FastifyInstance> {
   // Authorization check
   app.addHook('onRequest', async (req, res) => {
     if (req.headers.authorization !== req.server.config.bot_token) {
-      res.status(401).send({
+      return res.status(401).send({
         message: 'Credentials not valid.',
       });
     }

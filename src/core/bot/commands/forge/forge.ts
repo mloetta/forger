@@ -42,7 +42,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'variant',
-      description: "Variant of the item (e.g., Dark Knight Gauntlets, Goblin's Crown)",
+      description: "Variant of the item (e.g., Dark Knight's Gauntlets, Goblin's Crown)",
       required: true,
       autocomplete: true,
     },
@@ -59,12 +59,17 @@ createApplicationCommand({
       makeRequest('http://localhost:9999/weapons', {
         method: RequestMethod.GET,
         response: ResponseType.JSON,
-        headers: { 'x-api-key': BOT_TOKEN },
+        headers: {
+          'x-api-key': BOT_TOKEN,
+        },
       }),
+
       makeRequest('http://localhost:9999/armors', {
         method: RequestMethod.GET,
         response: ResponseType.JSON,
-        headers: { 'x-api-key': BOT_TOKEN },
+        headers: {
+          'x-api-key': BOT_TOKEN,
+        },
       }),
     ]);
 
@@ -119,7 +124,9 @@ createApplicationCommand({
     const armorsRes = await makeRequest('http://localhost:9999/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
-      headers: { 'x-api-key': BOT_TOKEN },
+      headers: {
+        'x-api-key': BOT_TOKEN,
+      },
     });
 
     let mode: 'Weapon' | 'Armor' = 'Weapon';
