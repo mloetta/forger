@@ -15,11 +15,9 @@ Forger provides functionalities to improve user experience, caching, and interna
 **4. Data Collection**  
 Forger collects only:
 
-- Discord Guild ID (if used in a server)
-- Channel ID (if used in a server)
 - Username
 
-This data is used **exclusively for internal analytics** and caching to improve the Bot’s performance.
+This data is used **exclusively for internal analytics**.
 
 **5. Intellectual Property**  
 All content and software of the Bot are owned by the Bot developer. You may not copy, distribute, or claim ownership of any part of Forger.
@@ -36,4 +34,4 @@ Continued use of the Bot after the updated Terms take effect constitutes accepta
 The developer may suspend or ban users who violate these Terms.
 
 **9. Governing Law**  
-These Terms are governed by the laws of [Your Country/State].
+These Terms are governed by the laws of Brazil.
