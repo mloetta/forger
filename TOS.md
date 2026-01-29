@@ -15,14 +15,14 @@ Forger provides functionalities to improve user experience, caching, and interna
 **4. Data Collection**  
 Forger collects only:
 
-- Discord Guild ID (if used in a server)
-- Channel ID (if used in a server)
 - Username
 
-This data is used **exclusively for internal analytics** and caching to improve the Bot’s performance.
+This data is used **exclusively for internal analytics**.
 
-**5. Intellectual Property**  
-All content and software of the Bot are owned by the Bot developer. You may not copy, distribute, or claim ownership of any part of Forger.
+**5. Intellectual Property**    
+The Forger name, branding, and associated identifiers remain the intellectual property of the developer.
+The Bot’s source code is licensed under the MIT License. Use, modification, and distribution of the source code are permitted in accordance with the terms of that license.
+Nothing in these Terms restricts rights expressly granted under the MIT License.
 
 **6. Limitation of Liability**  
 Forger is provided on an “as-is” basis. The developer makes reasonable efforts to maintain the Bot’s stability, security, and functionality; however, uninterrupted or error-free operation is not guaranteed.  
@@ -36,4 +36,4 @@ Continued use of the Bot after the updated Terms take effect constitutes accepta
 The developer may suspend or ban users who violate these Terms.
 
 **9. Governing Law**  
-These Terms are governed by the laws of [Your Country/State].
+These Terms are governed by the laws of Brazil.

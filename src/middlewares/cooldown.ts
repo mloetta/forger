@@ -16,7 +16,12 @@ export function check(userId: bigint, commandName: string, cooldown: number) {
   if (userCooldowns.has(commandName)) {
     const expiration = userCooldowns.get(commandName)!;
     if (now < expiration) {
+<<<<<<< HEAD
       return { executable: false, remaining: expiration };
+=======
+      const remaining = Math.ceil((expiration - now) / 1000);
+      return { executable: false, remaining };
+>>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
     }
   }
 

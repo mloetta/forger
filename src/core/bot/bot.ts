@@ -10,6 +10,7 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import type { ApplicationCommand } from 'types/types';
 
 const desiredProperties = createDesiredPropertiesObject({
+<<<<<<< HEAD
   channel: {
     guildId: true,
     id: true,
@@ -22,6 +23,8 @@ const desiredProperties = createDesiredPropertiesObject({
     id: true,
     ownerId: true,
   },
+=======
+>>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
   interaction: {
     channelId: true,
     data: true,
@@ -33,6 +36,7 @@ const desiredProperties = createDesiredPropertiesObject({
     user: true,
   },
   member: {
+<<<<<<< HEAD
     communicationDisabledUntil: true,
     id: true,
     roles: true,
@@ -45,6 +49,12 @@ const desiredProperties = createDesiredPropertiesObject({
   user: {
     id: true,
     username: true,
+=======
+    id: true,
+  },
+  user: {
+    id: true,
+>>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
   },
 });
 
