@@ -6,11 +6,9 @@ import {
   MessageComponentTypes,
   MessageFlags,
 } from 'discordeno';
-import type { ApplicationCommand } from 'helpers/command';
 import { check } from 'middlewares/cooldown';
-import { codeblock, highlight, icon, link, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
-import type { CollectorType } from 'helpers/collector';
-import { type Interaction } from 'types/types';
+import { codeblock, highlight, icon, pill, smallPill, timestamp } from 'utils/markdown';
+import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
@@ -69,16 +67,14 @@ async function handleApplicationCommand(interaction: Interaction) {
     const result = check(interaction.user.id, command.name, command.details.cooldown);
 
     if (!result.executable) {
-      const expires = Date.now() + result.remaining * 1000;
-
       if (command.acknowledge) {
         await interaction.edit({
-          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(expires, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(expires, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -89,21 +85,21 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.permissions) {
     if (!interaction.guildId) return;
-    const cachedGuild = await bot.cache.guilds.get(interaction.guildId);
-    if (!cachedGuild) return;
+    const guild = await bot.helpers.getGuild(interaction.guildId);
+    if (!guild) return;
 
     if (!interaction.channelId) return;
-    const cachedChannel = await bot.cache.channels.get(interaction.channelId);
-    if (!cachedChannel) return;
+    const channel = await bot.helpers.getChannel(interaction.channelId);
+    if (!channel) return;
 
-    const client = await bot.cache.members.get(bot.id, interaction.guildId);
+    const client = await bot.helpers.getMember(interaction.guildId, bot.id);
     if (!client) return;
 
     if (!interaction.member) return;
-    const author = await bot.cache.members.get(interaction.member.id, interaction.guildId);
+    const author = await bot.helpers.getMember(interaction.guildId, interaction.member.id);
     if (!author) return;
 
-    const permissionManager = new PermissionManager(cachedGuild, cachedChannel, author, client, command.permissions);
+    const permissionManager = new PermissionManager(guild, channel, author, client, command.permissions);
 
     const { authorHasPerm, clientHasPerm, missingAuthorPerms, missingClientPerms } = permissionManager.check();
 
@@ -175,20 +171,6 @@ async function handleApplicationCommand(interaction: Interaction) {
                 type: MessageComponentTypes.TextDisplay,
                 content: codeblock('ts', e instanceof Error ? e.message : e),
               },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.Button,
-                    style: ButtonStyles.Link,
-                    label: 'Support Server',
-                    url: SUPPORT_SERVER,
-                  },
-                ],
-              },
             ],
           },
         ],
@@ -210,20 +192,6 @@ async function handleApplicationCommand(interaction: Interaction) {
               {
                 type: MessageComponentTypes.TextDisplay,
                 content: codeblock('ts', e instanceof Error ? e.message : e),
-              },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.Button,
-                    style: ButtonStyles.Link,
-                    label: 'Support Server',
-                    url: SUPPORT_SERVER,
-                  },
-                ],
               },
             ],
           },

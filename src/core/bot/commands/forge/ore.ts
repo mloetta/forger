@@ -119,7 +119,14 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information\n- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**\n- Price: **$${res.price.toLocaleString('en-US')}**`,
+              content: `## Information
+- Chance: **${decimalToFraction(res.chance)}**
+- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**
+- Price: **$${res.price.toLocaleString('en-US')}**${
+                res.unique_price_multiplier != null
+                  ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier.toLocaleString('en-US')}x**`
+                  : ''
+              }`,
             },
           ],
         },

@@ -18,7 +18,6 @@ const rest = createRestManager({
 
 export const gateway = createGatewayManager({
   token: BOT_TOKEN,
-  intents: GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages,
   connection: await rest.getGatewayBot(),
   shardsPerWorker: 16,
   // totalShards: 1,

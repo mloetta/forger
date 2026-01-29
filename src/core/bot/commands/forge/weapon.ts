@@ -111,7 +111,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information\n- Damage: **${res.damage.toLocaleString('en-US')}**\n- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}s**\n- Damage Per Second: **${res.damage_per_second.toLocaleString('en-US')}**\n- Range: **${res.attack_range.toLocaleString('en-US')} studs**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Base Price: **$${res.base_price.toLocaleString('en-US')}**`,
+              content: `## Information\n- Damage: **${res.damage.toLocaleString('en-US')}**\n- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}s**\n- Damage Per Second: **${res.damage_per_second.toLocaleString('en-US')}**\n- Range: **${res.attack_range.toLocaleString('en-US')} studs**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Price: **$${res.price.toLocaleString('en-US')}**`,
             },
           ],
         },

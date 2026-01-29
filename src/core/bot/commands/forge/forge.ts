@@ -103,7 +103,7 @@ createApplicationCommand({
     }
   },
   async run(bot, interaction, options) {
-    const armorsRes = await makeRequest('http://localhost:9999/armors', {
+    const armorsRes = await makeRequest('http://172.18.0.1:6969/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -191,6 +191,7 @@ createApplicationCommand({
                     : null,
                   res.defense !== undefined ? `- Defense: **${res.defense.toLocaleString('en-US')}**` : null,
                   `- Total Ores: **${res.total_ores.toLocaleString('en-US')}**`,
+                  res.sell_price !== undefined ? `- Sell Price: **$${res.sell_price.toLocaleString('en-US')}**` : null,
                 ].filter(Boolean);
 
                 return lines.join('\n');

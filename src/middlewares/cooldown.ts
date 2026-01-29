@@ -1,13 +1,8 @@
 import { Collection } from 'discordeno';
 
-export type CooldownResult = {
-  executable: boolean;
-  remaining: number;
-};
-
 const cooldowns = new Collection<bigint, Collection<string, number>>();
 
-export function check(userId: bigint, commandName: string, cooldown: number): CooldownResult {
+export function check(userId: bigint, commandName: string, cooldown: number) {
   if (cooldown <= 0) throw new Error('Cooldown must be greater than 0.');
 
   const now = Date.now();
@@ -21,11 +16,11 @@ export function check(userId: bigint, commandName: string, cooldown: number): Co
   if (userCooldowns.has(commandName)) {
     const expiration = userCooldowns.get(commandName)!;
     if (now < expiration) {
-      const remaining = (expiration - now) / 1000;
-      return { executable: false, remaining };
+      return { executable: false, remaining: expiration };
     }
   }
 
-  userCooldowns.set(commandName, now + cooldown * 1000);
-  return { executable: true, remaining: 0 };
+  const expiration = now + cooldown * 1000;
+  userCooldowns.set(commandName, expiration);
+  return { executable: true, remaining: expiration };
 }

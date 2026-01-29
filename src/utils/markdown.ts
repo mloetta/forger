@@ -1,3 +1,4 @@
+import { TimestampStyle } from 'types/types';
 import { Emojis } from './emojis';
 
 /** Escapes backticks in a string to avoid breaking codeblocks. */
@@ -139,18 +140,6 @@ export function iconLinkPill(icon: keyof typeof Emojis, url: string, content: an
   if (content) return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
 
   return url;
-}
-
-export enum TimestampStyle {
-  ShortTime = 't',
-  MediumTime = 'T',
-  ShortDate = 'd',
-  LongDate = 'D',
-  LongDateShortTime = 'f',
-  FullDateShortTime = 'F',
-  ShortDateShortTime = 's',
-  ShortDateMediumTime = 'S',
-  RelativeTime = 'R',
 }
 
 /** Returns a Discord timestamp markdown.

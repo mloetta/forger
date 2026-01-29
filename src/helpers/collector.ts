@@ -1,27 +1,6 @@
 import { Collection } from 'discordeno';
 import EventListener from 'libs/listener';
-
-export interface CollectorOptions<T> {
-  key: string;
-  filter?: (item: T) => boolean | Promise<boolean>;
-  duration?: number;
-  max?: number;
-}
-
-export interface CollectorEvents<T> {
-  collect: [T];
-  dispose: [string];
-}
-
-export type CollectorType<T> = ReturnType<typeof createCollector<T>>;
-
-export interface CollectorData<T> {
-  id: string;
-  key: string;
-  max?: number;
-  filter?: (item: T) => boolean | Promise<boolean>;
-  listener: EventListener<CollectorEvents<T>>;
-}
+import type { CollectorData, CollectorEvents, CollectorOptions } from 'types/types';
 
 const collectors = new Collection<string, CollectorData<any>>();
 

@@ -1,21 +1,15 @@
-import type { CachedChannel, CachedRole, CommandPermission } from 'types/types';
+import type { Channel, CommandPermission, Guild, Role } from 'types/types';
 import { BitwisePermissionFlags, ChannelTypes, type PermissionStrings, separateOverwrites } from 'discordeno';
-import type { CachedGuild, CachedMember, Member } from 'types/types';
+import type { Member } from 'types/types';
 
 export class PermissionManager {
-  #guild: CachedGuild;
-  #channel: CachedChannel;
-  #author: CachedMember | Member;
-  #client: CachedMember | Member;
+  #guild: Guild;
+  #channel: Channel;
+  #author: Member;
+  #client: Member;
   #commandPerms: CommandPermission;
 
-  constructor(
-    guild: CachedGuild,
-    channel: CachedChannel,
-    author: CachedMember | Member,
-    client: CachedMember | Member,
-    commandPerms: CommandPermission,
-  ) {
+  constructor(guild: Guild, channel: Channel, author: Member, client: Member, commandPerms: CommandPermission) {
     this.#guild = guild;
     this.#channel = channel;
     this.#author = author;
@@ -59,7 +53,7 @@ export class PermissionManager {
 }
 
 /** Calculates the permissions this member has in the given guild */
-export function calculateBasePermissions(guild: CachedGuild, member: CachedMember | Member) {
+export function calculateBasePermissions(guild: Guild, member: Member) {
   if (!guild || !member) return 0n;
 
   let permissions = 0n;
@@ -81,7 +75,7 @@ export function calculateBasePermissions(guild: CachedGuild, member: CachedMembe
 }
 
 /** Calculates the permissions this member has for the given CachedChannel */
-export function calculateCachedChannelOverwrites(guild: CachedGuild, channelId: bigint, member: CachedMember | Member) {
+export function calculateCachedChannelOverwrites(guild: Guild, channelId: bigint, member: Member) {
   let channel = guild.channels!.get(channelId);
   if (!channel) return 0n;
 
@@ -166,7 +160,7 @@ export function calculateCachedChannelOverwrites(guild: CachedGuild, channelId: 
 }
 
 /** Calculates the permissions this role has for the given CachedChannel */
-export function calculateCachedChannelOverwritesForRole(guild: CachedGuild, channelId: bigint, roleId: bigint) {
+export function calculateCachedChannelOverwritesForRole(guild: Guild, channelId: bigint, roleId: bigint) {
   let channel = guild.channels!.get(channelId);
   if (!channel) return 0n;
 
@@ -272,11 +266,7 @@ export function validatePermissions(permissionBits: bigint, permissions: Permiss
 }
 
 /** Checks if the given member has these permissions in the given guild */
-export function hasGuildPermissions(
-  guild: CachedGuild,
-  member: CachedMember | Member,
-  permissions: PermissionStrings[],
-) {
+export function hasGuildPermissions(guild: Guild, member: Member, permissions: PermissionStrings[]) {
   // First we need the role permission bits this member has
   const basePermissions = calculateBasePermissions(guild, member);
   // Second use the validatePermissions function to check if the member has every permission
@@ -284,20 +274,16 @@ export function hasGuildPermissions(
 }
 
 /** Checks if the bot has these permissions in the given guild */
-export function botHasGuildPermissions(
-  guild: CachedGuild,
-  clientMember: CachedMember | Member,
-  permissions: PermissionStrings[],
-) {
+export function botHasGuildPermissions(guild: Guild, clientMember: Member, permissions: PermissionStrings[]) {
   // Since Bot is a normal member we can use the hasRolePermissions() function
   return hasGuildPermissions(guild, clientMember, permissions);
 }
 
 /** Checks if the given member has these permissions for the given channel */
 export function hasChannelPermissions(
-  guild: CachedGuild,
+  guild: Guild,
   channelId: bigint,
-  member: CachedMember | Member,
+  member: Member,
   permissions: PermissionStrings[],
 ) {
   // First we need the overwrite bits this member has
@@ -308,7 +294,7 @@ export function hasChannelPermissions(
 
 /** Checks if the given role has these permissions for the given channel */
 export function roleHasChannelPermissions(
-  guild: CachedGuild,
+  guild: Guild,
   channelId: bigint,
   roleId: bigint,
   permissions: PermissionStrings[],
@@ -328,8 +314,8 @@ export function missingPermissions<T extends PermissionStrings>(permissionBits: 
 
 /** Get the missing CachedGuild permissions this member has */
 export function getMissingGuildPermissions<T extends PermissionStrings>(
-  guild: CachedGuild,
-  member: CachedMember | Member,
+  guild: Guild,
+  member: Member,
   permissions: T[],
 ) {
   // First we need the role permission bits this member has
@@ -340,9 +326,9 @@ export function getMissingGuildPermissions<T extends PermissionStrings>(
 
 /** Get the missing CachedChannel permissions this member has */
 export function getMissingChannelPermissions<T extends PermissionStrings>(
-  guild: CachedGuild,
+  guild: Guild,
   channelId: bigint,
-  member: CachedMember | Member,
+  member: Member,
   permissions: T[],
 ) {
   // First we need the role permission bits this member has
@@ -352,11 +338,7 @@ export function getMissingChannelPermissions<T extends PermissionStrings>(
 }
 
 /** Throws an error if this member has not all of the given permissions */
-export function requireGuildPermissions(
-  guild: CachedGuild,
-  member: CachedMember | Member,
-  permissions: PermissionStrings[],
-) {
+export function requireGuildPermissions(guild: Guild, member: Member, permissions: PermissionStrings[]) {
   const missing = getMissingGuildPermissions(guild, member, permissions);
   if (missing.length) {
     // If the member is missing a permission throw an Error
@@ -366,9 +348,9 @@ export function requireGuildPermissions(
 
 /** Throws an error if this member has not all of the given permissions */
 export function requireChannelPermissions(
-  guild: CachedGuild,
+  guild: Guild,
   channelId: bigint,
-  member: CachedMember | Member,
+  member: Member,
   permissions: PermissionStrings[],
 ) {
   const missing = getMissingChannelPermissions(guild, channelId, member, permissions);
@@ -399,13 +381,13 @@ export function calculateBits(permissions: PermissionStrings[]) {
 }
 
 /** Gets the highest role from the member in this guild */
-export function highestRole(guild: CachedGuild, member: CachedMember | Member) {
+export function highestRole(guild: Guild, member: Member) {
   // Get the roles from the member
   const memberRoles = member.roles;
   // This member has no roles so the highest one is the @everyone role
   if (!memberRoles) return guild.roles!.get(guild.id)!;
 
-  let memberHighestRole: CachedRole | undefined;
+  let memberHighestRole: Role | undefined;
 
   for (const roleId of memberRoles) {
     const role = guild.roles!.get(roleId);
@@ -428,7 +410,7 @@ export function highestRole(guild: CachedGuild, member: CachedMember | Member) {
 }
 
 /** Checks if the first role is higher than the second role */
-export function higherRolePosition(guild: CachedGuild, roleId: bigint, otherRoleId: bigint) {
+export function higherRolePosition(guild: Guild, roleId: bigint, otherRoleId: bigint) {
   const role = guild.roles!.get(roleId);
   const otherRole = guild.roles!.get(otherRoleId);
 
@@ -441,7 +423,7 @@ export function higherRolePosition(guild: CachedGuild, roleId: bigint, otherRole
 }
 
 /** Checks if the member has a higher position than the given role */
-export function isHigherPosition(guild: CachedGuild, member: CachedMember | Member, compareRoleId: bigint) {
+export function isHigherPosition(guild: Guild, member: Member | Member, compareRoleId: bigint) {
   if (guild.ownerId === member.id) return true;
 
   const memberHighestRole = highestRole(guild, member);

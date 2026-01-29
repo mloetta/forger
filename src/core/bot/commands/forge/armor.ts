@@ -13,7 +13,7 @@ import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'armor',
-  description: 'View weapon details',
+  description: 'View armor details',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
