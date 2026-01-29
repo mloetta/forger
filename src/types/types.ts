@@ -11,10 +11,6 @@ import type { bot, CustomBot } from 'bot/bot';
 import EventListener from 'libs/listener';
 import type { createCollector } from 'helpers/collector';
 
-<<<<<<< HEAD
-=======
-// Command stuff
->>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
 export enum ApplicationCommandCategory {
   Core = 'Core',
   Forge = 'Forge',
@@ -111,14 +107,11 @@ interface TypeToResolvedMap {
   [ApplicationCommandOptionTypes.Attachment]: Attachment;
 }
 
-<<<<<<< HEAD
 export interface Event<T extends keyof Events> {
   name: T;
   run: (...args: Parameters<Events[T]>) => any;
 }
 
-=======
->>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
 // Type helpers
 export type Optional<T extends Record<any, any>, K extends keyof T> = Omit<T, K> & DeepPartial<Pick<T, K>>;
 

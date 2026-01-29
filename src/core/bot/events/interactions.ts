@@ -1,23 +1,10 @@
-import {
-  ButtonStyles,
-  commandOptionsParser,
-  createLogger,
-  InteractionTypes,
-  MessageComponentTypes,
-  MessageFlags,
-} from 'discordeno';
+import { commandOptionsParser, createLogger, InteractionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import { check } from 'middlewares/cooldown';
-<<<<<<< HEAD
 import { codeblock, highlight, icon, pill, smallPill, timestamp } from 'utils/markdown';
 import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
-=======
-import { codeblock, highlight, icon, pill, smallPill, timestamp, TimestampStyle } from 'utils/markdown';
-import type { Interaction, CollectorType, ApplicationCommand } from 'types/types';
->>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
-import { SUPPORT_SERVER } from 'core/constants';
 
 export const collectors = new Set<CollectorType<Interaction>>();
 
@@ -72,11 +59,6 @@ async function handleApplicationCommand(interaction: Interaction) {
     const result = check(interaction.user.id, command.name, command.details.cooldown);
 
     if (!result.executable) {
-<<<<<<< HEAD
-=======
-      const expires = Date.now() + result.remaining;
-
->>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
       if (command.acknowledge) {
         await interaction.edit({
           content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
@@ -95,7 +77,6 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.permissions) {
     if (!interaction.guildId) return;
-<<<<<<< HEAD
     const guild = await bot.helpers.getGuild(interaction.guildId);
     if (!guild) return;
 
@@ -108,20 +89,6 @@ async function handleApplicationCommand(interaction: Interaction) {
 
     if (!interaction.member) return;
     const author = await bot.helpers.getMember(interaction.guildId, interaction.member.id);
-=======
-    const cachedGuild = await bot.rest.getGuild(interaction.guildId);
-    if (!cachedGuild) return;
-
-    if (!interaction.channelId) return;
-    const cachedChannel = await bot.rest.getChannel(interaction.channelId);
-    if (!cachedChannel) return;
-
-    const client = await bot.rest.getMember(interaction.guildId, bot.id);
-    if (!client) return;
-
-    if (!interaction.member) return;
-    const author = await bot.rest.getMember(interaction.guildId, interaction.member.id);
->>>>>>> 07adef5b5cdf3ce41f03025153f89e738e44692f
     if (!author) return;
 
     const permissionManager = new PermissionManager(guild, channel, author, client, command.permissions);

@@ -19,7 +19,7 @@ Forger collects only:
 
 This data is used **exclusively for internal analytics**.
 
-**5. Intellectual Property**    
+**5. Intellectual Property**  
 The Forger name, branding, and associated identifiers remain the intellectual property of the developer.
 The Bot’s source code is licensed under the MIT License. Use, modification, and distribution of the source code are permitted in accordance with the terms of that license.
 Nothing in these Terms restricts rights expressly granted under the MIT License.
