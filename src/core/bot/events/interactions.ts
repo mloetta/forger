@@ -16,8 +16,6 @@ createEvent({
     logger.info(
       `Received interactionCreate event: ${interaction.id} (${interaction.type}) from ${interaction.user.username}`,
     );
-    
-    logger.info('six seven ')
 
     if (!interaction.data) return;
 

@@ -80,11 +80,15 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
+              type: MessageComponentTypes.TextDisplay,
+              content: `# ${res.name} (${res.ore})\n-# ${res.rarity}`,
+            },
+            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name} (${res.ore})\n-# ${res.rarity}`,
+                  content: `*${res.description}*`,
                 },
               ],
               accessory: {
@@ -93,10 +97,6 @@ createApplicationCommand({
                   url: res.image,
                 },
               },
-            },
-            {
-              type: MessageComponentTypes.TextDisplay,
-              content: `*${res.description}*`,
             },
             {
               type: MessageComponentTypes.ActionRow,

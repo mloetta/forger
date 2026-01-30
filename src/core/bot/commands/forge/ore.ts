@@ -81,11 +81,15 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
+              type: MessageComponentTypes.TextDisplay,
+              content: `# ${res.name}\n-# ${res.rarity}`,
+            },
+            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name}\n-# ${res.rarity}`,
+                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
                 },
               ],
               accessory: {
@@ -94,10 +98,6 @@ createApplicationCommand({
                   url: res.image,
                 },
               },
-            },
-            {
-              type: MessageComponentTypes.TextDisplay,
-              content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
             },
             {
               type: MessageComponentTypes.ActionRow,

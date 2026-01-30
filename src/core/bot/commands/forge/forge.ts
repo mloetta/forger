@@ -103,7 +103,7 @@ createApplicationCommand({
     }
   },
   async run(bot, interaction, options) {
-    const armorsRes = await makeRequest('http://172.18.0.1:6969/armors', {
+    const armorsRes = await makeRequest('http://localhost:9999/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -135,23 +135,21 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
+              type: MessageComponentTypes.TextDisplay,
+              content: `# ${res.name}`,
+            },
+            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name}`,
+                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
                 },
               ],
               accessory: {
                 type: MessageComponentTypes.Thumbnail,
-                media: {
-                  url: res.image,
-                },
+                media: { url: res.image },
               },
-            },
-            {
-              type: MessageComponentTypes.TextDisplay,
-              content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
             },
             ...(res.traits && res.traits.length > 0
               ? [
