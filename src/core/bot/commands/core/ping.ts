@@ -28,7 +28,7 @@ createApplicationCommand({
     const restLatency = Date.now() - snowflakeToTimestamp(interaction.id);
 
     await interaction.edit(
-      `${icon('NeutralPing')} Pong!\n-# Gateway (Shard: #${shard}): **${gatewayLatency}ms** ・ REST: **${restLatency}ms**`,
+      `${icon('Ping')} Pong!\n-# Gateway (Shard: #${shard}): **${gatewayLatency}ms** ・ REST: **${restLatency}ms**`,
     );
   },
 });

@@ -16,6 +16,8 @@ createEvent({
     logger.info(
       `Received interactionCreate event: ${interaction.id} (${interaction.type}) from ${interaction.user.username}`,
     );
+    
+    logger.info('six seven ')
 
     if (!interaction.data) return;
 
@@ -37,7 +39,7 @@ async function handleApplicationCommand(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Warning')} The command: ${highlight(interaction.data.name)} was not found`,
+      content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found`,
       flags: MessageFlags.Ephemeral,
     });
 
@@ -61,12 +63,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!result.executable) {
       if (command.acknowledge) {
         await interaction.edit({
-          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+          content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -98,12 +100,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!authorHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
+          content: `${icon('Exclamation')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
+          content: `${icon('Exclamation')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -114,12 +116,12 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!clientHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Warning')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
+          content: `${icon('Exclamation')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Warning')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
+          content: `${icon('Exclamation')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -154,7 +156,7 @@ async function handleApplicationCommand(interaction: Interaction) {
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Error')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+                content: `${icon('Wrong')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
               },
               {
                 type: MessageComponentTypes.Separator,
@@ -176,7 +178,7 @@ async function handleApplicationCommand(interaction: Interaction) {
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Error')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+                content: `${icon('Wrong')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
               },
               {
                 type: MessageComponentTypes.Separator,
@@ -202,7 +204,7 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Warning')} The command: ${interaction.data.name} was not found`,
+      content: `${icon('Exclamation')} The command: ${interaction.data.name} was not found`,
       flags: MessageFlags.Ephemeral,
     });
 

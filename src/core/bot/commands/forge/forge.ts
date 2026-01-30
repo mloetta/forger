@@ -135,21 +135,23 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name}`,
-            },
-            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
+                  content: `# ${res.name}`,
                 },
               ],
               accessory: {
                 type: MessageComponentTypes.Thumbnail,
-                media: { url: res.image },
+                media: {
+                  url: res.image,
+                },
               },
+            },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
             },
             ...(res.traits && res.traits.length > 0
               ? [
