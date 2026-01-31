@@ -5,6 +5,7 @@ import { TimestampStyle, type Interaction, type CollectorType, type ApplicationC
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
+import { MAINTENANCE } from 'core/variables';
 
 export const collectors = new Set<CollectorType<Interaction>>();
 
@@ -37,14 +38,43 @@ async function handleApplicationCommand(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found`,
-      flags: MessageFlags.Ephemeral,
+      components: [
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found.`,
+            },
+          ],
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
     });
 
     return;
   }
 
   if (command.dev && interaction.user.id !== BigInt('782946852278501407')) return;
+
+  if (MAINTENANCE.toLowerCase() === 'true') {
+    await interaction.respond({
+      components: [
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Warning')} The bot is currently under maintenance.`,
+            },
+          ],
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+    });
+
+    return;
+  }
 
   const incognito = Boolean(interaction.data.options?.find((option) => option.name === 'incognito')?.value);
 
@@ -61,13 +91,33 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!result.executable) {
       if (command.acknowledge) {
         await interaction.edit({
-          content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       }
 
@@ -98,13 +148,33 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!authorHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Exclamation')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Exclamation')} You lack the following permissions: ${missingAuthorPerms.join(', ')} required to use this command`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       }
 
@@ -114,13 +184,33 @@ async function handleApplicationCommand(interaction: Interaction) {
     if (!clientHasPerm) {
       if (acknowledged) {
         await interaction.edit({
-          content: `${icon('Exclamation')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       } else {
         await interaction.respond({
-          content: `${icon('Exclamation')} I lack the following permissions: ${missingClientPerms.join(', ')} required to execute this command`,
-          flags: MessageFlags.Ephemeral,
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon('Exclamation')} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2,
         });
       }
 
@@ -202,8 +292,18 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {
     await interaction.respond({
-      content: `${icon('Exclamation')} The command: ${interaction.data.name} was not found`,
-      flags: MessageFlags.Ephemeral,
+      components: [
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found.`,
+            },
+          ],
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
     });
 
     return;

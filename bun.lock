@@ -11,7 +11,7 @@
         "@influxdata/influxdb-client": "^1.35.0",
         "@napi-rs/canvas": "^0.1.81",
         "@tolga1452/toolbox.js": "^2.0.1",
-        "discordeno": "22.0.1-next.9255e29",
+        "discordeno": "22.0.1-next.758e75f",
         "fastify": "^5.6.1",
       },
       "devDependencies": {
@@ -24,15 +24,15 @@
     },
   },
   "packages": {
-    "@discordeno/bot": ["@discordeno/bot@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/gateway": "22.0.1-next.9255e29", "@discordeno/rest": "22.0.1-next.9255e29", "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29" } }, "sha512-xBP82Wys5kj4gaEe4hybTMWd6secT2TM2xtLfkscGG7AhncsvuYpyTxmYWE0imaII+k1dYqUmM1dK0tTbRElrg=="],
+    "@discordeno/bot": ["@discordeno/bot@22.0.1-next.758e75f", "", { "dependencies": { "@discordeno/gateway": "22.0.1-next.758e75f", "@discordeno/rest": "22.0.1-next.758e75f", "@discordeno/types": "22.0.1-next.758e75f", "@discordeno/utils": "22.0.1-next.758e75f" } }, "sha512-I4WhgvKvqRB15znTJKm3GV8NesB9eQFKsi4cNgNIunwxi9T5iFLxSQnnS4sHVHvQ+cRb/vu0IAkrOX3kcl6JVw=="],
 
-    "@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29", "ws": "^8.19.0" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-Hlt1NaBWYmQbVVcgfUbxhRviCd8C112BXlStjzHD9BF/uLAx6ghrHCat5d8waIkohoAVo0Ni1PIW/vKBRcGY5Q=="],
+    "@discordeno/gateway": ["@discordeno/gateway@22.0.1-next.758e75f", "", { "dependencies": { "@discordeno/types": "22.0.1-next.758e75f", "@discordeno/utils": "22.0.1-next.758e75f", "ws": "^8.19.0" }, "optionalDependencies": { "fzstd": "^0.1.1" } }, "sha512-cjHrP1nSvcTvqZW54ijzl6KXiipO8G3v9mQjwbnPp4TntH6fWcxNpRP7ae9HpqgYnPaYPPeSUETDgL3YyGG5HA=="],
 
-    "@discordeno/rest": ["@discordeno/rest@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29" } }, "sha512-ndXSGvSym73eN3nt9jNx0MNRDcj3GngV+Of2LjN6BNVNXrziuk7vzujfnkAd+Nz4IpfR+XEztwUX0G7pTgdKMw=="],
+    "@discordeno/rest": ["@discordeno/rest@22.0.1-next.758e75f", "", { "dependencies": { "@discordeno/types": "22.0.1-next.758e75f", "@discordeno/utils": "22.0.1-next.758e75f" } }, "sha512-it4IPQ9WgjnbQMKv5FFz5hsFCjX+RCWUK3P1Utyc00WKUOy5jeIHOM41kwzKGDQ1PsVrDDqVPBtP/vwUCRMyaA=="],
 
-    "@discordeno/types": ["@discordeno/types@22.0.1-next.9255e29", "", {}, "sha512-jAIHfDBH+VS9qd2nuuJyf2YALjw1SZ+8zRqsPipgSdfbazjmAgSQHu9hiPsl+Utr4vx8so0zPknuCW/wjiBmdQ=="],
+    "@discordeno/types": ["@discordeno/types@22.0.1-next.758e75f", "", {}, "sha512-ZcPFV2RpKfvlx3ijrVANVNePZTpFem7BT6RBZUrc2SFhdzxe8bI+o5qLRFghV/+entPSaJLDkJHe6+bA8h6edQ=="],
 
-    "@discordeno/utils": ["@discordeno/utils@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/types": "22.0.1-next.9255e29" } }, "sha512-3oaNLUsua5pNg1aY97n8mSd+D59cA391uYhPfHctjlZR+0BRdQ63oOXBEhE0tCgDFCtvJhYw7sCLTlJpJydnfg=="],
+    "@discordeno/utils": ["@discordeno/utils@22.0.1-next.758e75f", "", { "dependencies": { "@discordeno/types": "22.0.1-next.758e75f" } }, "sha512-vop/GIclK9aJ0C5XeG07QyFEYpZs/44d+hD+sEUl7q9q1jWPhBxQOyhJITTpVKneFY9SfL575aUZpGT5v5X5tg=="],
 
     "@fastify/ajv-compiler": ["@fastify/ajv-compiler@4.0.5", "", { "dependencies": { "ajv": "^8.12.0", "ajv-formats": "^3.0.1", "fast-uri": "^3.0.0" } }, "sha512-KoWKW+MhvfTRWL4qrhUwAAZoaChluo0m0vbiJlGMt2GXvL4LVPQEjt8kSpHI3IBq5Rez8fg+XeH3cneztq+C7A=="],
 
@@ -106,7 +106,7 @@
 
     "dequal": ["dequal@2.0.3", "", {}, "sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA=="],
 
-    "discordeno": ["discordeno@22.0.1-next.9255e29", "", { "dependencies": { "@discordeno/bot": "22.0.1-next.9255e29", "@discordeno/gateway": "22.0.1-next.9255e29", "@discordeno/rest": "22.0.1-next.9255e29", "@discordeno/types": "22.0.1-next.9255e29", "@discordeno/utils": "22.0.1-next.9255e29" } }, "sha512-/LDAM5w1Hjhv0J6pptIZY7mzFATniLX7bgE8qgxgJRuRrVvWlF3shK2zbMKo30XKvpWrYmpzqWRQcPgBFvbulg=="],
+    "discordeno": ["discordeno@22.0.1-next.758e75f", "", { "dependencies": { "@discordeno/bot": "22.0.1-next.758e75f", "@discordeno/gateway": "22.0.1-next.758e75f", "@discordeno/rest": "22.0.1-next.758e75f", "@discordeno/types": "22.0.1-next.758e75f", "@discordeno/utils": "22.0.1-next.758e75f" } }, "sha512-0M9Nn4Rh1tanK1pHqMkjecK6Oh/ZdyIWgQN8bKYa09K4NMKvoaNP8UUWaHLkcWNpmb0sjaMRFdzwUzwH96PBXw=="],
 
     "dotenv": ["dotenv@17.2.3", "", {}, "sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w=="],
 
