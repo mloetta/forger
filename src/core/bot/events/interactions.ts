@@ -1,6 +1,6 @@
 import { commandOptionsParser, createLogger, InteractionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import { check } from 'middlewares/cooldown';
-import { codeblock, highlight, icon, pill, smallPill, timestamp } from 'utils/markdown';
+import { codeblock, highlight, icon, pill, smallPill, stringwrapPreserveWords, timestamp } from 'utils/markdown';
 import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
@@ -57,7 +57,7 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.dev && interaction.user.id !== BigInt('782946852278501407')) return;
 
-  if (MAINTENANCE.toLowerCase() === 'true') {
+  if (MAINTENANCE.toLowerCase() === 'true' && interaction.user.id !== BigInt('782946852278501407')) {
     await interaction.respond({
       components: [
         {
@@ -78,12 +78,7 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   const incognito = Boolean(interaction.data.options?.find((option) => option.name === 'incognito')?.value);
 
-  let acknowledged = false;
-  if (command.acknowledge) {
-    await interaction.defer(command.ephemeral || incognito);
-
-    acknowledged = true;
-  }
+  if (command.acknowledge) await interaction.defer(command.ephemeral || incognito);
 
   if (command.details.cooldown) {
     const result = check(interaction.user.id, command.name, command.details.cooldown);
@@ -146,7 +141,7 @@ async function handleApplicationCommand(interaction: Interaction) {
     const { authorHasPerm, clientHasPerm, missingAuthorPerms, missingClientPerms } = permissionManager.check();
 
     if (!authorHasPerm) {
-      if (acknowledged) {
+      if (command.acknowledge) {
         await interaction.edit({
           components: [
             {
@@ -182,7 +177,7 @@ async function handleApplicationCommand(interaction: Interaction) {
     }
 
     if (!clientHasPerm) {
-      if (acknowledged) {
+      if (command.acknowledge) {
         await interaction.edit({
           components: [
             {
@@ -236,7 +231,7 @@ async function handleApplicationCommand(interaction: Interaction) {
   } catch (e) {
     logger.error(`Command ${command.name} has errored.`, e);
 
-    if (acknowledged) {
+    if (command.acknowledge) {
       await interaction.edit({
         components: [
           {
@@ -251,7 +246,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: codeblock('ts', e instanceof Error ? e.message : e),
+                content: codeblock('ts', e instanceof Error ? e.message : stringwrapPreserveWords(String(e), 1500)),
               },
             ],
           },
@@ -273,7 +268,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: codeblock('ts', e instanceof Error ? e.message : e),
+                content: codeblock('ts', e instanceof Error ? e.message : stringwrapPreserveWords(String(e), 1500)),
               },
             ],
           },
