@@ -10,11 +10,22 @@ import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
 import type { ApplicationCommand } from 'types/types';
 
 const desiredProperties = createDesiredPropertiesObject({
+  attachment: {
+    contentType: true,
+    filename: true,
+    url: true,
+  },
   channel: {
     guildId: true,
     id: true,
     parentId: true,
     type: true,
+  },
+  component: {
+    component: true,
+    components: true,
+    value: true,
+    values: true,
   },
   guild: {
     channels: true,

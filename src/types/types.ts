@@ -14,6 +14,7 @@ import type { createCollector } from 'helpers/collector';
 export enum ApplicationCommandCategory {
   Core = 'Core',
   Forge = 'Forge',
+  Dev = 'Dev',
 }
 
 export enum TimestampStyle {

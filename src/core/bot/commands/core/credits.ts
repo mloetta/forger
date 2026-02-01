@@ -29,14 +29,15 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Team\n@mloetta - Lead Developer\n@h0gtt - Developer\n@merpixhq - Designer`,
+              content: '## Team\n@mloetta - Lead Developer\n@h0gtt - Developer\n@merpixhq - Designer',
             },
             {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Contributors\n@wolfypro - Host Provider\n@e.walk\n@dr.s.moller\n@woos_1\n@zach.08ll\n@daemi_rukiru`,
+              content:
+                '## Contributors\n@wolfypro - Host Provider\n@e.walk\n@dr.s.moller\n@woos_1\n@zach.08ll\n@daemi_rukiru',
             },
             {
               type: MessageComponentTypes.Separator,

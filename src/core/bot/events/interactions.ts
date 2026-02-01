@@ -1,11 +1,13 @@
 import { commandOptionsParser, createLogger, InteractionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import { check } from 'middlewares/cooldown';
-import { codeblock, highlight, icon, pill, smallPill, stringwrapPreserveWords, timestamp } from 'utils/markdown';
+import { codeblock, highlight, icon, link, pill, smallPill, stringwrapPreserveWords, timestamp } from 'utils/markdown';
 import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
 import { MAINTENANCE } from 'core/variables';
+import { redis } from 'utils/redis';
+import { SUPPORT_SERVER } from 'core/constants';
 
 export const collectors = new Set<CollectorType<Interaction>>();
 
@@ -34,6 +36,26 @@ createEvent({
 
 async function handleApplicationCommand(interaction: Interaction) {
   if (!interaction.data) return;
+
+  const blacklisted = await redis.sIsMember('blacklist:users', interaction.user.id.toString());
+  if (blacklisted) {
+    await interaction.respond({
+      components: [
+        {
+          type: MessageComponentTypes.Container,
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `${icon('Wrong')} You have been blacklisted from using this bot. Appeal ${link(SUPPORT_SERVER, 'here')}.`,
+            },
+          ],
+        },
+      ],
+      flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+    });
+
+    return;
+  }
 
   const command = bot.commands.get(interaction.data.name) as ApplicationCommand;
   if (!command) {

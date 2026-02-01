@@ -3,8 +3,8 @@ import { BOT_TOKEN } from 'core/variables';
 import { bot } from './bot';
 import { omit, readDirectory } from 'utils/utils';
 import { join } from 'path';
-import type { ApplicationCommandOption } from 'helpers/command';
 import 'utils/process';
+import type { ApplicationCommandOption } from 'types/types';
 
 const rest = createRestManager({ token: BOT_TOKEN });
 const logger = createLogger({ name: 'Application Commands' });
@@ -19,7 +19,6 @@ const commands = bot.commands.array().map((cmd) => {
     'permissions',
     'preconditions',
     'details',
-    'rateLimit',
     'acknowledge',
     'ephemeral',
     'dev',
