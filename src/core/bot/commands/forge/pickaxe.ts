@@ -1,4 +1,4 @@
-import { BOT_TOKEN } from 'core/variables';
+import { FORGE_API_KEY } from 'core/variables';
 import {
   ApplicationCommandOptionTypes,
   DiscordApplicationIntegrationType,
@@ -7,8 +7,8 @@ import {
   MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory } from 'types/types';
-import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
+import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
+import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'pickaxe',
@@ -40,11 +40,11 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9999/pickaxes', {
+    const res = await makeRequest('http://localhost:9998/pickaxes', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -63,14 +63,14 @@ createApplicationCommand({
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9999/pickaxes`, {
+    const res = await makeRequest(`http://localhost:9998/pickaxes`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
         name: options.pickaxe,
       },
       headers: {
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -122,7 +122,7 @@ createApplicationCommand({
               type: MessageComponentTypes.TextDisplay,
               content: (() => {
                 const lines = [
-                  `## Information`,
+                  `## Information:`,
                   `- Mine Power: **${res.mine_power}**`,
                   res.mine_speed !== undefined
                     ? `- Mine Speed: **${res.mine_speed.toLocaleString('en-US', { style: 'percent' })}**`
@@ -131,13 +131,19 @@ createApplicationCommand({
                     ? `- Luck Boost: **${res.luck_boost.toLocaleString('en-US', { style: 'percent' })}**`
                     : null,
                   res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots.toLocaleString('en-US')}**` : null,
-                  res.rune_price !== undefined ? `- Rune Price: **$${res.rune_price.toLocaleString('en-US')}**` : null,
-                  res.price !== undefined ? `- Price: **$${res.price.toLocaleString('en-US')}**` : null,
+                  res.rune_price !== undefined
+                    ? `- Rune Price: **${res.rune_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
+                    : null,
+                  res.price !== undefined
+                    ? `- Price: **${res.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
+                    : null,
                   res.tickets !== undefined ? `- Tickets: **${res.tickets.toLocaleString('en-US')}**` : null,
                   res.goblin_price !== undefined
-                    ? `- Goblin Price: **$${res.goblin_price.toLocaleString('en-US')}**`
+                    ? `- Goblin Price: **${res.goblin_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
                     : null,
-                  res.sell_price !== undefined ? `- Sell Price: **$${res.sell_price.toLocaleString('en-US')}**` : null,
+                  res.sell_price !== undefined
+                    ? `- Sell Price: **${res.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
+                    : null,
                 ].filter(Boolean);
 
                 return lines.join('\n');

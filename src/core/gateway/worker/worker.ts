@@ -9,7 +9,8 @@ import {
   ShardSocketCloseCodes,
 } from 'discordeno';
 import type { ManagerMessage, WorkerCreateData, WorkerMessage } from './types.js';
-import { makeRequest, RequestMethod, ResponseType } from 'utils/request.js';
+import { makeRequest } from 'utils/request.js';
+import { RequestMethod, ResponseType } from 'types/types.js';
 
 assert(parentPort);
 

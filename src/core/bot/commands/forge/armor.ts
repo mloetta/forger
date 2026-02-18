@@ -1,4 +1,4 @@
-import { BOT_TOKEN } from 'core/variables';
+import { FORGE_API_KEY } from 'core/variables';
 import {
   ApplicationCommandOptionTypes,
   DiscordApplicationIntegrationType,
@@ -7,8 +7,8 @@ import {
   MessageFlags,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory } from 'types/types';
-import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
+import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
+import { makeRequest } from 'utils/request';
 import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
@@ -41,11 +41,11 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9999/armors', {
+    const res = await makeRequest('http://localhost:9998/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -61,14 +61,14 @@ createApplicationCommand({
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9999/armors`, {
+    const res = await makeRequest(`http://localhost:9998/armors`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
         name: options.armor,
       },
       headers: {
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -98,7 +98,7 @@ createApplicationCommand({
                 {
                   type: MessageComponentTypes.StringSelect,
                   customId: 'armor-location',
-                  placeholder: 'Obtainable From',
+                  placeholder: 'Obtainable From:',
                   options: res.from.map((item: any) => ({
                     label: item,
                     value: item.toLowerCase().replace(/\s+/g, '_'),
@@ -111,7 +111,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information\n- Health: **${res.health.toLocaleString('en-US', { style: 'percent' })}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Base Price: **$${res.base_price.toLocaleString('en-US')}**`,
+              content: `## Information:\n- Health: **${res.health.toLocaleString('en-US', { style: 'percent' })}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Base Price: **${res.base_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`,
             },
           ],
         },

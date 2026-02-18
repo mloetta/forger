@@ -8,9 +8,9 @@ import {
   type ActionRow,
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory } from 'types/types';
+import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { stringwrapPreserveWords } from 'utils/markdown';
-import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
+import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'forge',
@@ -56,7 +56,7 @@ createApplicationCommand({
         .toLowerCase() ?? '';
 
     const [weaponsRes, armorsRes] = await Promise.all([
-      makeRequest('http://localhost:9999/weapons', {
+      makeRequest('http://localhost:9998/weapons', {
         method: RequestMethod.GET,
         response: ResponseType.JSON,
         headers: {
@@ -64,7 +64,7 @@ createApplicationCommand({
         },
       }),
 
-      makeRequest('http://localhost:9999/armors', {
+      makeRequest('http://localhost:9998/armors', {
         method: RequestMethod.GET,
         response: ResponseType.JSON,
         headers: {
@@ -103,7 +103,7 @@ createApplicationCommand({
     }
   },
   async run(bot, interaction, options) {
-    const armorsRes = await makeRequest('http://localhost:9999/armors', {
+    const armorsRes = await makeRequest('http://localhost:9998/armors', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -114,7 +114,7 @@ createApplicationCommand({
     let mode: 'Weapon' | 'Armor' = 'Weapon';
     if (armorsRes.some((a: any) => a.type === options.category)) mode = 'Armor';
 
-    const res = await makeRequest('http://localhost:9999/forge', {
+    const res = await makeRequest('http://localhost:9998/forge', {
       method: RequestMethod.POST,
       response: ResponseType.JSON,
       body: {
@@ -175,7 +175,7 @@ createApplicationCommand({
               type: MessageComponentTypes.TextDisplay,
               content: (() => {
                 const lines = [
-                  `## Information`,
+                  `## Information:`,
                   res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi.toLocaleString('en-US')}x**` : null,
                   res.base_damage !== undefined
                     ? `- Base Damage: **${res.base_damage.toLocaleString('en-US')}**`

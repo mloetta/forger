@@ -23,87 +23,8 @@ export function readableFileSize(bytes: number, micro: boolean = false, precisio
   return `${bytes.toFixed(precision)} ${readableFileSizeUnits[unit]}`;
 }
 
-export function msToReadableTime(duration: number | string): string {
-  let totalMs = Number(duration);
-  if (isNaN(totalMs) || totalMs < 0) throw new Error(`Invalid duration: ${duration}`);
-
-  const units = [
-    { label: 'w', ms: 7 * 24 * 60 * 60 * 1000 },
-    { label: 'd', ms: 24 * 60 * 60 * 1000 },
-    { label: 'h', ms: 60 * 60 * 1000 },
-    { label: 'm', ms: 60 * 1000 },
-    { label: 's', ms: 1000 },
-  ];
-
-  const parts: string[] = [];
-
-  for (const unit of units) {
-    const value = Math.floor(totalMs / unit.ms);
-    if (value > 0) {
-      parts.push(`${value}${unit.label}`);
-      totalMs -= value * unit.ms;
-    }
-  }
-
-  if (parts.length === 0) return '0s';
-
-  return parts.join(' ');
-}
-
-export function readableTimeToMs(input: string): number {
-  if (typeof input !== 'string' || input.trim() === '') {
-    throw new Error(`Invalid format: ${input}`);
-  }
-
-  const regex = /(\d+(?:\.\d+)?)([smhdw])/gi;
-  let totalMs = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = regex.exec(input)) !== null) {
-    if (!match[1] || !match[2]) throw new Error(`Invalid format: ${input}`);
-
-    const value = parseFloat(match[1]);
-    const unit = match[2].toLowerCase();
-
-    switch (unit) {
-      case 's':
-        totalMs += value * 1000;
-        break;
-      case 'm':
-        totalMs += value * 60 * 1000;
-        break;
-      case 'h':
-        totalMs += value * 60 * 60 * 1000;
-        break;
-      case 'd':
-        totalMs += value * 24 * 60 * 60 * 1000;
-        break;
-      case 'w':
-        totalMs += value * 7 * 24 * 60 * 60 * 1000;
-        break;
-      default:
-        throw new Error(`Invalid unit: ${unit}`);
-    }
-  }
-
-  if (totalMs === 0) throw new Error(`Invalid format: ${input}`);
-  return totalMs;
-}
-
-export function timestamp() {
-  const now = new Date();
-  const year = now.getFullYear().toString().padStart(4, '0');
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
-export function commas(num: number | string) {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export function buildQueryString(params: Record<string, any>): string {
+  return new URLSearchParams(params).toString();
 }
 
 export function debounce(fn: any, delay: number) {
@@ -122,17 +43,6 @@ for (let i = 0; i < 256; i++) {
     c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
   }
   table[i] = c;
-}
-
-export function CRC32(string: string): string {
-  let crc = -1;
-  for (let i = 0; i < string.length; i++) {
-    crc = table[(crc ^ string.charCodeAt(i)) & 0xff]! ^ (crc >>> 8);
-  }
-
-  const hash = -(crc + 1) >>> 0;
-
-  return hash.toString(16).padStart(8, '0');
 }
 
 export function closestMatch(input: string, strings: readonly string[]): string | null {
@@ -226,7 +136,9 @@ export async function readDirectory(dir: string): Promise<any[]> {
 }
 
 export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: Value2): NonNullable<Value1> | Value2 {
-  return ifExists !== null && ifExists !== undefined ? (ifExists as NonNullable<Value1>) : ifNot;
+  return ifExists !== null && ifExists !== undefined && !Number.isNaN(ifExists)
+    ? (ifExists as NonNullable<Value1>)
+    : ifNot;
 }
 
 export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {

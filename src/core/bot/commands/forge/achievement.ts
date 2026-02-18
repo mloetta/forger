@@ -9,11 +9,10 @@ import {
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { makeRequest } from 'utils/request';
-import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
-  name: 'ore',
-  description: 'View ore details',
+  name: 'achievement',
+  description: 'View achievement details',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -26,9 +25,9 @@ createApplicationCommand({
   ],
   options: [
     {
-      name: 'ore',
-      description: 'Pick an ore to view',
       type: ApplicationCommandOptionTypes.String,
+      name: 'achievement',
+      description: 'Pick an achievement to view',
       required: true,
       autocomplete: true,
     },
@@ -41,7 +40,7 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9998/ores', {
+    const res = await makeRequest('http://localhost:9998/achievements', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -50,25 +49,25 @@ createApplicationCommand({
     });
 
     const choices = res
-      .filter((ore: any) => {
+      .filter((achievement: any) => {
         if (!focused) return true;
 
-        return ore.name.toLowerCase().includes(focused);
+        return achievement.name.toLowerCase().includes(focused);
       })
       .slice(0, 25)
-      .map((ore: any) => ({
-        name: ore.name,
-        value: ore.name,
+      .map((achievement: any) => ({
+        name: achievement.name,
+        value: achievement.name,
       }));
 
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9998/ores`, {
+    const res = await makeRequest(`http://localhost:9998/achievements`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        name: options.ore,
+        name: options.achievement,
       },
       headers: {
         'x-api-key': FORGE_API_KEY,
@@ -82,44 +81,14 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name}\n-# ${res.rarity}`,
-            },
-            {
-              type: MessageComponentTypes.Section,
-              components: [
-                {
-                  type: MessageComponentTypes.TextDisplay,
-                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
-                },
-              ],
-              accessory: {
-                type: MessageComponentTypes.Thumbnail,
-                media: {
-                  url: res.image,
-                },
-              },
-            },
-            {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'ore-location',
-                  placeholder: 'Obtainable From:',
-                  options: res.obtainable_from.map((item: any) => ({
-                    label: item.area,
-                    value: item.area.toLowerCase().replace(/\s+/g, '_'),
-                    description: item.from.join(', '),
-                  })),
-                },
-              ],
+              content: `# ${res.name}`,
             },
             {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**\n- Price: **$${res.price.toLocaleString('en-US')}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier.toLocaleString('en-US')}x**` : ''}`,
+              content: `## Stages:\n${res.stages.map((stage: any) => `Stage ${stage.stage}:\n- Requirement: **${stage.requirement.toLocaleString('en-US')} ${res.quest_type}**\n- Reward: **${stage.value.toLocaleString('en-US', { style: 'percent' })} ${stage.name}**`).join('\n\n')}`,
             },
           ],
         },

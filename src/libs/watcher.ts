@@ -1,12 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
-enum ItemType {
-  FILE = 0,
-  DIRECTORY = 1,
-  SYMLINK = 2,
-  UNKNOWN = 3,
-}
+import { ItemType } from 'types/types';
 
 export default class FolderWatcher {
   public folder: string;

@@ -1,8 +1,4 @@
-export interface Stack {
-  reject(res?: unknown): any;
-  resolve(val: unknown): any;
-  callback: () => any;
-}
+import type { Stack } from 'types/types';
 
 export default class CallStack {
   public stack = [] as Stack[];

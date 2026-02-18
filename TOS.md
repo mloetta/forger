@@ -33,6 +33,7 @@ Forger collects the following information:
 - **Blacklist Records**: User IDs of blacklisted users (stored in Redis)
 
 This data is used exclusively for:
+
 - Improving Bot performance and stability
 - Monitoring system health and availability
 - Processing user-submitted bug reports
@@ -42,6 +43,7 @@ This data is used exclusively for:
 **6. Third-Party Data**
 
 Forger does not intentionally share user data with third parties. However:
+
 - Bug reports are stored in a dedicated Discord forum channel within our support server
 - Analytics data may be stored in InfluxDB instances under the developer's control
 - All data remains under the developer's responsibility
@@ -63,6 +65,7 @@ Forger does not intentionally share user data with third parties. However:
 **9. Limitation of Liability**
 
 Forger is provided on an "as-is" basis. The developer:
+
 - Makes reasonable efforts to maintain the Bot's stability, security, and functionality
 - Does NOT guarantee uninterrupted or error-free operation
 - Shall not be held liable for indirect, incidental, or consequential damages resulting from use
@@ -71,6 +74,7 @@ Forger is provided on an "as-is" basis. The developer:
 **10. Modifications to Terms**
 
 The developer may update these Terms to reflect:
+
 - Improvements to the Bot
 - Legal requirements
 - Operational changes
@@ -81,6 +85,7 @@ When reasonably possible, material changes will be communicated to users. Contin
 **11. User Conduct and Termination**
 
 The developer may suspend or permanently ban users who:
+
 - Violate these Terms
 - Engage in abusive behavior
 - Attempt to exploit the Bot

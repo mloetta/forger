@@ -26,6 +26,11 @@ export function createCollector<T>(options: CollectorOptions<T>) {
     collected.push(item);
     listener.emit('collect', item);
 
+    if (options.duration) {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => listener.dispose('time'), options.duration);
+    }
+
     if (options.max && collected.length >= options.max) listener.dispose('max');
   };
 

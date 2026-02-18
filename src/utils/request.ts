@@ -1,40 +1,12 @@
 import http from 'http';
 import https from 'https';
+import { buildQueryString } from './utils';
+import { RequestMethod, ResponseType, type RequestOptions, type RequestResponse } from 'types/types';
 
-export enum RequestMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH',
-}
-
-export enum ResponseType {
-  TEXT = 'TEXT',
-  JSON = 'JSON',
-  BUFFER = 'BUFFER',
-}
-
-export type Response = {
-  [ResponseType.TEXT]: string;
-  [ResponseType.JSON]: { [key: string]: any };
-  [ResponseType.BUFFER]: Buffer;
-};
-
-export type Options<T extends ResponseType> = {
-  body?: any;
-  method?: RequestMethod;
-  response?: T;
-  params?: { [key: string]: any };
-  headers?: { [key: string]: any };
-  timeout?: number;
-};
-
-function buildQueryString(params: Record<string, any>): string {
-  return new URLSearchParams(params).toString();
-}
-
-export function makeRequest<T extends ResponseType>(url: string, options: Options<T>): Promise<Response[T]> {
+export function makeRequest<T extends ResponseType>(
+  url: string,
+  options: RequestOptions<T>,
+): Promise<RequestResponse[T]> {
   return new Promise((resolve, reject) => {
     try {
       const urlObj = new URL(url);
@@ -65,15 +37,15 @@ export function makeRequest<T extends ResponseType>(url: string, options: Option
                 switch (options.response) {
                   case ResponseType.JSON: {
                     const text = buffer.toString('utf-8').trim();
-                    resolve(text ? (JSON.parse(text) as Response[T]) : ({} as Response[T]));
+                    resolve(text ? (JSON.parse(text) as RequestResponse[T]) : ({} as RequestResponse[T]));
                     break;
                   }
                   case ResponseType.BUFFER: {
-                    resolve(buffer as Response[T]);
+                    resolve(buffer as RequestResponse[T]);
                     break;
                   }
                   default: {
-                    resolve(buffer.toString('utf-8') as Response[T]);
+                    resolve(buffer.toString('utf-8') as RequestResponse[T]);
                   }
                 }
               } catch (e) {

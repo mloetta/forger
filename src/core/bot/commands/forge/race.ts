@@ -9,11 +9,10 @@ import {
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { makeRequest } from 'utils/request';
-import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
-  name: 'ore',
-  description: 'View ore details',
+  name: 'race',
+  description: 'View race details',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -26,9 +25,9 @@ createApplicationCommand({
   ],
   options: [
     {
-      name: 'ore',
-      description: 'Pick an ore to view',
       type: ApplicationCommandOptionTypes.String,
+      name: 'race',
+      description: 'Pick a race to view',
       required: true,
       autocomplete: true,
     },
@@ -41,7 +40,7 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9998/ores', {
+    const res = await makeRequest('http://localhost:9998/races', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -50,25 +49,25 @@ createApplicationCommand({
     });
 
     const choices = res
-      .filter((ore: any) => {
+      .filter((race: any) => {
         if (!focused) return true;
 
-        return ore.name.toLowerCase().includes(focused);
+        return race.name.toLowerCase().includes(focused);
       })
       .slice(0, 25)
-      .map((ore: any) => ({
-        name: ore.name,
-        value: ore.name,
+      .map((race: any) => ({
+        name: race.name,
+        value: race.name,
       }));
 
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9998/ores`, {
+    const res = await makeRequest(`http://localhost:9998/races`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        name: options.ore,
+        name: options.race,
       },
       headers: {
         'x-api-key': FORGE_API_KEY,
@@ -81,15 +80,15 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name}\n-# ${res.rarity}`,
-            },
-            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `*${res.description}*${typeof res.trait === 'string' ? `\n> ${res.trait}` : `\n-# *${res.trait.type}*\n> *${res.trait.description}*`}`,
+                  content: `# ${res.name}\n-# ${res.rarity} (${res.drop_rate.toLocaleString('en-US', {
+                    style: 'percent',
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })})`,
                 },
               ],
               accessory: {
@@ -100,26 +99,13 @@ createApplicationCommand({
               },
             },
             {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'ore-location',
-                  placeholder: 'Obtainable From:',
-                  options: res.obtainable_from.map((item: any) => ({
-                    label: item.area,
-                    value: item.area.toLowerCase().replace(/\s+/g, '_'),
-                    description: item.from.join(', '),
-                  })),
-                },
-              ],
-            },
-            {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**\n- Price: **$${res.price.toLocaleString('en-US')}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier.toLocaleString('en-US')}x**` : ''}`,
+              content: `## Perks:\n${res.perks
+                .map((perk: any) => `**${perk.name}**\n- *${perk.description}*`)
+                .join('\n\n')}`,
             },
           ],
         },

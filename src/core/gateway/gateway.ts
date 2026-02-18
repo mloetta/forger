@@ -1,5 +1,5 @@
 import type { Worker } from 'worker_threads';
-import { createGatewayManager, createLogger, createRestManager, GatewayIntents } from 'discordeno';
+import { createGatewayManager, createLogger, createRestManager } from 'discordeno';
 import type { ManagerMessage, WorkerMessage } from './worker/types';
 import { REST_URL, BOT_TOKEN } from 'core/variables';
 import { createWorker } from './worker/createWorker';

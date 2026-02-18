@@ -19,3 +19,4 @@ export const INFLUX_TOKEN = env.get('influx_token');
 export const INFLUX_ORG = env.get('influx_org');
 export const INFLUX_BUCKET = env.get('influx_bucket');
 export const MAINTENANCE = env.get('maintenance', true);
+export const FORGE_API_KEY = env.get('forge_api_key', true);

@@ -1,10 +1,4 @@
-export enum SchemaType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Array = 'array',
-  Object = 'object',
-}
+import { SchemaType } from 'types/types';
 
 export namespace Schema {
   export interface ISchema {

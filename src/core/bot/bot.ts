@@ -6,8 +6,8 @@ import type {
   WorkerShardPayload,
 } from 'gateway/worker/types';
 import { GATEWAY_URL, REST_URL, BOT_TOKEN } from 'core/variables';
-import { makeRequest, RequestMethod, ResponseType } from 'utils/request';
-import type { ApplicationCommand } from 'types/types';
+import { RequestMethod, ResponseType, type ApplicationCommand } from 'types/types';
+import { makeRequest } from 'utils/request';
 
 const desiredProperties = createDesiredPropertiesObject({
   attachment: {
@@ -24,6 +24,7 @@ const desiredProperties = createDesiredPropertiesObject({
   component: {
     component: true,
     components: true,
+    customId: true,
     value: true,
     values: true,
   },
@@ -38,10 +39,14 @@ const desiredProperties = createDesiredPropertiesObject({
     data: true,
     guildId: true,
     id: true,
+    message: true,
     member: true,
     token: true,
     type: true,
     user: true,
+  },
+  message: {
+    id: true,
   },
   member: {
     communicationDisabledUntil: true,
