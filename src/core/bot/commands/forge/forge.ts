@@ -1,4 +1,4 @@
-import { BOT_TOKEN } from 'core/variables';
+import { FORGE_API_KEY } from 'core/variables';
 import {
   ApplicationCommandOptionTypes,
   DiscordApplicationIntegrationType,
@@ -60,7 +60,7 @@ createApplicationCommand({
         method: RequestMethod.GET,
         response: ResponseType.JSON,
         headers: {
-          'x-api-key': BOT_TOKEN,
+          'x-api-key': FORGE_API_KEY,
         },
       }),
 
@@ -68,7 +68,7 @@ createApplicationCommand({
         method: RequestMethod.GET,
         response: ResponseType.JSON,
         headers: {
-          'x-api-key': BOT_TOKEN,
+          'x-api-key': FORGE_API_KEY,
         },
       }),
     ]);
@@ -107,7 +107,7 @@ createApplicationCommand({
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -125,7 +125,7 @@ createApplicationCommand({
       },
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': BOT_TOKEN,
+        'x-api-key': FORGE_API_KEY,
       },
     });
 
@@ -143,7 +143,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage.toLocaleString('en-US', { style: 'percent' })})*`).join('\n')}`,
+                  content: `> *${res.recipe}*\n ${res.ore_percentages.map((item: any) => `> *${item.ore} (${item.percentage})*`).join('\n')}`,
                 },
               ],
               accessory: {
@@ -176,22 +176,16 @@ createApplicationCommand({
               content: (() => {
                 const lines = [
                   `## Information:`,
-                  res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi.toLocaleString('en-US')}x**` : null,
-                  res.base_damage !== undefined
-                    ? `- Base Damage: **${res.base_damage.toLocaleString('en-US')}**`
-                    : null,
-                  res.attack_speed !== undefined
-                    ? `- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}s**`
-                    : null,
-                  res.effective_dps !== undefined
-                    ? `- Effective DPS: **${res.effective_dps.toLocaleString('en-US')}**`
-                    : null,
+                  res.avg_multi !== undefined ? `- Multiplier: **${res.avg_multi}x**` : null,
+                  res.base_damage !== undefined ? `- Base Damage: **${res.base_damage}**` : null,
+                  res.attack_speed !== undefined ? `- Attack Speed: **${res.attack_speed}s**` : null,
+                  res.effective_dps !== undefined ? `- Effective DPS: **${res.effective_dps}**` : null,
                   res.avg_damage_per_hit !== undefined
-                    ? `- Average Damage per Hit: **${res.avg_damage_per_hit.toLocaleString('en-US')}**`
+                    ? `- Average Damage per Hit: **${res.avg_damage_per_hit}**`
                     : null,
-                  res.defense !== undefined ? `- Defense: **${res.defense.toLocaleString('en-US')}**` : null,
-                  `- Total Ores: **${res.total_ores.toLocaleString('en-US')}**`,
-                  res.sell_price !== undefined ? `- Sell Price: **$${res.sell_price.toLocaleString('en-US')}**` : null,
+                  res.defense !== undefined ? `- Defense: **${res.defense}**` : null,
+                  `- Total Ores: **${res.total_ores}**`,
+                  res.sell_price !== undefined ? `- Sell Price: **$${res.sell_price}**` : null,
                 ].filter(Boolean);
 
                 return lines.join('\n');

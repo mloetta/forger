@@ -13,7 +13,7 @@ import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'rune',
-  description: 'View rune details',
+  description: 'Views information about the selected rune',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -28,7 +28,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'rune',
-      description: 'Pick a rune to view',
+      description: 'Pick a rune to view information about',
       required: true,
       autocomplete: true,
     },
@@ -114,9 +114,9 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Primary Traits:\n${res.primary_traits
+              content: `${res.primary_traits
                 .map((trait: any) => {
-                  return `**${trait.name}**\n*${trait.description}*${trait.value_range ? `\n- Value: **${trait.value_range.min.toLocaleString('en-US', { style: 'percent' })}${trait.value_range.max ? ` - ${trait.value_range.max.toLocaleString('en-US', { style: 'percent' })}` : ''}**` : ''}${trait.duration_range ? `\n- Duration: **${trait.duration_range.min.toLocaleString('en-US')}s${trait.duration_range.max ? ` - ${trait.duration_range.max.toLocaleString('en-US')}s` : ''}**` : ''}${trait.dot_per_second_weapon_fraction_range ? `\n- DoT/s: **${trait.dot_per_second_weapon_fraction_range.min.toLocaleString('en-US')}${trait.dot_per_second_weapon_fraction_range.max ? ` - ${trait.dot_per_second_weapon_fraction_range.max.toLocaleString('en-US')}` : ''}**` : ''}${trait.aoe_weapon_fraction_range ? `\n- AoE: **${trait.aoe_weapon_fraction_range.min.toLocaleString('en-US')}${trait.aoe_weapon_fraction_range.max ? ` - ${trait.aoe_weapon_fraction_range.max.toLocaleString('en-US')}` : ''}**` : ''}${trait.lifesteal_fraction_range ? `\n- Lifesteal: **${trait.lifesteal_fraction_range.min.toLocaleString('en-US')}${trait.lifesteal_fraction_range.max ? ` - ${trait.lifesteal_fraction_range.max.toLocaleString('en-US')}` : ''}**` : ''}${trait.reflect_fraction_range ? `\n- Reflect: **${trait.reflect_fraction_range.min.toLocaleString('en-US')}${trait.reflect_fraction_range.max ? ` - ${trait.reflect_fraction_range.max.toLocaleString('en-US')}` : ''}**` : ''}${trait.slow_percent_range ? `\n- Slow: **${trait.slow_percent_range.min.toLocaleString('en-US', { style: 'percent' })}${trait.slow_percent_range.max ? ` - ${trait.slow_percent_range.max.toLocaleString('en-US', { style: 'percent' })}` : ''}**` : ''}${trait.buff_percent_range ? `\n- Buff: **${trait.buff_percent_range.min.toLocaleString('en-US', { style: 'percent' })}${trait.buff_percent_range.max ? ` - ${trait.buff_percent_range.max.toLocaleString('en-US', { style: 'percent' })}` : ''}**` : ''}${trait.reduction_percent_range ? `\n- Reduction: **${trait.reduction_percent_range.min.toLocaleString('en-US', { style: 'percent' })}${trait.reduction_percent_range.max ? ` - ${trait.reduction_percent_range.max.toLocaleString('en-US', { style: 'percent' })}` : ''}**` : ''}${trait.notes ? `\n\n*${trait.notes}*` : ''}`;
+                  return `**${trait.name}**\n*${trait.description}*${trait.value_range ? `\n- Value: **${trait.value_range.min}${trait.value_range.max ? ` - ${trait.value_range.max}` : ''}**` : ''}${trait.duration_range ? `\n- Duration: **${trait.duration_range.min}s${trait.duration_range.max ? ` - ${trait.duration_range.max}s` : ''}**` : ''}${trait.dot_per_second_weapon_fraction_range ? `\n- DoT/s: **${trait.dot_per_second_weapon_fraction_range.min}${trait.dot_per_second_weapon_fraction_range.max ? ` - ${trait.dot_per_second_weapon_fraction_range.max}` : ''}**` : ''}${trait.aoe_weapon_fraction_range ? `\n- AoE: **${trait.aoe_weapon_fraction_range.min}${trait.aoe_weapon_fraction_range.max ? ` - ${trait.aoe_weapon_fraction_range.max}` : ''}**` : ''}${trait.lifesteal_fraction_range ? `\n- Lifesteal: **${trait.lifesteal_fraction_range.min}${trait.lifesteal_fraction_range.max ? ` - ${trait.lifesteal_fraction_range.max}` : ''}**` : ''}${trait.reflect_fraction_range ? `\n- Reflect: **${trait.reflect_fraction_range.min}${trait.reflect_fraction_range.max ? ` - ${trait.reflect_fraction_range.max}` : ''}**` : ''}${trait.slow_percent_range ? `\n- Slow: **${trait.slow_percent_range.min}${trait.slow_percent_range.max ? ` - ${trait.slow_percent_range.max}` : ''}**` : ''}${trait.buff_percent_range ? `\n- Buff: **${trait.buff_percent_range.min}${trait.buff_percent_range.max ? ` - ${trait.buff_percent_range.max}` : ''}**` : ''}${trait.reduction_percent_range ? `\n- Reduction: **${trait.reduction_percent_range.min}${trait.reduction_percent_range.max ? ` - ${trait.reduction_percent_range.max}` : ''}**` : ''}${trait.notes ? `\n\n*${trait.notes}*` : ''}`;
                 })
                 .join('\n\n')}`,
             },
@@ -124,7 +124,7 @@ createApplicationCommand({
               ? ([
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `## Rune Proc:\n**${res.proc.type}**${res.proc.notes ? `\n-# *${res.proc.notes}*` : ''}${res.proc.chance_range ? `\n- Chance: **${res.proc.chance_range.min.toLocaleString('en-US')}${res.proc.chance_range.max ? ` - ${res.proc.chance_range.max.toLocaleString('en-US')}` : ''}**` : ''}${res.proc.cooldown_range ? `\n- Cooldown: **${res.proc.cooldown_range.min.toLocaleString('en-US')}s${res.proc.cooldown_range.max ? ` - ${res.proc.cooldown_range.max.toLocaleString('en-US')}s` : ''}**` : ''}`,
+                    content: `**${res.proc.type}**${res.proc.notes ? `\n-# *${res.proc.notes}*` : ''}${res.proc.chance_range ? `\n- Chance: **${res.proc.chance_range.min}${res.proc.chance_range.max ? ` - ${res.proc.chance_range.max}` : ''}**` : ''}${res.proc.cooldown_range ? `\n- Cooldown: **${res.proc.cooldown_range.min}s${res.proc.cooldown_range.max ? ` - ${res.proc.cooldown_range.max}s` : ''}**` : ''}`,
                   },
                 ] satisfies MessageComponents)
               : []),
@@ -136,7 +136,7 @@ createApplicationCommand({
                   },
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `## Tier 2 Information:\n**Subtrait Groups:**\n${res.allowed_subtrait_groups.map((group: string) => `- ${group}`).join('\n')}${res.tier2_notes ? `\n\n-# *${res.tier2_notes}*` : ''}`,
+                    content: `**Subtrait Groups:**\n${res.allowed_subtrait_groups.map((group: string) => `- ${group}`).join('\n')}${res.tier2_notes ? `\n\n-# *${res.tier2_notes}*` : ''}`,
                   },
                 ] satisfies MessageComponents)
               : []),

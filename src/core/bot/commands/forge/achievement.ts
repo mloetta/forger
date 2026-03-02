@@ -12,7 +12,7 @@ import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'achievement',
-  description: 'View achievement details',
+  description: 'Views information about the selected achievement',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -27,7 +27,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'achievement',
-      description: 'Pick an achievement to view',
+      description: 'Pick an achievement to view information about',
       required: true,
       autocomplete: true,
     },
@@ -88,7 +88,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Stages:\n${res.stages.map((stage: any) => `Stage ${stage.stage}:\n- Requirement: **${stage.requirement.toLocaleString('en-US')} ${res.quest_type}**\n- Reward: **${stage.value.toLocaleString('en-US', { style: 'percent' })} ${stage.name}**`).join('\n\n')}`,
+              content: `${res.stages.map((stage: any) => `Stage ${stage.stage}:\n- Requirement: **${stage.requirement} ${res.quest_type}**\n- Reward: **${stage.value} ${stage.name}**`).join('\n\n')}`,
             },
           ],
         },

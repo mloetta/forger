@@ -5,11 +5,11 @@
   "private": true,
   "packageManager": "bun@1.3.8",
   "scripts": {
-    "start:rest": "bun run src/core/rest/index.ts",
-    "start:bot": "bun run src/core/bot/index.ts",
-    "start:gateway": "bun run src/core/gateway/index.ts",
+    "rest": "bun run src/core/rest/index.ts",
+    "bot": "bun run src/core/bot/index.ts",
+    "gateway": "bun run src/core/gateway/index.ts",
     "register": "bun run src/core/bot/register.ts",
-    "format": "bunx prettier --config ../prettier/.prettierrc --write ."
+    "format": "bunx prettier --write ."
   },
   "devDependencies": {
     "@types/bun": "latest",

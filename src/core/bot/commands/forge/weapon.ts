@@ -13,7 +13,7 @@ import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'weapon',
-  description: 'View weapon details',
+  description: 'Views information about the selected weapon',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -28,7 +28,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'weapon',
-      description: 'Pick a weapon to view',
+      description: 'Pick a weapon to view information about',
       required: true,
       autocomplete: true,
     },
@@ -111,7 +111,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Damage: **${res.damage.toLocaleString('en-US')}**\n- Attack Speed: **${res.attack_speed.toLocaleString('en-US')}s**\n- Damage Per Second: **${res.damage_per_second.toLocaleString('en-US')}**\n- Range: **${res.attack_range.toLocaleString('en-US')} studs**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Price: **${res.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`,
+              content: `## Information:\n- Damage: **${res.damage}**\n- Attack Speed: **${res.attack_speed}s**\n- Damage Per Second: **${res.damage_per_second}**\n- Range: **${res.attack_range} studs**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores}**\n- Price: **${res.price}**`,
             },
           ],
         },

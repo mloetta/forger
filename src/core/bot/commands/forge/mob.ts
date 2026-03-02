@@ -13,8 +13,8 @@ import { makeRequest } from 'utils/request';
 import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
-  name: 'mob',
-  description: 'View mob details',
+  name: 'enemy',
+  description: 'Views information about the selected enemy',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -28,8 +28,8 @@ createApplicationCommand({
   options: [
     {
       type: ApplicationCommandOptionTypes.String,
-      name: 'mob',
-      description: 'Pick a mob to view',
+      name: 'enemy',
+      description: 'Pick an enemy to view information about',
       required: true,
       autocomplete: true,
     },
@@ -69,7 +69,7 @@ createApplicationCommand({
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        name: options.mob,
+        name: options.enemy,
       },
       headers: {
         'x-api-key': FORGE_API_KEY,
@@ -119,7 +119,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Stats:\n- Level Range: **${res.level_range.min.toLocaleString('en-US') ?? '?'} - ${res.level_range.max.toLocaleString('en-US') ?? '?'}**\n- Health: **${res.stats.health.min.toLocaleString('en-US') ?? '?'} - ${res.stats.health.max.toLocaleString('en-US') ?? '?'}**\n- Damage: **${res.stats.damage.min.toLocaleString('en-US') ?? '?'} - ${res.stats.damage.max.toLocaleString('en-US') ?? '?'}**\n- Gold: **${res.stats.gold.min.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) ?? '?'} - ${res.stats.gold.max.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) ?? '?'}**\n- Experience: **${res.stats.experience.min.toLocaleString('en-US') ?? '?'} - ${res.stats.experience.max.toLocaleString('en-US') ?? '?'}**`,
+              content: `- Level Range: **${res.level_range.min ?? '?'} - ${res.level_range.max ?? '?'}**\n- Health: **${res.stats.health.min ?? '?'} - ${res.stats.health.max ?? '?'}**\n- Damage: **${res.stats.damage.min ?? '?'} - ${res.stats.damage.max ?? '?'}**\n- Gold: **${res.stats.gold.min ?? '?'} - ${res.stats.gold.max ?? '?'}**\n- Experience: **${res.stats.experience.min ?? '?'} - ${res.stats.experience.max ?? '?'}**`,
             },
             ...(res.drops && res.drops.length > 0
               ? ([
@@ -128,7 +128,7 @@ createApplicationCommand({
                   },
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `## Drops:\n${res.drops.map((drop: any) => `- ${drop.item} - **${decimalToFraction(drop.chance)}**`).join('\n')}`,
+                    content: `${res.drops.map((drop: any) => `- ${drop.item} - **${decimalToFraction(drop.chance)}**`).join('\n')}`,
                   },
                 ] satisfies MessageComponents)
               : []),

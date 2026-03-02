@@ -13,7 +13,7 @@ import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'armor',
-  description: 'View armor details',
+  description: 'Views information about the selected armor',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -28,7 +28,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'armor',
-      description: 'Pick an armor to view',
+      description: 'Pick an armor to view information about',
       required: true,
       autocomplete: true,
     },
@@ -111,7 +111,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Health: **${res.health.toLocaleString('en-US', { style: 'percent' })}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores.toLocaleString('en-US')}**\n- Base Price: **${res.base_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`,
+              content: `- Health: **${res.health}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores}**\n- Base Price: **${res.base_price}**`,
             },
           ],
         },

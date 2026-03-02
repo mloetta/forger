@@ -12,7 +12,7 @@ import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'gamepass',
-  description: 'View gamepass details',
+  description: 'Views information about the selected gamepass',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -26,7 +26,7 @@ createApplicationCommand({
   options: [
     {
       name: 'gamepass',
-      description: 'Pick a gamepass to view',
+      description: 'Pick a gamepass to view information about',
       type: ApplicationCommandOptionTypes.String,
       required: true,
       autocomplete: true,

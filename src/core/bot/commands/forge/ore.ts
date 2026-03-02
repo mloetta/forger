@@ -13,7 +13,7 @@ import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'ore',
-  description: 'View ore details',
+  description: 'Views information about the selected ore',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -27,7 +27,7 @@ createApplicationCommand({
   options: [
     {
       name: 'ore',
-      description: 'Pick an ore to view',
+      description: 'Pick an ore to view information about',
       type: ApplicationCommandOptionTypes.String,
       required: true,
       autocomplete: true,
@@ -119,7 +119,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier.toLocaleString('en-US')}x**\n- Price: **$${res.price.toLocaleString('en-US')}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier.toLocaleString('en-US')}x**` : ''}`,
+              content: `- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier}x**\n- Price: **${res.price}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier}x**` : ''}`,
             },
           ],
         },

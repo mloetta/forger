@@ -1,4 +1,4 @@
-﻿import { collectors } from 'bot/events/interactions';
+import { collectors } from 'bot/events/interactions';
 import { FORGE_API_KEY } from 'core/variables';
 import {
   ButtonStyles,
@@ -1126,9 +1126,7 @@ createApplicationCommand({
                   .map(([ore, amount]) => `${amount} ${ore}`)
                   .join(', ')}*
                   ${Object.entries(data.ores ?? {})
-                    .map(
-                      ([ore, amount]) => `> *${ore} ${(amount / total).toLocaleString('en-US', { style: 'percent' })}*`,
-                    )
+                    .map(([ore, amount]) => `> *${ore} ${amount / total}*`)
                     .join('\n')}`,
               },
               {
@@ -1166,7 +1164,7 @@ createApplicationCommand({
                 content: equipmentChance.chances
                   .map(
                     (e: any) =>
-                      `- ${e.name} **(${e.chance_rounded_1dp.toLocaleString('en-US', { style: 'percent' })})** - Min Ores: **${e.min_ores}**, Lockable: **${e.lockable}**`,
+                      `- ${e.name} **(${e.chance_rounded_1dp})** - Min Ores: **${e.min_ores}**, Lockable: **${e.lockable}**`,
                   )
                   .join('\n'),
               },
@@ -1291,7 +1289,7 @@ createApplicationCommand({
                 content: equipmentChance.chances
                   .map(
                     (w: any) =>
-                      `- ${w.name} **(${w.chance_rounded_1dp.toLocaleString('en-US', { style: 'percent' })})** - Min Ores: **${w.min_ores}**, Lockable: **${w.lockable}**`,
+                      `- ${w.name} **(${w.chance_rounded_1dp})** - Min Ores: **${w.min_ores}**, Lockable: **${w.lockable}**`,
                   )
                   .join('\n'),
               },
@@ -1523,7 +1521,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi.toLocaleString('en-US')}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original.toLocaleString('en-US')}**\n- Attack Speed: **${equipment.weapon.attack_speed.toLocaleString('en-US')}s**\n- Effective DPS: **${equipment.weapon.effective_dps.toLocaleString('en-US')}**\n- Total Ores: **${equipment.weapon.total_ores.toLocaleString('en-US')}**\n- Sell Price: **${equipment.weapon.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi.toLocaleString('en-US')}x**\n- Defense: **${equipment.armor.pieces[0].defense.toLocaleString('en-US')}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`}`,
+                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1534,12 +1532,11 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined &&
-                          `- Quality: **${(data.quality / 100).toLocaleString('en-US', { style: 'percent' })}**`,
-                        data.enhancement && `- Enhancement: **+${data.enhancement.toLocaleString('en-US')}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
-                          `- Achievement: **${data.achievement.name} (${data.achievement.stage.toLocaleString('en-US')})**`,
+                          `- Achievement: **${data.achievement.name} (${data.achievement.stage})**`,
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
@@ -1746,7 +1743,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi.toLocaleString('en-US')}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original.toLocaleString('en-US')}**\n- Attack Speed: **${equipment.weapon.attack_speed.toLocaleString('en-US')}s**\n- Effective DPS: **${equipment.weapon.effective_dps.toLocaleString('en-US')}**\n- Total Ores: **${equipment.weapon.total_ores.toLocaleString('en-US')}**\n- Sell Price: **${equipment.weapon.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi.toLocaleString('en-US')}x**\n- Defense: **${equipment.armor.pieces[0].defense.toLocaleString('en-US')}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`}`,
+                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1757,12 +1754,11 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined &&
-                          `- Quality: **${(data.quality / 100).toLocaleString('en-US', { style: 'percent' })}**`,
-                        data.enhancement && `- Enhancement: **+${data.enhancement.toLocaleString('en-US')}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
-                          `- Achievement: **${data.achievement.name} (${data.achievement.stage.toLocaleString('en-US')})**`,
+                          `- Achievement: **${data.achievement.name} (${data.achievement.stage})**`,
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
@@ -2078,7 +2074,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi.toLocaleString('en-US')}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original.toLocaleString('en-US')}**\n- Attack Speed: **${equipment.weapon.attack_speed.toLocaleString('en-US')}s**\n- Effective DPS: **${equipment.weapon.effective_dps.toLocaleString('en-US')}**\n- Total Ores: **${equipment.weapon.total_ores.toLocaleString('en-US')}**\n- Sell Price: **${equipment.weapon.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi.toLocaleString('en-US')}x**\n- Defense: **${equipment.armor.pieces[0].defense.toLocaleString('en-US')}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`}`,
+                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -2089,12 +2085,11 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined &&
-                          `- Quality: **${(data.quality / 100).toLocaleString('en-US', { style: 'percent' })}**`,
-                        data.enhancement && `- Enhancement: **+${data.enhancement.toLocaleString('en-US')}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
-                          `- Achievement: **${data.achievement.name} (${data.achievement.stage.toLocaleString('en-US')})**`,
+                          `- Achievement: **${data.achievement.name} (${data.achievement.stage})**`,
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
@@ -2197,30 +2192,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2238,30 +2241,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -2613,30 +2624,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2654,30 +2673,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -2820,30 +2847,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2864,30 +2899,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3193,30 +3236,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3237,30 +3288,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3363,30 +3422,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3404,30 +3471,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3568,30 +3643,38 @@ createApplicationCommand({
                                       const cleanKey = key.startsWith(runeNamePrefix + '_')
                                         ? key.slice(runeNamePrefix.length + 1)
                                         : key;
-                                      return `- ${cleanKey
-                                        .replace(/_/g, ' ')
-                                        .split(' ')
-                                        .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                        .map((w) => {
-                                          const lower = w.toLowerCase();
-                                          switch (lower) {
-                                            case 'ii':
-                                              return 'II';
-                                            case 'iii':
-                                              return 'III';
-                                            case 'iv':
-                                              return 'IV';
-                                            case 'v':
-                                              return 'V';
-                                            case 'ix':
-                                              return 'IX';
-                                            case 'x':
-                                              return 'X';
-                                            default:
-                                              return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                          }
-                                        })
-                                        .join(' ') || rune.rune.replace(/^Rune:\s*/, '')}: **${value}**`;
+                                      return `- ${
+                                        cleanKey
+                                          .replace(/_/g, ' ')
+                                          .split(' ')
+                                          .filter(
+                                            (w) =>
+                                              w &&
+                                              !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                w.toLowerCase(),
+                                              ),
+                                          )
+                                          .map((w) => {
+                                            const lower = w.toLowerCase();
+                                            switch (lower) {
+                                              case 'ii':
+                                                return 'II';
+                                              case 'iii':
+                                                return 'III';
+                                              case 'iv':
+                                                return 'IV';
+                                              case 'v':
+                                                return 'V';
+                                              case 'ix':
+                                                return 'IX';
+                                              case 'x':
+                                                return 'X';
+                                              default:
+                                                return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                            }
+                                          })
+                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                      }: **${value}**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3609,30 +3692,38 @@ createApplicationCommand({
                                           const cleanKey = key.startsWith(subraidNamePrefix + '_')
                                             ? key.slice(subraidNamePrefix.length + 1)
                                             : key;
-                                          return `- ${cleanKey
-                                            .replace(/_/g, ' ')
-                                            .split(' ')
-                                            .filter((w) => w && !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(w.toLowerCase()))
-                                            .map((w) => {
-                                              const lower = w.toLowerCase();
-                                              switch (lower) {
-                                                case 'ii':
-                                                  return 'II';
-                                                case 'iii':
-                                                  return 'III';
-                                                case 'iv':
-                                                  return 'IV';
-                                                case 'v':
-                                                  return 'V';
-                                                case 'ix':
-                                                  return 'IX';
-                                                case 'x':
-                                                  return 'X';
-                                                default:
-                                                  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-                                              }
-                                            })
-                                            .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')}: **${value}**`;
+                                          return `- ${
+                                            cleanKey
+                                              .replace(/_/g, ' ')
+                                              .split(' ')
+                                              .filter(
+                                                (w) =>
+                                                  w &&
+                                                  !['per', 'second', 'weapon', 'armor', 'fraction', 'percent'].includes(
+                                                    w.toLowerCase(),
+                                                  ),
+                                              )
+                                              .map((w) => {
+                                                const lower = w.toLowerCase();
+                                                switch (lower) {
+                                                  case 'ii':
+                                                    return 'II';
+                                                  case 'iii':
+                                                    return 'III';
+                                                  case 'iv':
+                                                    return 'IV';
+                                                  case 'v':
+                                                    return 'V';
+                                                  case 'ix':
+                                                    return 'IX';
+                                                  case 'x':
+                                                    return 'X';
+                                                  default:
+                                                    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+                                                }
+                                              })
+                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                          }: **${value}**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3850,7 +3941,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi.toLocaleString('en-US')}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original.toLocaleString('en-US')}**\n- Attack Speed: **${equipment.weapon.attack_speed.toLocaleString('en-US')}s**\n- Effective DPS: **${equipment.weapon.effective_dps.toLocaleString('en-US')}**\n- Total Ores: **${equipment.weapon.total_ores.toLocaleString('en-US')}**\n- Sell Price: **${equipment.weapon.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi.toLocaleString('en-US')}x**\n- Defense: **${equipment.armor.pieces[0].defense.toLocaleString('en-US')}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`}`,
+                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -3861,12 +3952,11 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined &&
-                          `- Quality: **${(data.quality / 100).toLocaleString('en-US', { style: 'percent' })}**`,
-                        data.enhancement && `- Enhancement: **+${data.enhancement.toLocaleString('en-US')}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
-                          `- Achievement: **${data.achievement.name} (${data.achievement.stage.toLocaleString('en-US')})**`,
+                          `- Achievement: **${data.achievement.name} (${data.achievement.stage})**`,
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
@@ -4019,7 +4109,7 @@ createApplicationCommand({
                 content: equipmentChance.chances
                   .map(
                     (w: any) =>
-                      `- ${w.name} **(${w.chance_rounded_1dp.toLocaleString('en-US', { style: 'percent' })})** - Min Ores: **${w.min_ores}**, Lockable: **${w.lockable}**`,
+                      `- ${w.name} **(${w.chance_rounded_1dp})** - Min Ores: **${w.min_ores}**, Lockable: **${w.lockable}**`,
                   )
                   .join('\n'),
               },

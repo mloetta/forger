@@ -1,8 +1,9 @@
 import { DiscordApplicationIntegrationType, DiscordInteractionContextType, snowflakeToTimestamp } from 'discordeno';
 import { getShardInfoFromGuild } from 'bot/bot';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory } from 'types/types';
-import { icon } from 'utils/markdown';
+import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
+import { makeRequest } from 'utils/request';
+import { FORGE_API_KEY } from 'core/variables';
 
 createApplicationCommand({
   name: 'ping',
@@ -22,13 +23,21 @@ createApplicationCommand({
     // Gateway
     const shardInfo = await getShardInfoFromGuild(interaction.guildId);
     const shard = shardInfo.shardId;
-    const gatewayLatency = shardInfo.rtt === -1 ? 'N/A' : shardInfo.rtt;
+    const gatewayLatency = shardInfo.rtt === -1 ? 'N/A' : shardInfo.rtt.toLocaleString('en-US');
 
     // REST
-    const restLatency = Date.now() - snowflakeToTimestamp(interaction.id);
+    const restLatency = (Date.now() - snowflakeToTimestamp(interaction.id)).toLocaleString('en-US');
+
+    // API
+    const apiStart = performance.now();
+    await makeRequest('http://localhost:9998/health', {
+      method: RequestMethod.GET,
+      response: ResponseType.JSON,
+    });
+    const apiLatency = Math.round(performance.now() - apiStart).toLocaleString('en-US');
 
     await interaction.edit(
-      `${icon('Ping')} Pong!\n-# Gateway (Shard: #${shard}): **${gatewayLatency}ms** ・ REST: **${restLatency}ms**`,
+      `Pong!\n-# Gateway (Shard: #${shard}): **${gatewayLatency}ms** ・ REST: **${restLatency}ms** ・ API: **${apiLatency}ms**`,
     );
   },
 });

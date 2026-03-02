@@ -12,7 +12,7 @@ import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'pickaxe',
-  description: 'View pickaxe details',
+  description: 'Views information about the selected pickaxe',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -27,7 +27,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'pickaxe',
-      description: 'Pick a pickaxe to view',
+      description: 'Pick a pickaxe to view information about',
       required: true,
       autocomplete: true,
     },
@@ -99,55 +99,23 @@ createApplicationCommand({
               },
             },
             {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'highest-mineable',
-                  placeholder: 'Highest Mineable Rock',
-                  options: [
-                    {
-                      label: res.highest_mineable.name,
-                      value: res.highest_mineable.name.toLowerCase().replace(/\s+/g, '_'),
-                      description: `Minimum Base Damage Required: ${res.highest_mineable.minimum_base_damage.toLocaleString('en-US')}`,
-                    },
-                  ],
-                },
-              ],
-            },
-            {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: (() => {
-                const lines = [
-                  `## Information:`,
-                  `- Mine Power: **${res.mine_power}**`,
-                  res.mine_speed !== undefined
-                    ? `- Mine Speed: **${res.mine_speed.toLocaleString('en-US', { style: 'percent' })}**`
-                    : null,
-                  res.luck_boost !== undefined
-                    ? `- Luck Boost: **${res.luck_boost.toLocaleString('en-US', { style: 'percent' })}**`
-                    : null,
-                  res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots.toLocaleString('en-US')}**` : null,
-                  res.rune_price !== undefined
-                    ? `- Rune Price: **${res.rune_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
-                    : null,
-                  res.price !== undefined
-                    ? `- Price: **${res.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
-                    : null,
-                  res.tickets !== undefined ? `- Tickets: **${res.tickets.toLocaleString('en-US')}**` : null,
-                  res.goblin_price !== undefined
-                    ? `- Goblin Price: **${res.goblin_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
-                    : null,
-                  res.sell_price !== undefined
-                    ? `- Sell Price: **${res.sell_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}**`
-                    : null,
-                ].filter(Boolean);
-
-                return lines.join('\n');
-              })(),
+              content: [
+                `- Mine Power: **${res.mine_power}**`,
+                res.mine_speed !== undefined ? `- Mine Speed: **${res.mine_speed}**` : '',
+                res.luck_boost !== undefined ? `- Luck Boost: **${res.luck_boost}**` : '',
+                res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots}**` : '',
+                res.rune_price ? `- Rune Price: **${res.rune_price}**` : '',
+                res.price ? `- Price: **${res.price}**` : '',
+                res.tickets !== undefined ? `- Tickets: **${res.tickets}**` : '',
+                res.goblin_price !== undefined ? `- Goblin Price: **${res.goblin_price}**` : '',
+                res.sell_price !== undefined ? `- Sell Price: **${res.sell_price}**` : '',
+              ]
+                .filter(Boolean)
+                .join('\n'),
             },
           ],
         },

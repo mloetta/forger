@@ -12,7 +12,7 @@ import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
   name: 'race',
-  description: 'View race details',
+  description: 'Views information about the selected race',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -27,7 +27,7 @@ createApplicationCommand({
     {
       type: ApplicationCommandOptionTypes.String,
       name: 'race',
-      description: 'Pick a race to view',
+      description: 'Pick a race to view information about',
       required: true,
       autocomplete: true,
     },
@@ -84,11 +84,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name}\n-# ${res.rarity} (${res.drop_rate.toLocaleString('en-US', {
-                    style: 'percent',
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1,
-                  })})`,
+                  content: `# ${res.name}\n-# ${res.rarity} (${res.drop_rate})`,
                 },
               ],
               accessory: {
@@ -103,9 +99,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Perks:\n${res.perks
-                .map((perk: any) => `**${perk.name}**\n- *${perk.description}*`)
-                .join('\n\n')}`,
+              content: `${res.perks.map((perk: any) => `**${perk.name}**\n- *${perk.description}*`).join('\n\n')}`,
             },
           ],
         },
