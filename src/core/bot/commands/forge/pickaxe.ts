@@ -80,15 +80,11 @@ createApplicationCommand({
           type: MessageComponentTypes.Container,
           components: [
             {
-              type: MessageComponentTypes.TextDisplay,
-              content: `# ${res.name} (${res.ore})\n-# ${res.rarity}`,
-            },
-            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `*${res.description}*`,
+                  content: `# ${res.name}\n-# ${res.rarity}\n*${res.description}*`,
                 },
               ],
               accessory: {
