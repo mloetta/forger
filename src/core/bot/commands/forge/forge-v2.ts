@@ -8,7 +8,7 @@ import {
   TextStyles,
   type MessageComponents,
 } from 'discordeno';
-import { createCollector } from 'helpers/collector';
+import createCollector from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType, type Interaction } from 'types/types';
 import { randomUUID } from 'crypto';
@@ -2147,6 +2147,7 @@ createApplicationCommand({
         flags: MessageFlags.IsComponentsV2,
       });
     });
+    // Rune bullshit starts here
     handlers.set('manage-runes', async (i) => {
       if (!i.data) return;
 

@@ -10,10 +10,10 @@ import {
   TextStyles,
   type MessageComponents,
 } from 'discordeno';
-import { createCollector } from 'helpers/collector';
+import createCollector from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, type Interaction } from 'types/types';
-import { icon, iconAsEmoji, link } from 'utils/markdown';
+import { icon, iconAsEmoji, link, pill } from 'utils/markdown';
 import or from 'utils/utils';
 
 createApplicationCommand({
@@ -44,19 +44,22 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content:
-                '# Welcome to Forger!\nYou can view all the available commands by typing **` / `**, then clicking on my profile.',
+              content: `# Welcome to Forger!\nYou can view all the available commands by typing ${pill('/')}, for further game assistance which the bot may or may not display go to ${link('https://forgewiki.org/wiki/The_Forge_wiki', 'the official wiki')}.`,
             },
             {
               type: MessageComponentTypes.Separator,
               divider: false,
             },
             {
+              type: MessageComponentTypes.TextDisplay,
+              content: '## How to report bugs?',
+            },
+            {
               type: MessageComponentTypes.Section,
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: '## How to report bugs?\nYou can report bugs by clicking the button in the right.',
+                  content: 'To report bugs simply click the button on the right.',
                 },
               ],
               accessory: {
@@ -189,7 +192,7 @@ createApplicationCommand({
 
         await bot.helpers.createForumThread('1467550986129113169', {
           name: bugReportId,
-          appliedTags: ['1467551226378981428'],
+          appliedTags: ['1467551226378981428', '1473484695856484372'],
           message: {
             components: [
               {

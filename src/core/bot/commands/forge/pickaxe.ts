@@ -101,14 +101,14 @@ createApplicationCommand({
               type: MessageComponentTypes.TextDisplay,
               content: [
                 `- Mine Power: **${res.mine_power}**`,
-                res.mine_speed !== undefined ? `- Mine Speed: **${res.mine_speed}**` : '',
-                res.luck_boost !== undefined ? `- Luck Boost: **${res.luck_boost}**` : '',
-                res.rune_slots !== undefined ? `- Rune Slots: **${res.rune_slots}**` : '',
+                res.mine_speed ? `- Mine Speed: **${res.mine_speed}**` : '',
+                res.luck_boost ? `- Luck Boost: **${res.luck_boost}**` : '',
+                res.rune_slots ? `- Rune Slots: **${res.rune_slots}**` : '',
                 res.rune_price ? `- Rune Price: **${res.rune_price}**` : '',
                 res.price ? `- Price: **${res.price}**` : '',
-                res.tickets !== undefined ? `- Tickets: **${res.tickets}**` : '',
-                res.goblin_price !== undefined ? `- Goblin Price: **${res.goblin_price}**` : '',
-                res.sell_price !== undefined ? `- Sell Price: **${res.sell_price}**` : '',
+                res.tickets ? `- Tickets: **${res.tickets}**` : '',
+                res.goblin_price ? `- Goblin Price: **${res.goblin_price}**` : '',
+                res.sell_price ? `- Sell Price: **${res.sell_price}**` : '',
               ]
                 .filter(Boolean)
                 .join('\n'),

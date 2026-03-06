@@ -4,7 +4,7 @@ import type { CollectorData, CollectorEvents, CollectorOptions } from 'types/typ
 
 const collectors = new Collection<string, CollectorData<any>>();
 
-export function createCollector<T>(options: CollectorOptions<T>) {
+export default function createCollector<T>(options: CollectorOptions<T>) {
   const id = `${options.key}_${Date.now()}`;
   const collected: T[] = [];
   let stopped = false;
