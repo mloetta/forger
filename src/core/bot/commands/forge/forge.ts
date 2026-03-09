@@ -1120,7 +1120,7 @@ createApplicationCommand({
                   .map(([ore, amount]) => `${amount} ${ore}`)
                   .join(', ')}*
                   ${Object.entries(data.ores ?? {})
-                    .map(([ore, amount]) => `> *${ore} ${amount / total}*`)
+                    .map(([ore, amount]) => `> *${ore} ${Math.round((amount / total) * 100)}%*`)
                     .join('\n')}`,
               },
               {
