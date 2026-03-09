@@ -1,3 +1,4 @@
+import { Emoji } from 'core/emojis';
 import { ApplicationCommandOptionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory } from 'types/types';
@@ -41,7 +42,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Correct')} <@${user.id}> was removed from the blacklist.`,
+                  content: `${icon(Emoji.Correct)} <@${user.id}> was removed from the blacklist.`,
                 },
               ],
             },
@@ -56,7 +57,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Wrong')} <@${user.id}> was not found in the blacklist.`,
+                  content: `${icon(Emoji.Wrong)} <@${user.id}> was not found in the blacklist.`,
                 },
               ],
             },
@@ -76,7 +77,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Wrong')} <@${user.id}> is already blacklisted.`,
+                  content: `${icon(Emoji.Warning)} <@${user.id}> is already blacklisted.`,
                 },
               ],
             },
@@ -96,7 +97,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Correct')} <@${user.id}> was added to the blacklist successfully!`,
+                content: `${icon(Emoji.Correct)} <@${user.id}> was added to the blacklist successfully!`,
               },
             ],
           },

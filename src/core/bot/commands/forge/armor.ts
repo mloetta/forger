@@ -9,7 +9,6 @@ import {
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { makeRequest } from 'utils/request';
-import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'armor',
@@ -111,7 +110,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `- Health: **${res.health}**\n- Chance: **${decimalToFraction(res.chance)}**\n- Minimum Ore Requirement: **${res.min_ores}**\n- Base Price: **${res.base_price}**`,
+              content: `- Health: **${res.health}**\n- Chance: **${res.chance}**\n- Minimum Ore Requirement: **${res.min_ores}**\n- Base Price: **${res.base_price}**`,
             },
           ],
         },

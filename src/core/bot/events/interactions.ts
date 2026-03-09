@@ -8,6 +8,7 @@ import { PermissionManager } from 'middlewares/permission';
 import { MAINTENANCE } from 'core/variables';
 import { redis } from 'utils/redis';
 import { SUPPORT_SERVER } from 'core/constants';
+import { Emoji } from 'core/emojis';
 
 export const collectors = new Set<CollectorType<Interaction>>();
 
@@ -46,7 +47,7 @@ async function handleApplicationCommand(interaction: Interaction) {
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Wrong')} You have been blacklisted from using this bot. Appeal ${link(SUPPORT_SERVER, 'here')}.`,
+              content: `${icon(Emoji.Wrong)} You have been blacklisted from using this bot. Appeal ${link(SUPPORT_SERVER, 'here')}.`,
             },
           ],
         },
@@ -66,7 +67,7 @@ async function handleApplicationCommand(interaction: Interaction) {
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found.`,
+              content: `${icon(Emoji.Exclamation)} The command: ${highlight(interaction.data.name)} was not found.`,
             },
           ],
         },
@@ -87,7 +88,7 @@ async function handleApplicationCommand(interaction: Interaction) {
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Warning')} The bot is currently under maintenance.`,
+              content: `${icon(Emoji.Warning)} The bot is currently under maintenance.`,
             },
           ],
         },
@@ -114,7 +115,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+                  content: `${icon(Emoji.Exclamation)} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
                 },
               ],
             },
@@ -129,7 +130,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
+                  content: `${icon(Emoji.Exclamation)} You are on cooldown! Please wait ${timestamp(result.remaining, TimestampStyle.RelativeTime)} before using ${smallPill(`/${command.name}`)} again.`,
                 },
               ],
             },
@@ -171,7 +172,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
+                  content: `${icon(Emoji.Exclamation)} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
                 },
               ],
             },
@@ -186,7 +187,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
+                  content: `${icon(Emoji.Exclamation)} You lack the following permissions: ${smallPill(missingAuthorPerms.join(', '))} required to use this command.`,
                 },
               ],
             },
@@ -207,7 +208,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
+                  content: `${icon(Emoji.Exclamation)} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
                 },
               ],
             },
@@ -222,7 +223,7 @@ async function handleApplicationCommand(interaction: Interaction) {
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
+                  content: `${icon(Emoji.Exclamation)} I lack the following permissions: ${smallPill(missingClientPerms.join(', '))} required to execute this command.`,
                 },
               ],
             },
@@ -261,7 +262,7 @@ async function handleApplicationCommand(interaction: Interaction) {
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Wrong')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+                content: `${icon(Emoji.Wrong)} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
               },
               {
                 type: MessageComponentTypes.Separator,
@@ -283,7 +284,7 @@ async function handleApplicationCommand(interaction: Interaction) {
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Wrong')} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
+                content: `${icon(Emoji.Wrong)} The command: ${pill(command.name)} has encountered an error. Please try again later.`,
               },
               {
                 type: MessageComponentTypes.Separator,
@@ -315,7 +316,7 @@ async function handleApplicationCommandAutocomplete(interaction: Interaction) {
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `${icon('Exclamation')} The command: ${highlight(interaction.data.name)} was not found.`,
+              content: `${icon(Emoji.Exclamation)} The command: ${highlight(interaction.data.name)} was not found.`,
             },
           ],
         },

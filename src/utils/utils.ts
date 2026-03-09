@@ -144,28 +144,3 @@ export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: 
 export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;
 }
-
-export function decimalToFraction(value: number, maxDenominator = 1000000): string {
-  let numerator = 1;
-  let denominator = 1;
-  let bestError = Math.abs(value - numerator / denominator);
-
-  for (let d = 1; d <= maxDenominator; d++) {
-    const n = Math.round(value * d);
-    const error = Math.abs(value - n / d);
-    if (error < bestError) {
-      numerator = n;
-      denominator = d;
-      bestError = error;
-      if (error === 0) break;
-    }
-  }
-
-  const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
-  const divisor = gcd(numerator, denominator);
-
-  const formattedNumerator = (numerator / divisor).toLocaleString('en-US');
-  const formattedDenominator = (denominator / divisor).toLocaleString('en-US');
-
-  return `${formattedNumerator}/${formattedDenominator}`;
-}

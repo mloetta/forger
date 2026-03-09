@@ -3,7 +3,6 @@ import { getShardInfoFromGuild } from 'bot/bot';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { makeRequest } from 'utils/request';
-import { FORGE_API_KEY } from 'core/variables';
 
 createApplicationCommand({
   name: 'ping',

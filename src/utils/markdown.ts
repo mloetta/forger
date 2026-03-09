@@ -1,21 +1,18 @@
 import { TimestampStyle } from 'types/types';
-import { Emojis } from './emojis';
+import { Emoji } from 'core/emojis';
 
 /** Escapes backticks in a string to avoid breaking codeblocks. */
 function _escapeCodeblock(content: any): string {
   return String(content ?? '').replace(/`/g, 'ˋ');
 }
 
-/** Resolves an internal emoji/icon from the Emojis object. */
-function _icon(icon: keyof typeof Emojis): string {
-  let i;
-  if (Emojis[icon]) i = Emojis[icon];
-
-  if (i) {
-    return i.replace(/:[a-zA-Z0-9_]*:/, ':i:');
-  } else {
+/** Resolves an internal emoji/icon from the Emoji object. */
+function _icon(icon: Emoji): string {
+  if (!icon) {
     throw new Error(`Icon ${icon} not found`);
   }
+
+  return icon.replace(/:[a-zA-Z0-9_]*:/, ':i:');
 }
 
 /** Wraps content in inline Discord code markdown.
@@ -54,11 +51,11 @@ export function smallPill(content: any): string {
   return '` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `';
 }
 
-/** Resolves an icon from the Emojis object.
+/** Resolves an icon from the Emoji object.
  *
  * @param icon - The icon to resolve.
  */
-export function icon(icon: keyof typeof Emojis): string {
+export function icon(icon: Emoji): string {
   return _icon(icon);
 }
 
@@ -67,7 +64,7 @@ export function icon(icon: keyof typeof Emojis): string {
  * @param icon - The icon to resolve.
  * @returns An emoji object with id, name, and animated properties.
  */
-export function iconAsEmoji(icon: keyof typeof Emojis): {
+export function iconAsEmoji(icon: Emoji): {
   id: string;
   name: string;
   animated: boolean;
@@ -86,7 +83,7 @@ export function iconAsEmoji(icon: keyof typeof Emojis): {
  * @param icon - The icon to resolve.
  * @param content - The content to wrap in a pill.
  */
-export function iconPill(icon: keyof typeof Emojis, content: any): string {
+export function iconPill(icon: Emoji, content: any): string {
   return _icon(icon) + '**` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `**';
 }
 
@@ -95,7 +92,7 @@ export function iconPill(icon: keyof typeof Emojis, content: any): string {
  * @param icon - The icon to resolve.
  * @param content - The content to wrap in a small pill.
  */
-export function smallIconPill(icon: keyof typeof Emojis, content: any): string {
+export function smallIconPill(icon: Emoji, content: any): string {
   return _icon(icon) + '` ' + _escapeCodeblock(content).replace(/ /g, ' ') + ' `';
 }
 
@@ -135,7 +132,7 @@ export function linkPill(url: string, content: any = '', tooltip: string = ''): 
  * @param content - The content to wrap in a pill.
  * @param tooltip - The tooltip to display when hovering over the link.
  */
-export function iconLinkPill(icon: keyof typeof Emojis, url: string, content: any = '', tooltip: string = ''): string {
+export function iconLinkPill(icon: Emoji, url: string, content: any = '', tooltip: string = ''): string {
   if (tooltip.length) tooltip = ` '${tooltip}'`;
   if (content) return `${_icon(icon)} [**\` ${_escapeCodeblock(content)} \`**](${url.replace(/\)/g, '\\)')}${tooltip})`;
 

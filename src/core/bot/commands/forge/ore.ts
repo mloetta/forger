@@ -8,8 +8,8 @@ import {
 } from 'discordeno';
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
+import { stringwrapPreserveWords } from 'utils/markdown';
 import { makeRequest } from 'utils/request';
-import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'ore',
@@ -102,11 +102,13 @@ createApplicationCommand({
                   type: MessageComponentTypes.StringSelect,
                   customId: 'ore-location',
                   placeholder: 'Obtainable From:',
-                  options: res.obtainable_from.map((item: any) => ({
-                    label: item.area,
-                    value: item.area.toLowerCase().replace(/\s+/g, '_'),
-                    description: item.from.join(', '),
-                  })),
+                  options: res.from.flatMap((item: any) =>
+                    item.world.map((world: string) => ({
+                      label: world,
+                      value: world,
+                      description: stringwrapPreserveWords(item.rock.join(', '), 100),
+                    })),
+                  ),
                 },
               ],
             },
@@ -115,7 +117,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `- Chance: **${decimalToFraction(res.chance)}**\n- Multiplier: **${res.multiplier}x**\n- Price: **${res.price}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier}x**` : ''}`,
+              content: `- Chance: **${res.chance}**\n- Multiplier: **${res.multiplier}x**\n- Price: **${res.price}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier}x**` : ''}`,
             },
           ],
         },

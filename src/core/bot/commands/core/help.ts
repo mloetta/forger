@@ -1,5 +1,6 @@
 import { collectors } from 'bot/events/interactions';
 import { INVITE_LINK, SUPPORT_SERVER } from 'core/constants';
+import { Emoji } from 'core/emojis';
 import {
   ButtonStyles,
   DiscordApplicationIntegrationType,
@@ -18,13 +19,7 @@ import or from 'utils/utils';
 
 createApplicationCommand({
   name: 'help',
-  nameLocalizations: {
-    'pt-BR': 'ajuda',
-  },
   description: 'Learn more about me and what I can do',
-  descriptionLocalizations: {
-    'pt-BR': 'Saiba mais sobre mim e o que posso fazer',
-  },
   integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
   contexts: [
     DiscordInteractionContextType.BotDm,
@@ -66,7 +61,7 @@ createApplicationCommand({
                 type: MessageComponentTypes.Button,
                 customId: 'bug-reports-button',
                 label: 'Report Bugs',
-                emoji: iconAsEmoji('Bug'),
+                emoji: iconAsEmoji(Emoji.Bug),
                 style: ButtonStyles.Secondary,
               },
             },
@@ -76,7 +71,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `-# ${icon('Exclamation')} You can visit **${link('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands.`,
+              content: `-# ${icon(Emoji.Exclamation)} You can visit **${link('https://discord.com/blog/slash-commands-permissions-discord-apps-bots', 'Discord Integration Settings')}** to learn how to disable commands.`,
             },
             {
               type: MessageComponentTypes.Separator,
@@ -89,14 +84,14 @@ createApplicationCommand({
                 {
                   type: MessageComponentTypes.Button,
                   label: 'Support Server',
-                  emoji: iconAsEmoji('Discord'),
+                  emoji: iconAsEmoji(Emoji.Discord),
                   url: SUPPORT_SERVER,
                   style: ButtonStyles.Link,
                 },
                 {
                   type: MessageComponentTypes.Button,
                   label: 'Invite Me!',
-                  emoji: iconAsEmoji('Link'),
+                  emoji: iconAsEmoji(Emoji.Link),
                   url: INVITE_LINK,
                   style: ButtonStyles.Link,
                 },
@@ -175,7 +170,7 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${icon('Warning')} Please provide a valid image file.`,
+                    content: `${icon(Emoji.Warning)} Please provide a valid image file.`,
                   },
                 ],
               },
@@ -245,7 +240,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Correct')} Bug report submitted successfully!\n-# Your bug report ID: ${bugReportId}`,
+                  content: `${icon(Emoji.Correct)} Bug report submitted successfully!\n-# Your bug report ID: ${bugReportId}`,
                 },
               ],
             },

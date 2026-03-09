@@ -14,11 +14,12 @@ import { ApplicationCommandCategory, RequestMethod, ResponseType, type Interacti
 import { randomUUID } from 'crypto';
 import { icon, pill, smallPill, stringwrapPreserveWords } from 'utils/markdown';
 import { makeRequest } from 'utils/request';
+import { Emoji } from 'core/emojis';
 
 // Remake the whole rune system at some point
 
 createApplicationCommand({
-  name: 'forge-v2',
+  name: 'forge',
   description: 'Forge a weapon or armor',
   details: {
     category: ApplicationCommandCategory.Forge,
@@ -92,8 +93,7 @@ createApplicationCommand({
                   options: ores.slice(0, 25).map((ore: any) => ({
                     label: ore.name,
                     value: ore.name,
-                    description:
-                      typeof ore.trait === 'string' ? ore.trait : stringwrapPreserveWords(ore.trait.description, 100),
+                    description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
                   })),
                 },
               ],
@@ -108,24 +108,6 @@ createApplicationCommand({
                   style: ButtonStyles.Secondary,
                 },
               ],
-            },
-            {
-              type: MessageComponentTypes.Separator,
-            },
-            {
-              type: MessageComponentTypes.Section,
-              components: [
-                {
-                  type: MessageComponentTypes.TextDisplay,
-                  content: 'Click the button on the right to view more options.',
-                },
-              ],
-              accessory: {
-                type: MessageComponentTypes.Button,
-                customId: 'view-more-options',
-                label: 'Extra',
-                style: ButtonStyles.Secondary,
-              },
             },
           ],
         },
@@ -287,8 +269,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description:
-                        typeof ore.trait === 'string' ? ore.trait : stringwrapPreserveWords(ore.trait.description, 100),
+                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
                     })),
                   },
                 ],
@@ -304,24 +285,28 @@ createApplicationCommand({
                   },
                 ],
               },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.Section,
-                components: [
-                  {
-                    type: MessageComponentTypes.TextDisplay,
-                    content: 'Click the button on the right to view more options.',
-                  },
-                ],
-                accessory: {
-                  type: MessageComponentTypes.Button,
-                  customId: 'view-more-options',
-                  label: 'Extra',
-                  style: ButtonStyles.Secondary,
-                },
-              },
+              ...(data.equipmentType === 'Weapon'
+                ? ([
+                    {
+                      type: MessageComponentTypes.Separator,
+                    },
+                    {
+                      type: MessageComponentTypes.Section,
+                      components: [
+                        {
+                          type: MessageComponentTypes.TextDisplay,
+                          content: 'Click the button on the right to view more options.',
+                        },
+                      ],
+                      accessory: {
+                        type: MessageComponentTypes.Button,
+                        customId: 'view-more-options',
+                        label: 'Extra',
+                        style: ButtonStyles.Secondary,
+                      },
+                    },
+                  ] satisfies MessageComponents)
+                : []),
             ],
           },
         ],
@@ -344,7 +329,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You can only select up to ${smallPill('4')} different ores.`,
+                  content: `${icon(Emoji.Exclamation)} You can only select up to ${smallPill('4')} different ores.`,
                 },
               ],
             },
@@ -397,7 +382,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Invalid amount. Please enter a valid number.`,
+                  content: `${icon(Emoji.Wrong)} Invalid amount. Please enter a valid number.`,
                 },
               ],
             },
@@ -420,7 +405,7 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${icon('Exclamation')} Cannot remove ore that doesn't exist in your selection.`,
+                    content: `${icon(Emoji.Wrong)} Cannot remove ore that doesn't exist in your selection.`,
                   },
                 ],
               },
@@ -438,7 +423,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} You cannot select more than ${smallPill('200')} ores.`,
+                  content: `${icon(Emoji.Exclamation)} You cannot select more than ${smallPill('200')} ores.`,
                 },
               ],
             },
@@ -550,8 +535,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description:
-                        typeof ore.trait === 'string' ? ore.trait : stringwrapPreserveWords(ore.trait.description, 100),
+                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
                     })),
                   },
                 ],
@@ -567,24 +551,28 @@ createApplicationCommand({
                   },
                 ],
               },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.Section,
-                components: [
-                  {
-                    type: MessageComponentTypes.TextDisplay,
-                    content: 'Click the button on the right to view more options.',
-                  },
-                ],
-                accessory: {
-                  type: MessageComponentTypes.Button,
-                  customId: 'view-more-options',
-                  label: 'Extra',
-                  style: ButtonStyles.Secondary,
-                },
-              },
+              ...(data.equipmentType === 'Weapon'
+                ? ([
+                    {
+                      type: MessageComponentTypes.Separator,
+                    },
+                    {
+                      type: MessageComponentTypes.Section,
+                      components: [
+                        {
+                          type: MessageComponentTypes.TextDisplay,
+                          content: 'Click the button on the right to view more options.',
+                        },
+                      ],
+                      accessory: {
+                        type: MessageComponentTypes.Button,
+                        customId: 'view-more-options',
+                        label: 'Extra',
+                        style: ButtonStyles.Secondary,
+                      },
+                    },
+                  ] satisfies MessageComponents)
+                : []),
             ],
           },
         ],
@@ -697,8 +685,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description:
-                        typeof ore.trait === 'string' ? ore.trait : stringwrapPreserveWords(ore.trait.description, 100),
+                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
                     })),
                   },
                 ],
@@ -714,24 +701,28 @@ createApplicationCommand({
                   },
                 ],
               },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.Section,
-                components: [
-                  {
-                    type: MessageComponentTypes.TextDisplay,
-                    content: 'Click the button on the right to view more options.',
-                  },
-                ],
-                accessory: {
-                  type: MessageComponentTypes.Button,
-                  customId: 'view-more-options',
-                  label: 'Extra',
-                  style: ButtonStyles.Secondary,
-                },
-              },
+              ...(data.equipmentType === 'Weapon'
+                ? ([
+                    {
+                      type: MessageComponentTypes.Separator,
+                    },
+                    {
+                      type: MessageComponentTypes.Section,
+                      components: [
+                        {
+                          type: MessageComponentTypes.TextDisplay,
+                          content: 'Click the button on the right to view more options.',
+                        },
+                      ],
+                      accessory: {
+                        type: MessageComponentTypes.Button,
+                        customId: 'view-more-options',
+                        label: 'Extra',
+                        style: ButtonStyles.Secondary,
+                      },
+                    },
+                  ] satisfies MessageComponents)
+                : []),
             ],
           },
         ],
@@ -835,7 +826,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a race or achievement.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a race or achievement.`,
                 },
               ],
             },
@@ -854,7 +845,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a stage for the achievement.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a stage for the achievement.`,
                 },
               ],
             },
@@ -877,7 +868,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a valid stage for the achievement.`,
+                  content: `${icon(Emoji.Wrong)} Please select a stage for the achievement from 1 to 5.`,
                 },
               ],
             },
@@ -996,8 +987,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description:
-                        typeof ore.trait === 'string' ? ore.trait : stringwrapPreserveWords(ore.trait.description, 100),
+                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
                     })),
                   },
                 ],
@@ -1013,24 +1003,28 @@ createApplicationCommand({
                   },
                 ],
               },
-              {
-                type: MessageComponentTypes.Separator,
-              },
-              {
-                type: MessageComponentTypes.Section,
-                components: [
-                  {
-                    type: MessageComponentTypes.TextDisplay,
-                    content: 'Click the button on the right to view more options.',
-                  },
-                ],
-                accessory: {
-                  type: MessageComponentTypes.Button,
-                  customId: 'view-more-options',
-                  label: 'Extra',
-                  style: ButtonStyles.Secondary,
-                },
-              },
+              ...(data.equipmentType === 'Weapon'
+                ? ([
+                    {
+                      type: MessageComponentTypes.Separator,
+                    },
+                    {
+                      type: MessageComponentTypes.Section,
+                      components: [
+                        {
+                          type: MessageComponentTypes.TextDisplay,
+                          content: 'Click the button on the right to view more options.',
+                        },
+                      ],
+                      accessory: {
+                        type: MessageComponentTypes.Button,
+                        customId: 'view-more-options',
+                        label: 'Extra',
+                        style: ButtonStyles.Secondary,
+                      },
+                    },
+                  ] satisfies MessageComponents)
+                : []),
             ],
           },
         ],
@@ -1049,7 +1043,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select equipment type and at least ${smallPill('3')} ores.`,
+                  content: `${icon(Emoji.Exclamation)} Please select equipment type and at least ${smallPill('3')} ores.`,
                 },
               ],
             },
@@ -1069,7 +1063,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select at least ${smallPill('3')} ores.`,
+                  content: `${icon(Emoji.Exclamation)} Please select at least ${smallPill('3')} ores.`,
                 },
               ],
             },
@@ -1151,6 +1145,10 @@ createApplicationCommand({
                       {
                         label: 'Frostspire Expanse',
                         value: 'Frostspire Expanse',
+                      },
+                      {
+                        label: 'Crimson Sakura',
+                        value: 'Crimson Sakura',
                       },
                     ],
                   },
@@ -1277,6 +1275,10 @@ createApplicationCommand({
                         label: 'Frostspire Expanse',
                         value: 'Frostspire Expanse',
                       },
+                      {
+                        label: 'Crimson Sakura',
+                        value: 'Crimson Sakura',
+                      },
                     ].filter((option) => option.value !== data.world),
                   },
                 ],
@@ -1362,7 +1364,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Insufficient ores to forge ${pill(selectedCategory)}. Minimum required: ${smallPill(minOres)}. Provided: ${smallPill(total)}.`,
+                  content: `${icon(Emoji.Exclamation)} Insufficient ores to forge ${pill(selectedCategory)}. Minimum required: ${smallPill(minOres)}. Provided: ${smallPill(total)}.`,
                 },
               ],
             },
@@ -1404,7 +1406,12 @@ createApplicationCommand({
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
                   category: data.category,
-                  variant: data.variant,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
                   craft_quality_percent: data.quality,
                   enhancement: data.enhancement,
                   runes: data.runes,
@@ -1420,7 +1427,12 @@ createApplicationCommand({
                       .map(([name, quantity]) => `${quantity} ${name}`)
                       .join(', '),
                     category: data.category,
-                    variant: data.variant,
+                    variant: (data.variant =
+                      variants
+                        .filter((e: any) => e.type === data.category)
+                        .flatMap((e: any) => e.variants)
+                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                        .at(0)?.name ?? data.variant),
                     craft_quality_percent: data.quality,
                     enhancement: data.enhancement,
                     runes: data.runes,
@@ -1521,7 +1533,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1532,7 +1544,7 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality}**`,
                         data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
@@ -1743,7 +1755,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1754,7 +1766,7 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality}**`,
                         data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
@@ -1877,7 +1889,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a forging quality or enhancement level.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a forging quality or enhancement level.`,
                 },
               ],
             },
@@ -1899,7 +1911,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a valid forging quality.`,
+                  content: `${icon(Emoji.Wrong)} Please select a forging quality from 0 to 100.`,
                 },
               ],
             },
@@ -1921,7 +1933,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a valid enhancement level.`,
+                  content: `${icon(Emoji.Wrong)} Please select an enhancement level from 0 to 9.`,
                 },
               ],
             },
@@ -1966,7 +1978,12 @@ createApplicationCommand({
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
                   category: data.category,
-                  variant: data.variant,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
                   craft_quality_percent: data.quality,
                   enhancement: data.enhancement,
                   runes: data.runes,
@@ -1982,7 +1999,12 @@ createApplicationCommand({
                       .map(([name, quantity]) => `${quantity} ${name}`)
                       .join(', '),
                     category: data.category,
-                    variant: data.variant,
+                    variant: (data.variant =
+                      variants
+                        .filter((e: any) => e.type === data.category)
+                        .flatMap((e: any) => e.variants)
+                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                        .at(0)?.name ?? data.variant),
                     craft_quality_percent: data.quality,
                     enhancement: data.enhancement,
                     runes: data.runes,
@@ -2074,7 +2096,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -2085,7 +2107,7 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality}**`,
                         data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
@@ -2381,10 +2403,9 @@ createApplicationCommand({
         ...Object.fromEntries(
           rune.primary_traits?.flatMap((trait: any) => {
             const rangeFields = getRangeFields(trait);
-            const traitLower = trait.name.toLowerCase().replace(/\s+/g, '_');
             return rangeFields.map((field) => [
               `rune-${trait.name}-${field}`,
-              `${runeNamePrefix}_${traitLower}_${field.replace(/_range$/, '')}`,
+              `${runeNamePrefix}_${field.replace(/_range$/, '')}`,
             ]);
           }) || [],
         ),
@@ -2530,7 +2551,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Invalid number format for: ${pill(invalidFields.join(', '))}. Please provide valid numbers.`,
+                  content: `${icon(Emoji.Wrong)} Invalid number format for: ${pill(invalidFields.join(', '))}. Please provide valid numbers.`,
                 },
               ],
             },
@@ -2548,7 +2569,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Some values are out of range:\n${outOfRangeFields.map((f) => `${pill(f.field)}: ${smallPill(f.value)} is not between ${smallPill(f.min)} and ${smallPill(f.max)}`).join('\n')}`,
+                  content: `${icon(Emoji.Wrong)} Some values are out of range:\n${outOfRangeFields.map((f) => `${pill(f.field)}: ${smallPill(f.value)} is not between ${smallPill(f.min)} and ${smallPill(f.max)}`).join('\n')}`,
                 },
               ],
             },
@@ -2579,7 +2600,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Correct')} ${pill(data.runeTemp?.name)} has been configured and added to your runes.`,
+                content: `${icon(Emoji.Correct)} ${pill(data.runeTemp?.name)} has been configured and added to your runes.`,
               },
             ],
           },
@@ -3067,7 +3088,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Please select a subtrait and provide a valid value.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a subtrait and provide a valid value.`,
                 },
               ],
             },
@@ -3104,7 +3125,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} The subtrait value must be between ${smallPill(subtraitRange.min)} and ${smallPill(subtraitRange.max)}.`,
+                  content: `${icon(Emoji.Wrong)} The subtrait value must be between ${smallPill(subtraitRange.min)} and ${smallPill(subtraitRange.max)}.`,
                 },
               ],
             },
@@ -3123,7 +3144,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} Invalid value provided.`,
+                  content: `${icon(Emoji.Wrong)} Invalid value provided.`,
                 },
               ],
             },
@@ -3146,7 +3167,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon('Exclamation')} The subtrait ${pill(selectedSubtrait)} has already been added to this rune.`,
+                  content: `${icon(Emoji.Exclamation)} The subtrait ${pill(selectedSubtrait)} has already been added to this rune.`,
                 },
               ],
             },
@@ -3184,7 +3205,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Correct')} ${pill(selectedSubtrait)} with value ${smallPill(selectedSubtraitValue)} has been added to your rune.`,
+                content: `${icon(Emoji.Correct)} ${pill(selectedSubtrait)} with value ${smallPill(selectedSubtraitValue)} has been added to your rune.`,
               },
             ],
           },
@@ -3598,7 +3619,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Correct')} ${pill(removedRuneName)} has been removed from your runes.`,
+                content: `${icon(Emoji.Correct)} ${pill(removedRuneName)} has been removed from your runes.`,
               },
             ],
           },
@@ -3834,7 +3855,12 @@ createApplicationCommand({
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
                   category: data.category,
-                  variant: data.variant,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
                   craft_quality_percent: data.quality,
                   enhancement: data.enhancement,
                   runes: data.runes,
@@ -3850,7 +3876,12 @@ createApplicationCommand({
                       .map(([name, quantity]) => `${quantity} ${name}`)
                       .join(', '),
                     category: data.category,
-                    variant: data.variant,
+                    variant: (data.variant =
+                      variants
+                        .filter((e: any) => e.type === data.category)
+                        .flatMap((e: any) => e.variants)
+                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                        .at(0)?.name ?? data.variant),
                     craft_quality_percent: data.quality,
                     enhancement: data.enhancement,
                     runes: data.runes,
@@ -3942,7 +3973,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## Information:\n${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Base Damage: **${equipment.weapon.base_damage_display}**\n- Forged Base Damage: **${equipment.weapon.base_damage_original}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -3953,7 +3984,7 @@ createApplicationCommand({
                       type: MessageComponentTypes.TextDisplay,
                       content: `## Extras:\n${[
                         data.race && `- Race: **${data.race}**`,
-                        data.quality !== undefined && `- Quality: **${data.quality / 100}**`,
+                        data.quality !== undefined && `- Quality: **${data.quality}**`,
                         data.enhancement && `- Enhancement: **+${data.enhancement}**`,
                         data.achievement?.name &&
                           data.achievement.stage &&
@@ -4098,6 +4129,10 @@ createApplicationCommand({
                         label: 'Frostspire Expanse',
                         value: 'Frostspire Expanse',
                       },
+                      {
+                        label: 'Crimson Sakura',
+                        value: 'Crimson Sakura',
+                      },
                     ].filter((option) => option.value !== data.world),
                   },
                 ],
@@ -4151,7 +4186,7 @@ createApplicationCommand({
             components: [
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${icon('Exclamation')} Forging session expired.\n-# Execute the command again to start a new session.`,
+                content: `${icon(Emoji.Exclamation)} Forging session expired.\n-# Execute the command again to start a new session.`,
               },
             ],
           },

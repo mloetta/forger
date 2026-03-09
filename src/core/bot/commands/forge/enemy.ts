@@ -10,7 +10,6 @@ import {
 import createApplicationCommand from 'helpers/command';
 import { ApplicationCommandCategory, RequestMethod, ResponseType } from 'types/types';
 import { makeRequest } from 'utils/request';
-import { decimalToFraction } from 'utils/utils';
 
 createApplicationCommand({
   name: 'enemy',
@@ -42,7 +41,7 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9998/mobs', {
+    const res = await makeRequest('http://localhost:9998/enemies', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -51,21 +50,21 @@ createApplicationCommand({
     });
 
     const choices = res
-      .filter((mob: any) => {
+      .filter((enemy: any) => {
         if (!focused) return true;
 
-        return mob.name.toLowerCase().includes(focused);
+        return enemy.name.toLowerCase().includes(focused);
       })
       .slice(0, 25)
-      .map((mob: any) => ({
-        name: mob.name,
-        value: mob.name,
+      .map((enemy: any) => ({
+        name: enemy.name,
+        value: enemy.name,
       }));
 
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9998/mobs`, {
+    const res = await makeRequest(`http://localhost:9998/enemies`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
@@ -86,7 +85,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name}\n-# ${res.world} - ${res.area}${res.overview ? `\n> *${res.overview}*` : ''}`,
+                  content: `# ${res.name}\n *${res.description}*`,
                 },
               ],
               accessory: {
@@ -96,7 +95,7 @@ createApplicationCommand({
                 },
               },
             },
-            ...(res.locations && res.locations.length > 0
+            ...(res.location && res.location.length > 0
               ? ([
                   {
                     type: MessageComponentTypes.ActionRow,
@@ -105,10 +104,13 @@ createApplicationCommand({
                         type: MessageComponentTypes.StringSelect,
                         customId: 'mob-locations',
                         placeholder: 'Locations:',
-                        options: res.locations.map((loc: string) => ({
-                          label: loc,
-                          value: loc,
-                        })),
+                        options: res.location.flatMap((loc: any) =>
+                          loc.world.map((world: string) => ({
+                            label: world,
+                            value: world,
+                            description: loc.area.join(', '),
+                          })),
+                        ),
                       },
                     ],
                   },
@@ -119,7 +121,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `- Level Range: **${res.level_range.min ?? '?'} - ${res.level_range.max ?? '?'}**\n- Health: **${res.stats.health.min ?? '?'} - ${res.stats.health.max ?? '?'}**\n- Damage: **${res.stats.damage.min ?? '?'} - ${res.stats.damage.max ?? '?'}**\n- Gold: **${res.stats.gold.min ?? '?'} - ${res.stats.gold.max ?? '?'}**\n- Experience: **${res.stats.experience.min ?? '?'} - ${res.stats.experience.max ?? '?'}**`,
+              content: `- Level Range: **${res.level_range.min ?? '?'} - ${res.level_range.max ?? '?'}**\n- Health: **${res.health.min ?? '?'} - ${res.health.max ?? '?'}**\n- Damage: **${res.damage.min ?? '?'} - ${res.damage.max ?? '?'}**\n- Gold: **${res.gold.min ?? '?'} - ${res.gold.max ?? '?'}**\n- Experience: **${res.experience.min ?? '?'} - ${res.experience.max ?? '?'}**`,
             },
             ...(res.drops && res.drops.length > 0
               ? ([
@@ -128,7 +130,7 @@ createApplicationCommand({
                   },
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${res.drops.map((drop: any) => `- ${drop.item} - **${decimalToFraction(drop.chance)}**`).join('\n')}`,
+                    content: `${res.drops.map((drop: any) => `- ${drop.item} - **${drop.chance}**`).join('\n')}`,
                   },
                 ] satisfies MessageComponents)
               : []),
