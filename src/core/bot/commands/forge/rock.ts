@@ -12,8 +12,8 @@ import { stringwrapPreserveWords } from 'utils/markdown';
 import { makeRequest } from 'utils/request';
 
 createApplicationCommand({
-  name: 'ore',
-  description: 'Views information about the selected ore',
+  name: 'rock',
+  description: 'Views information about the selected rock',
   details: {
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
@@ -26,8 +26,8 @@ createApplicationCommand({
   ],
   options: [
     {
-      name: 'ore',
-      description: 'Pick an ore to view information about',
+      name: 'rock',
+      description: 'Pick a rock to view information about',
       type: ApplicationCommandOptionTypes.String,
       required: true,
       autocomplete: true,
@@ -41,7 +41,7 @@ createApplicationCommand({
         ?.value?.toString()
         .toLowerCase() ?? '';
 
-    const res = await makeRequest('http://localhost:9998/ores', {
+    const res = await makeRequest('http://localhost:9998/rocks', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       headers: {
@@ -50,25 +50,25 @@ createApplicationCommand({
     });
 
     const choices = res
-      .filter((ore: any) => {
+      .filter((rock: any) => {
         if (!focused) return true;
 
-        return ore.name.toLowerCase().includes(focused);
+        return rock.name.toLowerCase().includes(focused);
       })
       .slice(0, 25)
-      .map((ore: any) => ({
-        name: ore.name,
-        value: ore.name,
+      .map((rock: any) => ({
+        name: rock.name,
+        value: rock.name,
       }));
 
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
-    const res = await makeRequest(`http://localhost:9998/ores`, {
+    const res = await makeRequest(`http://localhost:9998/rocks`, {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
       params: {
-        name: options.ore,
+        name: options.rock,
       },
       headers: {
         'x-api-key': FORGE_API_KEY,
@@ -85,7 +85,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name}\n-# ${res.rarity}\n*${res.description}*${res.trait ? `\n> ${res.trait.description} (${res.trait.type})` : '\n> None'}`,
+                  content: `# ${res.name}`,
                 },
               ],
               accessory: {
@@ -96,28 +96,18 @@ createApplicationCommand({
               },
             },
             {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'ore-location',
-                  placeholder: 'Obtainable From:',
-                  options: res.from.flatMap((item: any) =>
-                    item.world.map((world: string) => ({
-                      label: world,
-                      value: world,
-                      description: stringwrapPreserveWords(item.rock.join(', '), 100),
-                    })),
-                  ),
-                },
-              ],
+              type: MessageComponentTypes.Separator,
+            },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: res.ores.map((ore: string) => `> - ${ore}`).join('\n'),
             },
             {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `- Chance: **${res.chance}**\n- Multiplier: **${res.multiplier}x**\n- Price: **${res.price}**${res.unique_price_multiplier != null ? `\n- Unique Price Multiplier: **${res.unique_price_multiplier}x**` : ''}`,
+              content: `- Health: **${res.health}**\n- Experience: **${res.exp}**\n- Required Damage: **${res.required_damage}**${res.spawn_count_range ? `\n- Spawn Count Range: **${res.spawn_count_range.min} - ${res.spawn_count_range.max}**` : ''}${res.luck_boost ? `\n- Luck Boost: **${res.luck_boost}x**` : ''}`,
             },
           ],
         },

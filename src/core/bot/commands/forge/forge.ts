@@ -3,6 +3,8 @@ import { FORGE_API_KEY } from 'core/variables';
 import {
   ButtonStyles,
   Collection,
+  DiscordApplicationIntegrationType,
+  DiscordInteractionContextType,
   MessageComponentTypes,
   MessageFlags,
   TextStyles,
@@ -25,6 +27,12 @@ createApplicationCommand({
     category: ApplicationCommandCategory.Forge,
     cooldown: 5,
   },
+  integrationTypes: [DiscordApplicationIntegrationType.GuildInstall, DiscordApplicationIntegrationType.UserInstall],
+  contexts: [
+    DiscordInteractionContextType.BotDm,
+    DiscordInteractionContextType.Guild,
+    DiscordInteractionContextType.PrivateChannel,
+  ],
   acknowledge: true,
   async run(bot, interaction, options) {
     const ores = await makeRequest('http://localhost:9998/ores', {
@@ -1456,22 +1464,22 @@ createApplicationCommand({
             type: MessageComponentTypes.Container,
             components: [
               {
-                type: MessageComponentTypes.TextDisplay,
-                content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}`,
-              },
-              {
                 type: MessageComponentTypes.Section,
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.weapon_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.armor_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                     }`,
                   },
                 ],
@@ -1685,22 +1693,22 @@ createApplicationCommand({
             type: MessageComponentTypes.Container,
             components: [
               {
-                type: MessageComponentTypes.TextDisplay,
-                content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}`,
-              },
-              {
                 type: MessageComponentTypes.Section,
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.weapon_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.armor_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                     }`,
                   },
                 ],
@@ -2026,22 +2034,22 @@ createApplicationCommand({
             type: MessageComponentTypes.Container,
             components: [
               {
-                type: MessageComponentTypes.TextDisplay,
-                content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}`,
-              },
-              {
                 type: MessageComponentTypes.Section,
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.weapon_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.armor_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                     }`,
                   },
                 ],
@@ -3903,22 +3911,22 @@ createApplicationCommand({
             type: MessageComponentTypes.Container,
             components: [
               {
-                type: MessageComponentTypes.TextDisplay,
-                content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}`,
-              },
-              {
                 type: MessageComponentTypes.Section,
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.weapon_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
-                          : '> *None*'
+                          ? equipment.traits.armor_ore_traits
+                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
+                              .join('\n')
+                          : '\n> *None*'
                     }`,
                   },
                 ],

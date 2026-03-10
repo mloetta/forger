@@ -108,7 +108,7 @@ createApplicationCommand({
                           loc.world.map((world: string) => ({
                             label: world,
                             value: world,
-                            description: loc.area.join(', '),
+                            ...(loc.area ? { description: loc.area.join(', ') } : {}),
                           })),
                         ),
                       },
