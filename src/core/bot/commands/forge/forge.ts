@@ -2397,8 +2397,6 @@ createApplicationCommand({
         },
       });
 
-      const runeNamePrefix = selectedRune.toLowerCase().replace(/\s+/g, '_');
-
       // Dynamically extract trait range fields from the trait objects
       const getRangeFields = (trait: any): string[] => {
         return Object.keys(trait).filter(
@@ -2411,20 +2409,21 @@ createApplicationCommand({
         ...Object.fromEntries(
           rune.primary_traits?.flatMap((trait: any) => {
             const rangeFields = getRangeFields(trait);
-            return rangeFields.map((field) => [
-              `rune-${trait.name}-${field}`,
-              `${runeNamePrefix}_${field.replace(/_range$/, '')}`,
-            ]);
+            //ucv forthe iv9
+            return rangeFields
+              .map((field) => {
+                const canonicalKey = trait?.keys?.[field];
+                if (!canonicalKey) return null;
+                return [`rune-${trait.name}-${field}`, canonicalKey];
+              })
+              .filter(Boolean) as [string, string][];
           }) || [],
         ),
         ...(rune.proc
           ? Object.fromEntries(
               ['chance_range', 'cooldown_range']
-                .filter((field) => rune.proc[field])
-                .map((field) => [
-                  `rune-proc-${field}`,
-                  field === 'chance_range' ? `${runeNamePrefix}_proc_chance` : `${runeNamePrefix}_proc_cooldown`,
-                ]),
+                .filter((field) => rune.proc[field] && rune.proc?.keys?.[field])
+                .map((field) => [`rune-proc-${field}`, rune.proc.keys[field]]),
             )
           : {}),
       };
