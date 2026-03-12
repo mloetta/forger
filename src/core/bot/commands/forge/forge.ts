@@ -151,7 +151,7 @@ createApplicationCommand({
         rune: string;
         roll: Record<string, number>;
         subtraits?: {
-          rune: string;
+          subtrait: string;
           roll: Record<string, number>;
         }[];
       }[];
@@ -1468,17 +1468,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -1697,17 +1693,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -2038,17 +2030,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -2265,7 +2253,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -2302,7 +2290,7 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') || (subtrait.subtrait ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -2695,7 +2683,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -2732,7 +2720,8 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') ||
+                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -2921,7 +2910,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -2958,7 +2947,8 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') ||
+                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -2972,7 +2962,7 @@ createApplicationCommand({
                   ]
                 : []),
               ...(((data.runes ?? []).find((r: any) => r.id === data.runeTemp?.id)?.subtraits?.length ?? 0) <
-              (rune.is_tier2_available ? 2 : 1)
+              (rune.max_subtraits ?? (rune.is_tier2_available ? 2 : 1))
                 ? ([
                     {
                       type: MessageComponentTypes.Section,
@@ -3036,7 +3026,8 @@ createApplicationCommand({
 
       const runeIndex = (data.runes ?? []).findIndex((r: any) => r.id === data.runeTemp?.id);
       const selectedRune = runeIndex !== undefined && runeIndex >= 0 ? (data.runes ?? [])[runeIndex] : undefined;
-      const addedSubtraits = selectedRune?.subtraits?.map((s: any) => s.rune.replace(/^Secondary:\s*/, '')) || [];
+      const addedSubtraits =
+        selectedRune?.subtraits?.map((s: any) => (s.subtrait ?? s.rune ?? '').replace(/^Secondary:\s*/, '')) || [];
 
       await i.respond({
         customId: 'subtrait-management',
@@ -3164,9 +3155,11 @@ createApplicationCommand({
 
       const runeIndex = (data.runes ?? []).findIndex((r: any) => r.id === data.runeTemp?.id);
       const selectedRune = runeIndex !== undefined && runeIndex >= 0 ? (data.runes ?? [])[runeIndex] : undefined;
-      const addedSubtraits = selectedRune?.subtraits?.map((s: any) => s.rune.replace(/^Secondary:\s*/, '')) || [];
+      const addedSubtraits =
+        selectedRune?.subtraits?.map((s: any) => (s.subtrait ?? s.rune ?? '').replace(/^Secondary:\s*/, '')) || [];
+      const maxSubtraits = rune.max_subtraits ?? (rune.is_tier2_available ? 2 : 1);
 
-      if (addedSubtraits.includes(selectedSubtrait ?? '')) {
+      if (addedSubtraits.length >= maxSubtraits) {
         await i.respond({
           components: [
             {
@@ -3174,7 +3167,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} The subtrait ${pill(selectedSubtrait)} has already been added to this rune.`,
+                  content: `${icon(Emoji.Exclamation)} This rune can only contain ${maxSubtraits} subtrait(s).`,
                 },
               ],
             },
@@ -3197,7 +3190,7 @@ createApplicationCommand({
           const subtraitKey = subtraitData?.key || (selectedSubtrait ?? '').toLowerCase().replace(/\s+/g, '_');
 
           selectedRuneEntry.subtraits.push({
-            rune: `Secondary: ${selectedSubtrait}`,
+            subtrait: `Secondary: ${selectedSubtrait}`,
             roll: {
               [subtraitKey]: selectedSubtraitValue,
             },
@@ -3310,7 +3303,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -3347,7 +3340,8 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') ||
+                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -3361,7 +3355,7 @@ createApplicationCommand({
                   ]
                 : []),
               ...(((data.runes ?? []).find((r: any) => r.id === data.runeTemp?.id)?.subtraits?.length ?? 0) <
-              (rune.is_tier2_available ? 2 : 1)
+              (rune.max_subtraits ?? (rune.is_tier2_available ? 2 : 1))
                 ? ([
                     {
                       type: MessageComponentTypes.Section,
@@ -3493,7 +3487,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -3530,7 +3524,8 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') ||
+                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -3714,7 +3709,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = subtrait.rune
+                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -3751,7 +3746,8 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') || subtrait.rune.replace(/^Secondary:\s*/, '')
+                                              .join(' ') ||
+                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
                                           }: **${value}**`;
                                         })
                                         .join('\n'),
@@ -3914,17 +3910,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
                       data.equipmentType === 'Weapon'
                         ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                         : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits
-                              .map((t: any) => `\n> *${t.source}: ${t.trait}*`)
-                              .join('\n')
+                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },

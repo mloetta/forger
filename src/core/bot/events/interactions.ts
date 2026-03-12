@@ -1,6 +1,16 @@
 import { commandOptionsParser, createLogger, InteractionTypes, MessageComponentTypes, MessageFlags } from 'discordeno';
 import { check } from 'middlewares/cooldown';
-import { codeblock, highlight, icon, link, pill, smallPill, stringwrapPreserveWords, timestamp } from 'utils/markdown';
+import {
+  codeblock,
+  commandMention,
+  highlight,
+  icon,
+  link,
+  pill,
+  smallPill,
+  stringwrapPreserveWords,
+  timestamp,
+} from 'utils/markdown';
 import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
@@ -271,6 +281,10 @@ async function handleApplicationCommand(interaction: Interaction) {
                 type: MessageComponentTypes.TextDisplay,
                 content: codeblock('ts', e instanceof Error ? e.message : stringwrapPreserveWords(String(e), 1500)),
               },
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `-# If you believe this is a bug, please report it to the developers by using ${commandMention('help', '1467573209594597661')}.`,
+              },
             ],
           },
         ],
@@ -292,6 +306,10 @@ async function handleApplicationCommand(interaction: Interaction) {
               {
                 type: MessageComponentTypes.TextDisplay,
                 content: codeblock('ts', e instanceof Error ? e.message : stringwrapPreserveWords(String(e), 1500)),
+              },
+              {
+                type: MessageComponentTypes.TextDisplay,
+                content: `-# If you believe this is a bug, please report it to the developers by using ${commandMention('help', '1467573209594597661')}.`,
               },
             ],
           },
