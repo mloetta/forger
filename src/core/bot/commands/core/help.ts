@@ -43,7 +43,14 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.Separator,
-              divider: false,
+            },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: '## How to support the bot?',
+            },
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `You can support the bot by voting it in ${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}! Every vote helps is appreciated, helps the bot grow and reach more people`,
             },
             {
               type: MessageComponentTypes.TextDisplay,
