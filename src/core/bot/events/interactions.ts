@@ -261,6 +261,14 @@ async function handleApplicationCommand(interaction: Interaction) {
     }
 
     await command.run(bot, interaction, commandOptionsParser(interaction));
+
+    const hasActiveVote = await redis.get(`topgg:votes:active:${interaction.user.id.toString()}`);
+
+    if (!hasActiveVote) {
+      await interaction.sendFollowupMessage(
+        `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!`,
+      );
+    }
   } catch (e) {
     logger.error(`Command ${command.name} has errored.`, e);
 

@@ -75,6 +75,6 @@ app.post('/', async (req, res) => {
 
 await app.listen({ host: app.config.host, port: Number(GATEWAY_PORT) });
 
-logger.info(`Gateway manager listening on port ${GATEWAY_PORT}`);
+logger.info(`Gateway is listening on port ${GATEWAY_PORT}`);
 
 await gateway.spawnShards();

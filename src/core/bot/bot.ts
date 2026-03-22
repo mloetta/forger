@@ -1,4 +1,10 @@
-import { Collection, createBot, createDesiredPropertiesObject, DesiredPropertiesBehavior } from 'discordeno';
+import {
+  Collection,
+  createBot,
+  createDesiredPropertiesObject,
+  createLogger,
+  DesiredPropertiesBehavior,
+} from 'discordeno';
 import type {
   ManagerGetShardInfoFromGuildId,
   ShardInfo,
@@ -8,6 +14,8 @@ import type {
 import { GATEWAY_URL, REST_URL, BOT_TOKEN } from 'core/variables';
 import { RequestMethod, ResponseType, type ApplicationCommand } from 'types/types';
 import { makeRequest } from 'utils/request';
+
+export const logger = createLogger({ name: 'BOT' });
 
 const desiredProperties = createDesiredPropertiesObject({
   attachment: {

@@ -41,4 +41,4 @@ app.all('/*', async (req, res) => {
 
 await app.listen({ host: app.config.host, port: Number(REST_PORT) });
 
-logger.info(`REST Proxy listening on port ${REST_PORT}`);
+logger.info(`REST is listening on port ${REST_PORT}`);

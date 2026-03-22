@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/express": "^5.0.6",
     "prettier": "^3.6.2"
   },
   "peerDependencies": {
@@ -23,10 +24,11 @@
     "@fastify/helmet": "^13.0.2",
     "@fastify/multipart": "^9.2.1",
     "@influxdata/influxdb-client": "^1.35.0",
-    "@napi-rs/canvas": "^0.1.81",
     "@tolga1452/toolbox.js": "^2.0.1",
+    "@top-gg/sdk": "^3.1.6",
     "crypto": "^1.0.1",
     "discordeno": "22.0.1-next.758e75f",
+    "express": "^5.2.1",
     "fastify": "^5.6.1",
     "redis": "^5.10.0"
   }
