@@ -4,6 +4,8 @@ import {
   createDesiredPropertiesObject,
   createLogger,
   DesiredPropertiesBehavior,
+  MessageComponentTypes,
+  MessageFlags,
 } from 'discordeno';
 import type {
   ManagerGetShardInfoFromGuildId,
@@ -14,6 +16,7 @@ import type {
 import { GATEWAY_URL, REST_URL, BOT_TOKEN } from 'core/variables';
 import { RequestMethod, ResponseType, type ApplicationCommand } from 'types/types';
 import { makeRequest } from 'utils/request';
+import { link } from 'utils/markdown';
 
 export const logger = createLogger({ name: 'BOT' });
 
@@ -140,3 +143,110 @@ export async function getShardInfoFromGuild(guildId?: bigint): Promise<Omit<Shar
 
   return res;
 }
+
+// Override interaction methods to add top.gg link
+const sendInteractionResponse = bot.helpers.sendInteractionResponse;
+
+bot.helpers.sendInteractionResponse = async (interactionId, token, options) => {
+  if (options.data) {
+    const isComponentsV2 = Boolean((options.data.flags ?? 0) & MessageFlags.IsComponentsV2);
+
+    if (isComponentsV2) {
+      options.data.components ??= [];
+
+      const hasVoteInComponents = (components: any[]): boolean => {
+        return components.some((component: any) => {
+          const hasVoteText =
+            component?.type === MessageComponentTypes.TextDisplay &&
+            typeof component?.content === 'string' &&
+            component.content.includes('top.gg/bot/1461873695688491190/vote');
+
+          if (hasVoteText) return true;
+
+          if (Array.isArray(component?.components) && component.components.length > 0) {
+            return hasVoteInComponents(component.components);
+          }
+
+          if (component?.accessory && Array.isArray(component.accessory?.components)) {
+            return hasVoteInComponents(component.accessory.components);
+          }
+
+          return false;
+        });
+      };
+
+      const alreadyHasVote = Array.isArray(options.data.components)
+        ? hasVoteInComponents(options.data.components)
+        : false;
+
+      if (!alreadyHasVote) {
+        options.data.components.unshift({
+          type: MessageComponentTypes.TextDisplay,
+          content: `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!`,
+        });
+      }
+    } else if (options.data.content) {
+      const currentContent =
+        typeof options.data.content === 'string' ? options.data.content : String(options.data.content);
+
+      if (!currentContent.includes('top.gg/bot/1461873695688491190/vote')) {
+        options.data.content = `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!\n${currentContent}`;
+      }
+    }
+  }
+
+  return sendInteractionResponse(interactionId, token, options);
+};
+
+const editOriginalInteractionResponse = bot.helpers.editOriginalInteractionResponse;
+
+bot.helpers.editOriginalInteractionResponse = async (token, options) => {
+  if (options) {
+    const isComponentsV2 = Boolean((options.flags ?? 0) & MessageFlags.IsComponentsV2);
+
+    if (isComponentsV2) {
+      options.components ??= [];
+
+      const hasVoteInComponents = (components: any[]): boolean => {
+        return components.some((component: any) => {
+          const hasVoteText =
+            component?.type === MessageComponentTypes.TextDisplay &&
+            typeof component?.content === 'string' &&
+            component.content.includes('top.gg/bot/1461873695688491190/vote');
+
+          if (hasVoteText) return true;
+
+          if (Array.isArray(component?.components) && component.components.length > 0) {
+            return hasVoteInComponents(component.components);
+          }
+
+          if (component?.accessory && Array.isArray(component.accessory?.components)) {
+            return hasVoteInComponents(component.accessory.components);
+          }
+
+          return false;
+        });
+      };
+
+      const alreadyHasVote = Array.isArray(options.components) ? hasVoteInComponents(options.components) : false;
+
+      if (!alreadyHasVote) {
+        options.components.unshift({
+          type: MessageComponentTypes.TextDisplay,
+          content: `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!`,
+        });
+      }
+    } else {
+      const currentContent =
+        typeof options.content === 'string' ? options.content : options.content == null ? '' : String(options.content);
+
+      if (!currentContent.includes('top.gg/bot/1461873695688491190/vote')) {
+        options.content = currentContent
+          ? `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!\n${currentContent}`
+          : `-# Consider voting for us on **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**!`;
+      }
+    }
+  }
+
+  return editOriginalInteractionResponse(token, options);
+};

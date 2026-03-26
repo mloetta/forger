@@ -144,6 +144,7 @@ createApplicationCommand({
         name: string;
         stage: number;
       };
+      lethality?: number;
       quality?: number;
       enhancement?: number;
       runes?: {
@@ -241,6 +242,14 @@ createApplicationCommand({
                           {
                             type: MessageComponentTypes.TextDisplay,
                             content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                          },
+                        ] satisfies MessageComponents)
+                      : []),
+                    ...(data.lethality && data.lethality !== undefined
+                      ? ([
+                          {
+                            type: MessageComponentTypes.TextDisplay,
+                            content: `## Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -510,6 +519,14 @@ createApplicationCommand({
                           },
                         ] satisfies MessageComponents)
                       : []),
+                    ...(data.lethality && data.lethality !== undefined
+                      ? ([
+                          {
+                            type: MessageComponentTypes.TextDisplay,
+                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                          },
+                        ] satisfies MessageComponents)
+                      : []),
                     {
                       type: MessageComponentTypes.Separator,
                     },
@@ -660,6 +677,14 @@ createApplicationCommand({
                           },
                         ] satisfies MessageComponents)
                       : []),
+                    ...(data.lethality && data.lethality !== undefined
+                      ? ([
+                          {
+                            type: MessageComponentTypes.TextDisplay,
+                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                          },
+                        ] satisfies MessageComponents)
+                      : []),
                     {
                       type: MessageComponentTypes.Separator,
                     },
@@ -762,7 +787,7 @@ createApplicationCommand({
         components: [
           {
             type: MessageComponentTypes.Label,
-            label: 'Select your race',
+            label: 'Select a race',
             component: {
               type: MessageComponentTypes.StringSelect,
               customId: 'race-selection.',
@@ -777,7 +802,7 @@ createApplicationCommand({
           },
           {
             type: MessageComponentTypes.Label,
-            label: 'Select an achievement for the forge.',
+            label: 'Select an achievement',
             component: {
               type: MessageComponentTypes.StringSelect,
               customId: 'achievement-selection.',
@@ -792,11 +817,22 @@ createApplicationCommand({
           },
           {
             type: MessageComponentTypes.Label,
-            label: 'Select a stage for the achievement.',
+            label: 'Enter a stage for the achievement',
             component: {
               type: MessageComponentTypes.TextInput,
               customId: 'achievement-stage',
-              placeholder: 'Use numbers from 1 to 5.',
+              placeholder: 'Choose a value between 1 and 5',
+              style: TextStyles.Short,
+              required: false,
+            },
+          },
+          {
+            type: MessageComponentTypes.Label,
+            label: 'Enter a lethality value',
+            component: {
+              type: MessageComponentTypes.TextInput,
+              customId: 'lethality',
+              placeholder: 'Choose a value between 1% and 150%',
               style: TextStyles.Short,
               required: false,
             },
@@ -826,7 +862,13 @@ createApplicationCommand({
           ? Number(i.data.components[2].component.value)
           : undefined;
 
-      if (!selectedRace && !selectedAchievement) {
+      const selectedLethality =
+        typeof i.data.components?.[3]?.component?.value === 'string' &&
+        !Number.isNaN(Number.parseFloat(i.data.components[3].component.value))
+          ? Number.parseFloat(i.data.components[3].component.value)
+          : undefined;
+
+      if (!selectedRace && !selectedAchievement && !selectedLethality) {
         await i.respond({
           components: [
             {
@@ -834,7 +876,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} Please select a race or achievement.`,
+                  content: `${icon(Emoji.Exclamation)} Please provide a ${smallPill('race')}, ${smallPill('achievement')}, or ${smallPill('lethality')}.`,
                 },
               ],
             },
@@ -853,7 +895,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} Please select a stage for the achievement.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a ${smallPill('stage')} for the achievement.`,
                 },
               ],
             },
@@ -876,7 +918,29 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Wrong)} Please select a stage for the achievement from 1 to 5.`,
+                  content: `${icon(Emoji.Wrong)} Please provide a stage for the achievement from ${smallPill('1')} to ${smallPill('5')}.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+        });
+
+        return;
+      }
+
+      if (
+        selectedLethality &&
+        (!Number.isInteger(selectedLethality) || selectedLethality < 1 || selectedLethality > 150)
+      ) {
+        await i.respond({
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon(Emoji.Wrong)} Please provide a lethality value between ${smallPill('1%')} and ${smallPill('150%')}.`,
                 },
               ],
             },
@@ -894,6 +958,7 @@ createApplicationCommand({
             stage: selectedAchievementStage,
           })
         : (data.achievement = undefined);
+      data.lethality = selectedLethality;
 
       selections.set(i.user.id.toString(), data);
 
@@ -959,6 +1024,14 @@ createApplicationCommand({
                           {
                             type: MessageComponentTypes.TextDisplay,
                             content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                          },
+                        ] satisfies MessageComponents)
+                      : []),
+                    ...(data.lethality && data.lethality !== undefined
+                      ? ([
+                          {
+                            type: MessageComponentTypes.TextDisplay,
+                            content: `## Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -1051,7 +1124,26 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} Please select equipment type and at least ${smallPill('3')} ores.`,
+                  content: `${icon(Emoji.Exclamation)} Please select an ${smallPill('equipment type')} and provide at least ${smallPill('3')} ores.`,
+                },
+              ],
+            },
+          ],
+          flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
+        });
+
+        return;
+      }
+
+      if (!data.equipmentType) {
+        await i.respond({
+          components: [
+            {
+              type: MessageComponentTypes.Container,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `${icon(Emoji.Exclamation)} Please select an ${smallPill('equipment type')}.`,
                 },
               ],
             },
@@ -1081,8 +1173,6 @@ createApplicationCommand({
 
         return;
       }
-
-      data.equipmentType ??= 'Weapon';
 
       const equipmentChance =
         data.equipmentType === 'Weapon'
@@ -1406,10 +1496,31 @@ createApplicationCommand({
         body:
           data.equipmentType === 'Weapon'
             ? {
-                world: data.world,
                 race: data.race,
                 achievement: data.achievement,
                 weapon: {
+                  world: data.world ?? "Stonewake's Cross",
+                  recipe: Object.entries(data.ores ?? {})
+                    .map(([name, quantity]) => `${quantity} ${name}`)
+                    .join(', '),
+                  category: data.category,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
+                  craft_quality_percent: data.quality,
+                  enhancement: data.enhancement,
+                  runes: data.runes,
+                  lethality: data.lethality,
+                },
+              }
+            : {
+                race: data.race,
+                achievement: data.achievement,
+                armor: {
+                  world: data.world ?? "Stonewake's Cross",
                   recipe: Object.entries(data.ores ?? {})
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
@@ -1424,28 +1535,6 @@ createApplicationCommand({
                   enhancement: data.enhancement,
                   runes: data.runes,
                 },
-              }
-            : {
-                world: data.world,
-                race: data.race,
-                achievement: data.achievement,
-                armor: [
-                  {
-                    recipe: Object.entries(data.ores ?? {})
-                      .map(([name, quantity]) => `${quantity} ${name}`)
-                      .join(', '),
-                    category: data.category,
-                    variant: (data.variant =
-                      variants
-                        .filter((e: any) => e.type === data.category)
-                        .flatMap((e: any) => e.variants)
-                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                        .at(0)?.name ?? data.variant),
-                    craft_quality_percent: data.quality,
-                    enhancement: data.enhancement,
-                    runes: data.runes,
-                  },
-                ],
               },
         headers: {
           'x-api-key': FORGE_API_KEY,
@@ -1453,7 +1542,7 @@ createApplicationCommand({
       });
 
       data.equipmentRuneSlots =
-        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.pieces[0].rune_slots;
+        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
       selections.set(i.user.id.toString(), data);
 
@@ -1468,13 +1557,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name}\n${
                       data.equipmentType === 'Weapon'
-                        ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        ? equipment.weapon.traits_rendered?.length
+                          ? equipment.weapon.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
-                        : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        : equipment.armor.traits_rendered?.length
+                          ? equipment.armor.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -1482,7 +1571,7 @@ createApplicationCommand({
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.pieces[0].image,
+                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.image,
                   },
                 },
               },
@@ -1506,7 +1595,7 @@ createApplicationCommand({
                           v.name.toLowerCase() !==
                           (data.equipmentType === 'Weapon'
                             ? equipment.weapon.name
-                            : equipment.armor.pieces[0].name
+                            : equipment.armor.name
                           ).toLowerCase(),
                       )
                       .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
@@ -1537,7 +1626,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.final_attack_interval}s**\n- Effective DPS: **${equipment.weapon.dps.effective}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price_display}**` : `- Multiplier: **${equipment.armor.avg_multi}x**\n- Defense: **${equipment.armor.defense}**\n- Sell Price: **${equipment.armor.sell_price_display}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1564,11 +1653,7 @@ createApplicationCommand({
                     },
                   ] satisfies MessageComponents)
                 : []),
-              ...((
-                data.equipmentType === 'Weapon'
-                  ? equipment.weapon.rune_slots >= 1
-                  : equipment.armor.pieces[0].rune_slots >= 1
-              )
+              ...((data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots >= 1 : equipment.armor.rune_slots >= 1)
                 ? ([
                     {
                       type: MessageComponentTypes.Separator,
@@ -1643,10 +1728,26 @@ createApplicationCommand({
         body:
           data.equipmentType === 'Weapon'
             ? {
-                world: data.world,
                 race: data.race,
                 achievement: data.achievement,
                 weapon: {
+                  world: data.world ?? "Stonewake's Cross",
+                  recipe: Object.entries(data.ores ?? {})
+                    .map(([name, quantity]) => `${quantity} ${name}`)
+                    .join(', '),
+                  category: data.category,
+                  variant: data.variant,
+                  craft_quality_percent: data.quality,
+                  enhancement: data.enhancement,
+                  runes: data.runes,
+                  lethality: data.lethality,
+                },
+              }
+            : {
+                race: data.race,
+                achievement: data.achievement,
+                armor: {
+                  world: data.world ?? "Stonewake's Cross",
                   recipe: Object.entries(data.ores ?? {})
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
@@ -1656,23 +1757,6 @@ createApplicationCommand({
                   enhancement: data.enhancement,
                   runes: data.runes,
                 },
-              }
-            : {
-                world: data.world,
-                race: data.race,
-                achievement: data.achievement,
-                armor: [
-                  {
-                    recipe: Object.entries(data.ores ?? {})
-                      .map(([name, quantity]) => `${quantity} ${name}`)
-                      .join(', '),
-                    category: data.category,
-                    variant: data.variant,
-                    craft_quality_percent: data.quality,
-                    enhancement: data.enhancement,
-                    runes: data.runes,
-                  },
-                ],
               },
         headers: {
           'x-api-key': FORGE_API_KEY,
@@ -1680,7 +1764,7 @@ createApplicationCommand({
       });
 
       data.equipmentRuneSlots =
-        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.pieces[0].rune_slots;
+        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
       await i.deferEdit();
       await interaction.edit({
@@ -1693,13 +1777,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name}\n${
                       data.equipmentType === 'Weapon'
-                        ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        ? equipment.weapon.traits_rendered?.length
+                          ? equipment.weapon.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
-                        : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        : equipment.armor.traits_rendered?.length
+                          ? equipment.armor.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -1707,7 +1791,7 @@ createApplicationCommand({
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.pieces[0].image,
+                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.image,
                   },
                 },
               },
@@ -1755,7 +1839,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.final_attack_interval}s**\n- Effective DPS: **${equipment.weapon.dps.effective}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price_display}**` : `- Multiplier: **${equipment.armor.avg_multi}x**\n- Defense: **${equipment.armor.defense}**\n- Sell Price: **${equipment.armor.sell_price_display}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -1782,11 +1866,7 @@ createApplicationCommand({
                     },
                   ] satisfies MessageComponents)
                 : []),
-              ...((
-                data.equipmentType === 'Weapon'
-                  ? equipment.weapon.rune_slots >= 1
-                  : equipment.armor.pieces[0].rune_slots >= 1
-              )
+              ...((data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots >= 1 : equipment.armor.rune_slots >= 1)
                 ? ([
                     {
                       type: MessageComponentTypes.Separator,
@@ -1889,7 +1969,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} Please select a forging quality or enhancement level.`,
+                  content: `${icon(Emoji.Exclamation)} Please provide a ${smallPill('quality')} or ${smallPill('enhancement')} level.`,
                 },
               ],
             },
@@ -1970,10 +2050,31 @@ createApplicationCommand({
         body:
           data.equipmentType === 'Weapon'
             ? {
-                world: data.world,
                 race: data.race,
                 achievement: data.achievement,
                 weapon: {
+                  world: data.world ?? "Stonewake's Cross",
+                  recipe: Object.entries(data.ores ?? {})
+                    .map(([name, quantity]) => `${quantity} ${name}`)
+                    .join(', '),
+                  category: data.category,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
+                  craft_quality_percent: data.quality,
+                  enhancement: data.enhancement,
+                  runes: data.runes,
+                  lethality: data.lethality,
+                },
+              }
+            : {
+                race: data.race,
+                achievement: data.achievement,
+                armor: {
+                  world: data.world ?? "Stonewake's Cross",
                   recipe: Object.entries(data.ores ?? {})
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
@@ -1988,28 +2089,6 @@ createApplicationCommand({
                   enhancement: data.enhancement,
                   runes: data.runes,
                 },
-              }
-            : {
-                world: data.world,
-                race: data.race,
-                achievement: data.achievement,
-                armor: [
-                  {
-                    recipe: Object.entries(data.ores ?? {})
-                      .map(([name, quantity]) => `${quantity} ${name}`)
-                      .join(', '),
-                    category: data.category,
-                    variant: (data.variant =
-                      variants
-                        .filter((e: any) => e.type === data.category)
-                        .flatMap((e: any) => e.variants)
-                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                        .at(0)?.name ?? data.variant),
-                    craft_quality_percent: data.quality,
-                    enhancement: data.enhancement,
-                    runes: data.runes,
-                  },
-                ],
               },
         headers: {
           'x-api-key': FORGE_API_KEY,
@@ -2017,7 +2096,7 @@ createApplicationCommand({
       });
 
       data.equipmentRuneSlots =
-        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.pieces[0].rune_slots;
+        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
       await i.deferEdit();
       await interaction.edit({
@@ -2030,13 +2109,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name}\n${
                       data.equipmentType === 'Weapon'
-                        ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        ? equipment.weapon.traits_rendered?.length
+                          ? equipment.weapon.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
-                        : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        : equipment.armor.traits_rendered?.length
+                          ? equipment.armor.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -2044,7 +2123,7 @@ createApplicationCommand({
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.pieces[0].image,
+                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.image,
                   },
                 },
               },
@@ -2092,7 +2171,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.final_attack_interval}s**\n- Effective DPS: **${equipment.weapon.dps.effective}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price_display}**` : `- Multiplier: **${equipment.armor.avg_multi}x**\n- Defense: **${equipment.armor.defense}**\n- Sell Price: **${equipment.armor.sell_price_display}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -2119,11 +2198,7 @@ createApplicationCommand({
                     },
                   ] satisfies MessageComponents)
                 : []),
-              ...((
-                data.equipmentType === 'Weapon'
-                  ? equipment.weapon.rune_slots >= 1
-                  : equipment.armor.pieces[0].rune_slots >= 1
-              )
+              ...((data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots >= 1 : equipment.armor.rune_slots >= 1)
                 ? ([
                     {
                       type: MessageComponentTypes.Separator,
@@ -2242,7 +2317,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2291,7 +2372,13 @@ createApplicationCommand({
                                                 }
                                               })
                                               .join(' ') || (subtrait.subtrait ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -2672,7 +2759,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2683,7 +2776,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
+                                          const subraidNamePrefix = (subtrait.subtrait ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -2720,9 +2813,14 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') ||
-                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                              .join(' ') || (subtrait.subtrait ?? '').replace(/^Secondary:\s*/, '')
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -2896,7 +2994,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -2949,7 +3053,13 @@ createApplicationCommand({
                                               })
                                               .join(' ') ||
                                             (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3086,7 +3196,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} Please select a subtrait and provide a valid value.`,
+                  content: `${icon(Emoji.Exclamation)} Please select a ${smallPill('subtrait')} and provide a valid value.`,
                 },
               ],
             },
@@ -3167,7 +3277,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `${icon(Emoji.Exclamation)} This rune can only contain ${maxSubtraits} subtrait(s).`,
+                  content: `${icon(Emoji.Exclamation)} This rune can only contain ${smallPill(maxSubtraits)} subtrait(s).`,
                 },
               ],
             },
@@ -3289,7 +3399,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3342,7 +3458,13 @@ createApplicationCommand({
                                               })
                                               .join(' ') ||
                                             (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3476,7 +3598,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3487,7 +3615,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
+                                          const subraidNamePrefix = (subtrait.subtrait ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -3524,9 +3652,14 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') ||
-                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                              .join(' ') || (subtrait.subtrait ?? '').replace(/^Secondary:\s*/, '')
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3698,7 +3831,13 @@ createApplicationCommand({
                                             }
                                           })
                                           .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
-                                      }: **${value}**`;
+                                      }: **${
+                                        /chance|percent/i.test(cleanKey)
+                                          ? `${value}%`
+                                          : /duration|cooldown/i.test(cleanKey)
+                                            ? `${value}s`
+                                            : value
+                                      }**`;
                                     })
                                     .join('\n')
                                 : '- No values configured'
@@ -3709,7 +3848,7 @@ createApplicationCommand({
                                     .map((subtrait: any) =>
                                       Object.entries(subtrait.roll || {})
                                         .map(([key, value]) => {
-                                          const subraidNamePrefix = (subtrait.subtrait ?? subtrait.rune ?? '')
+                                          const subraidNamePrefix = (subtrait.subtrait ?? '')
                                             .replace(/^Secondary:\s*/, '')
                                             .toLowerCase()
                                             .replace(/\s+/g, '_');
@@ -3746,9 +3885,14 @@ createApplicationCommand({
                                                     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                                 }
                                               })
-                                              .join(' ') ||
-                                            (subtrait.subtrait ?? subtrait.rune ?? '').replace(/^Secondary:\s*/, '')
-                                          }: **${value}**`;
+                                              .join(' ') || (subtrait.subtrait ?? '').replace(/^Secondary:\s*/, '')
+                                          }: **${
+                                            /chance|percent/i.test(cleanKey)
+                                              ? `${value}%`
+                                              : /duration|cooldown/i.test(cleanKey)
+                                                ? `${value}s`
+                                                : value
+                                          }**`;
                                         })
                                         .join('\n'),
                                     )
@@ -3850,10 +3994,31 @@ createApplicationCommand({
         body:
           data.equipmentType === 'Weapon'
             ? {
-                world: data.world,
                 race: data.race,
                 achievement: data.achievement,
                 weapon: {
+                  world: data.world ?? "Stonewake's Cross",
+                  recipe: Object.entries(data.ores ?? {})
+                    .map(([name, quantity]) => `${quantity} ${name}`)
+                    .join(', '),
+                  category: data.category,
+                  variant: (data.variant =
+                    variants
+                      .filter((e: any) => e.type === data.category)
+                      .flatMap((e: any) => e.variants)
+                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+                      .at(0)?.name ?? data.variant),
+                  craft_quality_percent: data.quality,
+                  enhancement: data.enhancement,
+                  runes: data.runes,
+                  lethality: data.lethality,
+                },
+              }
+            : {
+                race: data.race,
+                achievement: data.achievement,
+                armor: {
+                  world: data.world ?? "Stonewake's Cross",
                   recipe: Object.entries(data.ores ?? {})
                     .map(([name, quantity]) => `${quantity} ${name}`)
                     .join(', '),
@@ -3868,28 +4033,6 @@ createApplicationCommand({
                   enhancement: data.enhancement,
                   runes: data.runes,
                 },
-              }
-            : {
-                world: data.world,
-                race: data.race,
-                achievement: data.achievement,
-                armor: [
-                  {
-                    recipe: Object.entries(data.ores ?? {})
-                      .map(([name, quantity]) => `${quantity} ${name}`)
-                      .join(', '),
-                    category: data.category,
-                    variant: (data.variant =
-                      variants
-                        .filter((e: any) => e.type === data.category)
-                        .flatMap((e: any) => e.variants)
-                        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                        .at(0)?.name ?? data.variant),
-                    craft_quality_percent: data.quality,
-                    enhancement: data.enhancement,
-                    runes: data.runes,
-                  },
-                ],
               },
         headers: {
           'x-api-key': FORGE_API_KEY,
@@ -3897,7 +4040,7 @@ createApplicationCommand({
       });
 
       data.equipmentRuneSlots =
-        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.pieces[0].rune_slots;
+        data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
       await i.deferEdit();
       await interaction.edit({
@@ -3910,13 +4053,13 @@ createApplicationCommand({
                 components: [
                   {
                     type: MessageComponentTypes.TextDisplay,
-                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.pieces[0].name}\n${
+                    content: `# ${data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name}\n${
                       data.equipmentType === 'Weapon'
-                        ? equipment.traits.weapon_ore_traits.length
-                          ? equipment.traits.weapon_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        ? equipment.weapon.traits_rendered?.length
+                          ? equipment.weapon.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
-                        : equipment.traits.armor_ore_traits.length
-                          ? equipment.traits.armor_ore_traits.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
+                        : equipment.armor.traits_rendered?.length
+                          ? equipment.armor.traits_rendered.map((t: any) => `> *${t.source}: ${t.trait}*`).join('\n')
                           : '\n> *None*'
                     }`,
                   },
@@ -3924,7 +4067,7 @@ createApplicationCommand({
                 accessory: {
                   type: MessageComponentTypes.Thumbnail,
                   media: {
-                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.pieces[0].image,
+                    url: data.equipmentType === 'Weapon' ? equipment.weapon.image : equipment.armor.image,
                   },
                 },
               },
@@ -3972,7 +4115,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.attack_speed}s**\n- Effective DPS: **${equipment.weapon.effective_dps}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price}**` : `- Multiplier: **${equipment.armor.pieces[0].avg_multi}x**\n- Defense: **${equipment.armor.pieces[0].defense}**\n- Sell Price: **${equipment.armor.pieces[0].sell_price}**`}`,
+                content: `${data.equipmentType === 'Weapon' ? `- Multiplier: **${equipment.weapon.avg_multi}x**\n- Forged Base Damage: **${equipment.weapon.base_damage_display}**\n- Attack Speed: **${equipment.weapon.final_attack_interval}s**\n- Effective DPS: **${equipment.weapon.dps.effective}**\n- Total Ores: **${equipment.weapon.total_ores}**\n- Sell Price: **${equipment.weapon.sell_price_display}**` : `- Multiplier: **${equipment.armor.avg_multi}x**\n- Defense: **${equipment.armor.defense}**\n- Sell Price: **${equipment.armor.sell_price_display}**`}`,
               },
               ...(data.race || data.quality || data.enhancement || data.achievement || (data.runes ?? []).length
                 ? ([
@@ -3999,11 +4142,7 @@ createApplicationCommand({
                     },
                   ] satisfies MessageComponents)
                 : []),
-              ...((
-                data.equipmentType === 'Weapon'
-                  ? equipment.weapon.rune_slots >= 1
-                  : equipment.armor.pieces[0].rune_slots >= 1
-              )
+              ...((data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots >= 1 : equipment.armor.rune_slots >= 1)
                 ? ([
                     {
                       type: MessageComponentTypes.Separator,
