@@ -5,6 +5,7 @@ import { omit, readDirectory } from 'utils/utils';
 import { join } from 'path';
 import 'utils/process';
 import type { ApplicationCommandOption } from 'types/types';
+import { redis } from 'utils/redis';
 
 const rest = createRestManager({ token: BOT_TOKEN });
 const logger = createLogger({ name: 'Application Commands' });
@@ -62,8 +63,19 @@ const commands = bot.commands.array().map((cmd) => {
 const globalCommands = commands.filter((c) => c.dev === false).map((c) => omit(c, ['dev']));
 const guildCommands = commands.filter((c) => c.dev === true).map((c) => omit(c, ['dev']));
 
-await rest.upsertGlobalApplicationCommands(globalCommands);
-await rest.upsertGuildApplicationCommands('1457032144349302900', guildCommands);
+const registeredGlobal = await rest.upsertGlobalApplicationCommands(globalCommands);
+const registeredGuild = await rest.upsertGuildApplicationCommands('1457032144349302900', guildCommands);
+
+// Save command IDs to Redis
+const commandIds: Record<string, string> = {};
+for (const cmd of registeredGlobal) {
+  commandIds[cmd.name] = cmd.id;
+}
+for (const cmd of registeredGuild) {
+  commandIds[cmd.name] = cmd.id;
+}
+
+await redis.hSet('commands:ids', commandIds);
 
 logger.info('Successfully reloaded application (/) commands');
 

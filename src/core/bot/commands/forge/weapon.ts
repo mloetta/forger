@@ -81,7 +81,7 @@ createApplicationCommand({
               components: [
                 {
                   type: MessageComponentTypes.TextDisplay,
-                  content: `# ${res.name} (${res.type})`,
+                  content: `# ${res.name}\n-# ${res.type}`,
                 },
               ],
               accessory: {

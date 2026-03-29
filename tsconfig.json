@@ -27,15 +27,16 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Absolute paths
-    "baseUrl": "./src",
     "paths": {
-      "bot/*": ["core/bot/*"],
-      "gateway/*": ["core/gateway/*"],
-      "rest/*": ["core/rest/*"],
-      "helpers/*": ["helpers/*"],
-      "middlewares/*": ["middlewares/*"],
-      "types/*": ["types/*"],
-      "utils/*": ["utils/*"]
+      "core/*": ["./src/core/*"],
+      "bot/*": ["./src/core/bot/*"],
+      "gateway/*": ["./src/core/gateway/*"],
+      "rest/*": ["./src/core/rest/*"],
+      "helpers/*": ["./src/helpers/*"],
+      "middlewares/*": ["./src/middlewares/*"],
+      "types/*": ["./src/types/*"],
+      "utils/*": ["./src/utils/*"],
+      "libs/*": ["./src/libs/*"]
     }
   }
 }

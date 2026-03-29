@@ -1,3 +1,4 @@
+import { bot } from 'bot/bot';
 import { collectors } from 'bot/events/interactions';
 import { INVITE_LINK, SUPPORT_SERVER } from 'core/constants';
 import { Emoji } from 'core/emojis';
@@ -13,8 +14,9 @@ import {
 } from 'discordeno';
 import createCollector from 'helpers/collector';
 import createApplicationCommand from 'helpers/command';
-import { ApplicationCommandCategory, type Interaction } from 'types/types';
-import { icon, iconAsEmoji, link, pill } from 'utils/markdown';
+import { ApplicationCommandCategory, type ApplicationCommand, type Interaction } from 'types/types';
+import { commandMention, icon, iconAsEmoji, link, pill, smallPill } from 'utils/markdown';
+import { redis } from 'utils/redis';
 import or from 'utils/utils';
 
 createApplicationCommand({
@@ -39,7 +41,23 @@ createApplicationCommand({
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `# Welcome to Forger!\nYou can view all the available commands by typing ${pill('/')}, for further game assistance which the bot may or may not display go to ${link('https://forgewiki.org/wiki/The_Forge_wiki', 'the official wiki')}.`,
+              content: '# Welcome to Forger!',
+            },
+            {
+              type: MessageComponentTypes.Section,
+              components: [
+                {
+                  type: MessageComponentTypes.TextDisplay,
+                  content: `You can view all the available commands by typing ${pill('/')}, or by clicking the button on the right, for further game assistance which the bot may or may not display go to ${link('https://forgewiki.org/wiki/The_Forge_wiki', 'the official wiki')}.`,
+                },
+              ],
+              accessory: {
+                type: MessageComponentTypes.Button,
+                style: ButtonStyles.Secondary,
+                customId: 'view-all-commands',
+                label: 'View All Commands',
+                emoji: iconAsEmoji(Emoji.List),
+              },
             },
             {
               type: MessageComponentTypes.Separator,
@@ -50,7 +68,7 @@ createApplicationCommand({
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `You can support the bot by voting it in **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**! Every vote helps is appreciated, helps the bot grow and reach more people`,
+              content: `You can support the bot by voting it in **${link('https://top.gg/bot/1461873695688491190/vote', 'top.gg')}**! Every vote helps is appreciated, helps the bot grow and reach more people.`,
             },
             {
               type: MessageComponentTypes.TextDisplay,
@@ -66,15 +84,14 @@ createApplicationCommand({
               ],
               accessory: {
                 type: MessageComponentTypes.Button,
+                style: ButtonStyles.Secondary,
                 customId: 'bug-reports-button',
                 label: 'Report Bugs',
                 emoji: iconAsEmoji(Emoji.Bug),
-                style: ButtonStyles.Secondary,
               },
             },
             {
               type: MessageComponentTypes.Separator,
-              divider: true,
             },
             {
               type: MessageComponentTypes.TextDisplay,
@@ -119,7 +136,30 @@ createApplicationCommand({
     collector.on('collect', async (i) => {
       if (!i.data) return;
 
-      if (i.data.customId === 'bug-reports-button') {
+      if (i.data.customId === 'view-all-commands') {
+        const commandIds = await redis.hGetAll('commands:ids');
+
+        const commandList = [...bot.commands.values()]
+          .filter((cmd) => !(cmd as ApplicationCommand).dev)
+          .map((cmd) => {
+            const id = commandIds[cmd.name];
+            return id
+              ? `> ${commandMention(cmd.name, id)} - ${cmd.description}`
+              : `> \`/${cmd.name}\` - ${cmd.description}`;
+          })
+          .join('\n');
+
+        await i.respond({
+          customId: 'all-commands-modal',
+          title: 'Command List',
+          components: [
+            {
+              type: MessageComponentTypes.TextDisplay,
+              content: `## Here you can view all the commands available in the bot.\n${commandList}`,
+            },
+          ],
+        });
+      } else if (i.data.customId === 'bug-reports-button') {
         await i.respond({
           customId: 'bug-reports-modal',
           title: 'Report your bug here.',
@@ -159,9 +199,7 @@ createApplicationCommand({
             },
           ],
         });
-      }
-
-      if (i.data.customId === 'bug-reports-modal') {
+      } else if (i.data.customId === 'bug-reports-modal') {
         const bugReport = or(i.data.components?.[0]?.component?.value, null);
         const stepsToReproduce = or(i.data.components?.[1]?.component?.value, null);
         const screenshotIds = or(i.data.components?.[2]?.component?.values, null);

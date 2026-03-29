@@ -226,7 +226,7 @@ export function commandMention(name: string, id: string): string {
  * @param cols - The columns to format.
  * @param options - The formatting options.
  */
-export function inline(cols: string[][], options?: { spacing?: number }): string[] {
+export function inline(cols: string[][], options?: { spacing?: number }) {
   options = options ?? {};
   const spacing = Math.max(options.spacing ?? 1);
 

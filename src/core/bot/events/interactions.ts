@@ -11,7 +11,7 @@ import {
   stringwrapPreserveWords,
   timestamp,
 } from 'utils/markdown';
-import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand } from 'types/types';
+import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand, ApplicationCommandCategory } from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
@@ -90,7 +90,7 @@ async function handleApplicationCommand(interaction: Interaction) {
 
   if (command.dev && interaction.user.id !== BigInt('782946852278501407')) return;
 
-  if (MAINTENANCE.toLowerCase() === 'true' && interaction.user.id !== BigInt('782946852278501407')) {
+  if (MAINTENANCE.toLowerCase() === 'true' && interaction.user.id !== BigInt('782946852278501407') && command.details.category !== ApplicationCommandCategory.Core) {
     await interaction.respond({
       components: [
         {

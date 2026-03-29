@@ -9,7 +9,7 @@ import type {
 } from 'discordeno';
 import type { bot, CustomBot } from 'bot/bot';
 import EventListener from 'libs/listener';
-import type { createCollector } from 'helpers/collector';
+import type createCollector from 'helpers/collector';
 
 // ========== ENUMS ==========
 

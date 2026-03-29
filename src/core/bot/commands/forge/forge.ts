@@ -101,7 +101,7 @@ createApplicationCommand({
                   options: ores.slice(0, 25).map((ore: any) => ({
                     label: ore.name,
                     value: ore.name,
-                    description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
+                    description: ore.multiplier,
                   })),
                 },
               ],
@@ -215,7 +215,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Type:\n- ${data.equipmentType}`,
+                            content: `### Selected Type:\n- ${data.equipmentType}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -223,7 +223,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Ores:\n${Object.entries(data.ores ?? {})
+                            content: `### Selected Ores:\n${Object.entries(data.ores ?? {})
                               .map(([ore, amount]) => `- ${ore}: **${amount}**`)
                               .join('\n')}`,
                           },
@@ -233,7 +233,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Race:\n- ${data.race}`,
+                            content: `### Selected Race:\n- ${data.race}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -241,7 +241,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                            content: `### Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -249,7 +249,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                            content: `### Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -286,7 +286,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
+                      description: ore.multiplier,
                     })),
                   },
                 ],
@@ -489,7 +489,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Type:\n- ${data.equipmentType}`,
+                            content: `### Selected Type:\n- ${data.equipmentType}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -497,7 +497,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Ores:\n${Object.entries(data.ores ?? {})
+                            content: `### Selected Ores:\n${Object.entries(data.ores ?? {})
                               .map(([ore, amount]) => `- ${ore}: **${amount}**`)
                               .join('\n')}`,
                           },
@@ -507,7 +507,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Race:\n- ${data.race}`,
+                            content: `### Selected Race:\n- ${data.race}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -515,7 +515,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                            content: `### Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -523,7 +523,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                            content: `### Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -560,7 +560,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
+                      description: ore.multiplier,
                     })),
                   },
                 ],
@@ -647,7 +647,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Type:\n- ${data.equipmentType}`,
+                            content: `### Selected Type:\n- ${data.equipmentType}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -655,7 +655,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Ores:\n${Object.entries(data.ores ?? {})
+                            content: `### Selected Ores:\n${Object.entries(data.ores ?? {})
                               .map(([ore, amount]) => `- ${ore}: **${amount}**`)
                               .join('\n')}`,
                           },
@@ -665,7 +665,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Race:\n- ${data.race}`,
+                            content: `### Selected Race:\n- ${data.race}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -673,7 +673,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                            content: `### Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -681,7 +681,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                            content: `### Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -718,7 +718,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
+                      description: ore.multiplier,
                     })),
                   },
                 ],
@@ -997,7 +997,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Type:\n- ${data.equipmentType}`,
+                            content: `### Selected Type:\n- ${data.equipmentType}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -1005,7 +1005,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Ores:\n${Object.entries(data.ores ?? {})
+                            content: `### Selected Ores:\n${Object.entries(data.ores ?? {})
                               .map(([ore, amount]) => `- ${ore}: **${amount}**`)
                               .join('\n')}`,
                           },
@@ -1015,7 +1015,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Race:\n- ${data.race}`,
+                            content: `### Selected Race:\n- ${data.race}`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -1023,7 +1023,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
+                            content: `### Selected Achievement:\n- ${data.achievement.name} (${data.achievement.stage})`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -1031,7 +1031,7 @@ createApplicationCommand({
                       ? ([
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## Selected Lethality:\n- ${data.lethality}%`,
+                            content: `### Selected Lethality:\n- ${data.lethality}%`,
                           },
                         ] satisfies MessageComponents)
                       : []),
@@ -1068,7 +1068,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.trait ? stringwrapPreserveWords(ore.trait.description, 100) : 'None',
+                      description: ore.multiplier,
                     })),
                   },
                 ],
@@ -1226,7 +1226,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- Stonewake's Cross`,
+                content: `### You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- Stonewake's Cross`,
               },
               {
                 type: MessageComponentTypes.ActionRow,
@@ -1351,7 +1351,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- ${data.world ?? "Stonewake's Cross"}`,
+                content: `### You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- ${data.world ?? "Stonewake's Cross"}`,
               },
               {
                 type: MessageComponentTypes.ActionRow,
@@ -1546,6 +1546,28 @@ createApplicationCommand({
 
       selections.set(i.user.id.toString(), data);
 
+      const validVariants = variants
+        .filter((equipment: any) => equipment.type === data.category)
+        .flatMap((equipment: any) =>
+          equipment.variants.map((variant: any) => ({
+            ...variant,
+            type: equipment.type,
+          })),
+        )
+        .filter(
+          (v: any) =>
+            v.name.toLowerCase() !==
+            (data.equipmentType === 'Weapon'
+              ? equipment.weapon.name
+              : equipment.armor.name
+            ).toLowerCase(),
+        )
+        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+        .map((v: any) => ({
+          label: v.name,
+          value: v.name,
+        }));
+
       await i.deferEdit();
       await interaction.edit({
         components: [
@@ -1575,37 +1597,21 @@ createApplicationCommand({
                   },
                 },
               },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.StringSelect,
-                    customId: 'change-variant',
-                    placeholder: 'View different variants.',
-                    options: variants
-                      .filter((equipment: any) => equipment.type === data.category)
-                      .flatMap((equipment: any) =>
-                        equipment.variants.map((variant: any) => ({
-                          ...variant,
-                          type: equipment.type,
-                        })),
-                      )
-                      .filter(
-                        (v: any) =>
-                          v.name.toLowerCase() !==
-                          (data.equipmentType === 'Weapon'
-                            ? equipment.weapon.name
-                            : equipment.armor.name
-                          ).toLowerCase(),
-                      )
-                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                      .map((v: any) => ({
-                        label: v.name,
-                        value: v.name,
-                      })),
-                  },
-                ],
-              },
+              ...(validVariants.length > 0
+                ? [
+                    {
+                      type: MessageComponentTypes.ActionRow,
+                      components: [
+                        {
+                          type: MessageComponentTypes.StringSelect,
+                          customId: 'change-variant',
+                          placeholder: 'View different variants.',
+                          options: validVariants,
+                        },
+                      ],
+                    },
+                  ] satisfies MessageComponents
+                : []),
               {
                 type: MessageComponentTypes.Section,
                 components: [
@@ -1766,6 +1772,28 @@ createApplicationCommand({
       data.equipmentRuneSlots =
         data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
+      const validVariants = variants
+        .filter((equipment: any) => equipment.type === data.category)
+        .flatMap((equipment: any) =>
+          equipment.variants.map((variant: any) => ({
+            ...variant,
+            type: equipment.type,
+          })),
+        )
+        .filter(
+          (v: any) =>
+            v.name.toLowerCase() !==
+            (data.equipmentType === 'Weapon'
+              ? equipment.weapon.name
+              : equipment.armor.name
+            ).toLowerCase(),
+        )
+        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+        .map((v: any) => ({
+          label: v.name,
+          value: v.name,
+        }));
+
       await i.deferEdit();
       await interaction.edit({
         components: [
@@ -1795,30 +1823,21 @@ createApplicationCommand({
                   },
                 },
               },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.StringSelect,
-                    customId: 'change-variant',
-                    placeholder: 'View different variants.',
-                    options: variants
-                      .filter((equipment: any) => equipment.type === data.category)
-                      .flatMap((equipment: any) =>
-                        equipment.variants.map((variant: any) => ({
-                          ...variant,
-                          type: equipment.type,
-                        })),
-                      )
-                      .filter((v: any) => v.name.toLowerCase() !== data.variant?.toLowerCase())
-                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                      .map((v: any) => ({
-                        label: v.name,
-                        value: v.name,
-                      })),
-                  },
-                ],
-              },
+              ...(validVariants.length > 0
+                ? [
+                    {
+                      type: MessageComponentTypes.ActionRow,
+                      components: [
+                        {
+                          type: MessageComponentTypes.StringSelect,
+                          customId: 'change-variant',
+                          placeholder: 'View different variants.',
+                          options: validVariants,
+                        },
+                      ],
+                    },
+                  ] satisfies MessageComponents
+                : []),
               {
                 type: MessageComponentTypes.Section,
                 components: [
@@ -2098,6 +2117,28 @@ createApplicationCommand({
       data.equipmentRuneSlots =
         data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
+      const validVariants = variants
+        .filter((equipment: any) => equipment.type === data.category)
+        .flatMap((equipment: any) =>
+          equipment.variants.map((variant: any) => ({
+            ...variant,
+            type: equipment.type,
+          })),
+        )
+        .filter(
+          (v: any) =>
+            v.name.toLowerCase() !==
+            (data.equipmentType === 'Weapon'
+              ? equipment.weapon.name
+              : equipment.armor.name
+            ).toLowerCase(),
+        )
+        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+        .map((v: any) => ({
+          label: v.name,
+          value: v.name,
+        }));
+
       await i.deferEdit();
       await interaction.edit({
         components: [
@@ -2127,30 +2168,21 @@ createApplicationCommand({
                   },
                 },
               },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.StringSelect,
-                    customId: 'change-variant',
-                    placeholder: 'View different variants.',
-                    options: variants
-                      .filter((equipment: any) => equipment.type === data.category)
-                      .flatMap((equipment: any) =>
-                        equipment.variants.map((variant: any) => ({
-                          ...variant,
-                          type: equipment.type,
-                        })),
-                      )
-                      .filter((v: any) => v.name.toLowerCase() !== data.variant?.toLowerCase())
-                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                      .map((v: any) => ({
-                        label: v.name,
-                        value: v.name,
-                      })),
-                  },
-                ],
-              },
+              ...(validVariants.length > 0
+                ? [
+                    {
+                      type: MessageComponentTypes.ActionRow,
+                      components: [
+                        {
+                          type: MessageComponentTypes.StringSelect,
+                          customId: 'change-variant',
+                          placeholder: 'View different variants.',
+                          options: validVariants,
+                        },
+                      ],
+                    },
+                  ] satisfies MessageComponents
+                : []),
               {
                 type: MessageComponentTypes.Section,
                 components: [
@@ -4042,6 +4074,28 @@ createApplicationCommand({
       data.equipmentRuneSlots =
         data.equipmentType === 'Weapon' ? equipment.weapon.rune_slots : equipment.armor.rune_slots;
 
+      const validVariants = variants
+        .filter((equipment: any) => equipment.type === data.category)
+        .flatMap((equipment: any) =>
+          equipment.variants.map((variant: any) => ({
+            ...variant,
+            type: equipment.type,
+          })),
+        )
+        .filter(
+          (v: any) =>
+            v.name.toLowerCase() !==
+            (data.equipmentType === 'Weapon'
+              ? equipment.weapon.name
+              : equipment.armor.name
+            ).toLowerCase(),
+        )
+        .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
+        .map((v: any) => ({
+          label: v.name,
+          value: v.name,
+        }));
+
       await i.deferEdit();
       await interaction.edit({
         components: [
@@ -4071,30 +4125,21 @@ createApplicationCommand({
                   },
                 },
               },
-              {
-                type: MessageComponentTypes.ActionRow,
-                components: [
-                  {
-                    type: MessageComponentTypes.StringSelect,
-                    customId: 'change-variant',
-                    placeholder: 'View different variants.',
-                    options: variants
-                      .filter((equipment: any) => equipment.type === data.category)
-                      .flatMap((equipment: any) =>
-                        equipment.variants.map((variant: any) => ({
-                          ...variant,
-                          type: equipment.type,
-                        })),
-                      )
-                      .filter((v: any) => v.name.toLowerCase() !== data.variant?.toLowerCase())
-                      .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
-                      .map((v: any) => ({
-                        label: v.name,
-                        value: v.name,
-                      })),
-                  },
-                ],
-              },
+              ...(validVariants.length > 0
+                ? [
+                    {
+                      type: MessageComponentTypes.ActionRow,
+                      components: [
+                        {
+                          type: MessageComponentTypes.StringSelect,
+                          customId: 'change-variant',
+                          placeholder: 'View different variants.',
+                          options: validVariants,
+                        },
+                      ],
+                    },
+                  ] satisfies MessageComponents
+                : []),
               {
                 type: MessageComponentTypes.Section,
                 components: [
@@ -4245,7 +4290,7 @@ createApplicationCommand({
               },
               {
                 type: MessageComponentTypes.TextDisplay,
-                content: `## You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- ${data.world ?? "Stonewake's Cross"}`,
+                content: `### You can change the world to forge new ${data.equipmentType}s!\nSelected World:\n- ${data.world ?? "Stonewake's Cross"}`,
               },
               {
                 type: MessageComponentTypes.ActionRow,
