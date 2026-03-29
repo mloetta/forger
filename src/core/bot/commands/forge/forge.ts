@@ -101,7 +101,7 @@ createApplicationCommand({
                   options: ores.slice(0, 25).map((ore: any) => ({
                     label: ore.name,
                     value: ore.name,
-                    description: ore.multiplier,
+                    description: `${ore.multiplier}x`,
                   })),
                 },
               ],
@@ -286,7 +286,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.multiplier,
+                      description: `${ore.multiplier}x`,
                     })),
                   },
                 ],
@@ -560,7 +560,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.multiplier,
+                      description: `${ore.multiplier}x`,
                     })),
                   },
                 ],
@@ -718,7 +718,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.multiplier,
+                      description: `${ore.multiplier}x`,
                     })),
                   },
                 ],
@@ -1068,7 +1068,7 @@ createApplicationCommand({
                     options: ores.slice(currentPage * 25, currentPage * 25 + 25).map((ore: any) => ({
                       label: ore.name,
                       value: ore.name,
-                      description: ore.multiplier,
+                      description: `${ore.multiplier}x`,
                     })),
                   },
                 ],
