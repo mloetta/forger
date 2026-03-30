@@ -149,7 +149,7 @@ createApplicationCommand({
       enhancement?: number;
       runes?: {
         id: string;
-        rune: string;
+        name: string;
         roll: Record<string, number>;
         subtraits?: {
           subtrait: string;
@@ -1651,7 +1651,7 @@ createApplicationCommand({
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
-                            .map((rune: any) => `  - **${rune.rune.replace(/^Rune:\s*/, '')}**`)
+                            .map((rune: any) => `  - **${rune.name.replace(/^Rune:\s*/, '')}**`)
                             .join('\n')}`,
                       ]
                         .filter(Boolean)
@@ -1877,7 +1877,7 @@ createApplicationCommand({
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
-                            .map((rune: any) => `  - **${rune.rune.replace(/^Rune:\s*/, '')}**`)
+                            .map((rune: any) => `  - **${rune.name.replace(/^Rune:\s*/, '')}**`)
                             .join('\n')}`,
                       ]
                         .filter(Boolean)
@@ -2222,7 +2222,7 @@ createApplicationCommand({
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
-                            .map((rune: any) => `  - **${rune.rune.replace(/^Rune:\s*/, '')}**`)
+                            .map((rune: any) => `  - **${rune.name.replace(/^Rune:\s*/, '')}**`)
                             .join('\n')}`,
                       ]
                         .filter(Boolean)
@@ -2307,11 +2307,11 @@ createApplicationCommand({
                         [
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## ${rune.rune.replace(/^Rune:\s*/, '')}\n${
+                            content: `## ${rune.name.replace(/^Rune:\s*/, '')}\n${
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -2348,7 +2348,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -2431,7 +2431,7 @@ createApplicationCommand({
                           customId: 'manage-rune',
                           placeholder: 'Select a rune to manage.',
                           options: (data.runes ?? []).map((rune: any, index: number) => ({
-                            label: rune.rune?.replace('Rune: ', '') || `Rune ${index + 1}`,
+                            label: rune.name?.replace('Rune: ', '') || `Rune ${index + 1}`,
                             value: String(rune.id),
                           })),
                         },
@@ -2700,10 +2700,12 @@ createApplicationCommand({
       } else {
         (data.runes ??= []).push({
           id: randomUUID(),
-          rune: `Rune: ${data.runeTemp?.name}`,
+          name: `Rune: ${data.runeTemp?.name}`,
           roll: runeValues,
         });
       }
+
+      console.log('Selected runes:', data.runes);
 
       selections.set(i.user.id.toString(), data);
 
@@ -2749,11 +2751,11 @@ createApplicationCommand({
                         [
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## ${rune.rune.replace(/^Rune:\s*/, '')}\n${
+                            content: `## ${rune.name.replace(/^Rune:\s*/, '')}\n${
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -2790,7 +2792,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -2873,7 +2875,7 @@ createApplicationCommand({
                           customId: 'manage-rune',
                           placeholder: 'Select a rune to manage.',
                           options: (data.runes ?? []).map((rune: any, index: number) => ({
-                            label: rune.rune?.replace('Rune: ', '') || `Rune ${index + 1}`,
+                            label: rune.name?.replace('Rune: ', '') || `Rune ${index + 1}`,
                             value: String(rune.id),
                           })),
                         },
@@ -2936,7 +2938,7 @@ createApplicationCommand({
       data.runeTemp = { id: selectedRuneId };
       const selectedRuneObj = (data.runes ?? []).find((r: any) => r.id === selectedRuneId);
       if (!selectedRuneObj) return;
-      data.runeTemp.name = selectedRuneObj?.rune?.replace('Rune: ', '');
+      data.runeTemp.name = selectedRuneObj?.name?.replace('Rune: ', '');
 
       const rune = await makeRequest('http://localhost:9998/runes', {
         method: RequestMethod.GET,
@@ -2988,7 +2990,7 @@ createApplicationCommand({
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -3025,7 +3027,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -3393,7 +3395,7 @@ createApplicationCommand({
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -3430,7 +3432,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -3588,11 +3590,11 @@ createApplicationCommand({
                         [
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## ${rune.rune.replace(/^Rune:\s*/, '')}\n${
+                            content: `## ${rune.name.replace(/^Rune:\s*/, '')}\n${
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -3629,7 +3631,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -3712,7 +3714,7 @@ createApplicationCommand({
                           customId: 'manage-rune',
                           placeholder: 'Select a rune to manage.',
                           options: (data.runes ?? []).map((rune: any, index: number) => ({
-                            label: rune.rune?.replace('Rune: ', '') || `Rune ${index + 1}`,
+                            label: rune.name?.replace('Rune: ', '') || `Rune ${index + 1}`,
                             value: String(rune.id),
                           })),
                         },
@@ -3774,7 +3776,7 @@ createApplicationCommand({
       if (runeIndex === undefined || runeIndex < 0) return;
 
       const removedRune = (data.runes ?? [])[runeIndex];
-      const removedRuneName = removedRune?.rune?.replace('Rune: ', '');
+      const removedRuneName = removedRune?.name?.replace('Rune: ', '');
 
       (data.runes ??= []).splice(runeIndex, 1);
       selections.set(i.user.id.toString(), data);
@@ -3821,11 +3823,11 @@ createApplicationCommand({
                         [
                           {
                             type: MessageComponentTypes.TextDisplay,
-                            content: `## ${rune.rune.replace(/^Rune:\s*/, '')}\n${
+                            content: `## ${rune.name.replace(/^Rune:\s*/, '')}\n${
                               rune.roll && Object.keys(rune.roll).length > 0
                                 ? Object.entries(rune.roll)
                                     .map(([key, value]) => {
-                                      const runeNamePrefix = rune.rune
+                                      const runeNamePrefix = rune.name
                                         .replace(/^Rune:\s*/, '')
                                         .toLowerCase()
                                         .replace(/\s+/g, '_');
@@ -3862,7 +3864,7 @@ createApplicationCommand({
                                                 return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
                                             }
                                           })
-                                          .join(' ') || rune.rune.replace(/^Rune:\s*/, '')
+                                          .join(' ') || rune.name.replace(/^Rune:\s*/, '')
                                       }: **${
                                         /chance|percent/i.test(cleanKey)
                                           ? `${value}%`
@@ -3945,7 +3947,7 @@ createApplicationCommand({
                           customId: 'manage-rune',
                           placeholder: 'Select a rune to manage.',
                           options: (data.runes ?? []).map((rune: any, index: number) => ({
-                            label: rune.rune?.replace('Rune: ', '') || `Rune ${index + 1}`,
+                            label: rune.name?.replace('Rune: ', '') || `Rune ${index + 1}`,
                             value: String(rune.id),
                           })),
                         },
@@ -4179,7 +4181,7 @@ createApplicationCommand({
                         (data.runes ?? []).filter((r: any) => r).length &&
                           `- Runes:\n${(data.runes ?? [])
                             .filter((rune: any) => rune)
-                            .map((rune: any) => `  - **${rune.rune.replace(/^Rune:\s*/, '')}**`)
+                            .map((rune: any) => `  - **${rune.name.replace(/^Rune:\s*/, '')}**`)
                             .join('\n')}`,
                       ]
                         .filter(Boolean)
