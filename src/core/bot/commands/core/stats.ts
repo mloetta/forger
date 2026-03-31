@@ -1,11 +1,16 @@
-import { getShardInfoFromGuild } from "core/bot/bot";
-import { Emoji } from "core/emojis";
-import { DiscordApplicationIntegrationType, DiscordInteractionContextType, MessageComponentTypes, MessageFlags } from "discordeno";
-import createApplicationCommand from "helpers/command";
-import { ApplicationCommandCategory, TimestampStyle } from "types/types";
-import { icon, timestamp } from "utils/markdown";
-import os from "os";
-import { MAINTENANCE } from "core/variables";
+import { getShardInfoFromGuild } from 'core/bot/bot';
+import { Emoji } from 'core/emojis';
+import {
+  DiscordApplicationIntegrationType,
+  DiscordInteractionContextType,
+  MessageComponentTypes,
+  MessageFlags,
+} from 'discordeno';
+import createApplicationCommand from 'helpers/command';
+import { ApplicationCommandCategory, TimestampStyle } from 'types/types';
+import { icon, timestamp } from 'utils/markdown';
+import os from 'os';
+import { MAINTENANCE } from 'core/variables';
 
 createApplicationCommand({
   name: 'debug',
@@ -18,7 +23,7 @@ createApplicationCommand({
   ],
   details: {
     category: ApplicationCommandCategory.Core,
-    cooldown: 3
+    cooldown: 3,
   },
   acknowledge: true,
   async run(bot, interaction, options) {
@@ -39,29 +44,30 @@ createApplicationCommand({
     const guilds = app.approximateGuildCount?.toLocaleString('en-US') ?? 'N/A';
     const installs = app.approximateUserInstallCount?.toLocaleString('en-US') ?? 'N/A';
 
-    const maintenance = MAINTENANCE.toLowerCase() === 'true' ? `\n-# ${icon(Emoji.Warning)} The bot is currently under maintenance.` : '';
+    const maintenance =
+      MAINTENANCE.toLowerCase() === 'true' ? `\n-# ${icon(Emoji.Warning)} The bot is currently under maintenance.` : '';
 
-    await interaction.respond({
+    await interaction.edit({
       components: [
         {
           type: MessageComponentTypes.Container,
           components: [
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Shard #${shard}${maintenance}\n### Overall\n${icon(Emoji.Text3)} Latency: **${latency}**\n${icon(Emoji.Text2)} Uptime: **${uptime}**\n${icon(Emoji.Text1)} Memory: **${memoryUsage}**`
+              content: `## Shard #${shard}${maintenance}\n### Overall\n${icon(Emoji.Text3)} Latency: **${latency}**\n${icon(Emoji.Text2)} Uptime: **${uptime}**\n${icon(Emoji.Text1)} Memory: **${memoryUsage}**`,
             },
             {
               type: MessageComponentTypes.Separator,
-              divider: false
+              divider: false,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `### Bot\n${icon(Emoji.Text3)} Guilds: **${guilds}**\n${icon(Emoji.Text1)} Installs: **${installs}**`
-            }
-          ]
-        }
+              content: `### Bot\n${icon(Emoji.Text3)} Guilds: **${guilds}**\n${icon(Emoji.Text1)} Installs: **${installs}**`,
+            },
+          ],
+        },
       ],
-      flags: MessageFlags.IsComponentsV2
-    })
+      flags: MessageFlags.IsComponentsV2,
+    });
   },
-})
+});

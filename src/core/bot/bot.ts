@@ -1,4 +1,5 @@
 import {
+  ApplicationCommandOptionTypes,
   Collection,
   createBot,
   createDesiredPropertiesObject,
@@ -13,10 +14,11 @@ import type {
   WorkerPresenceUpdate,
   WorkerShardPayload,
 } from 'gateway/worker/types';
-import { GATEWAY_URL, REST_URL, BOT_TOKEN } from 'core/variables';
-import { RequestMethod, ResponseType, type ApplicationCommand } from 'types/types';
+import { GATEWAY_URL, REST_URL, BOT_TOKEN, DEV_SERVER } from 'core/variables';
+import { RequestMethod, ResponseType, type ApplicationCommand, type ApplicationCommandOption } from 'types/types';
 import { makeRequest } from 'utils/request';
 import { link } from 'utils/markdown';
+import { redis } from 'utils/redis';
 
 export const logger = createLogger({ name: 'BOT' });
 
@@ -250,3 +252,60 @@ bot.helpers.editOriginalInteractionResponse = async (token, options) => {
 
   return editOriginalInteractionResponse(token, options);
 };
+
+export async function updateCommands(): Promise<void> {
+  bot.logger.info('Refreshing application (/) commands');
+
+  const commands = bot.commands.array().map((cmd) => {
+    if (!cmd.options) cmd.options = [];
+
+    const incognitoOption: ApplicationCommandOption = {
+      type: ApplicationCommandOptionTypes.Boolean,
+      name: 'incognito',
+      description: 'Whether the response should only be visible to you',
+    };
+
+    let hasSubOrGroup = false;
+
+    for (const option of cmd.options) {
+      if (option.type === ApplicationCommandOptionTypes.SubCommandGroup && option.options) {
+        hasSubOrGroup = true;
+        for (const sub of option.options) {
+          if (sub.type === ApplicationCommandOptionTypes.SubCommand) {
+            if (!sub.options) sub.options = [];
+            sub.options.push(incognitoOption);
+          }
+        }
+      } else if (option.type === ApplicationCommandOptionTypes.SubCommand) {
+        hasSubOrGroup = true;
+        if (!option.options) option.options = [];
+        option.options.push(incognitoOption);
+      }
+    }
+
+    if (!hasSubOrGroup) {
+      cmd.options.push(incognitoOption);
+    }
+
+    return { ...cmd, dev: !!cmd.dev };
+  });
+
+  const globalCommands = commands.filter((cmd) => !cmd.dev);
+  const devCommands = commands.filter((cmd) => !!cmd.dev);
+
+  const registeredGlobal = await bot.rest.upsertGlobalApplicationCommands(globalCommands);
+  const registeredDevGuild = await bot.rest.upsertGuildApplicationCommands(DEV_SERVER, devCommands);
+
+  // Save command IDs to Redis
+  const commandIds: Record<string, string> = {};
+  for (const cmd of registeredGlobal) {
+    commandIds[cmd.name] = cmd.id;
+  }
+  for (const cmd of registeredDevGuild) {
+    commandIds[cmd.name] = cmd.id;
+  }
+
+  await redis.hSet('commands:ids', commandIds);
+
+  bot.logger.info('Successfully refreshed application (/) commands');
+}

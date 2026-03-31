@@ -11,11 +11,17 @@ import {
   stringwrapPreserveWords,
   timestamp,
 } from 'utils/markdown';
-import { TimestampStyle, type Interaction, type CollectorType, type ApplicationCommand, ApplicationCommandCategory } from 'types/types';
+import {
+  TimestampStyle,
+  type Interaction,
+  type CollectorType,
+  type ApplicationCommand,
+  ApplicationCommandCategory,
+} from 'types/types';
 import createEvent from 'helpers/event';
 import { bot } from 'bot/bot';
 import { PermissionManager } from 'middlewares/permission';
-import { MAINTENANCE } from 'core/variables';
+import { DEV_IDS, MAINTENANCE } from 'core/variables';
 import { redis } from 'utils/redis';
 import { SUPPORT_SERVER } from 'core/constants';
 import { Emoji } from 'core/emojis';
@@ -88,9 +94,13 @@ async function handleApplicationCommand(interaction: Interaction) {
     return;
   }
 
-  if (command.dev && interaction.user.id !== BigInt('782946852278501407')) return;
+  if (command.dev && !DEV_IDS.includes(interaction.user.id.toString())) return;
 
-  if (MAINTENANCE.toLowerCase() === 'true' && interaction.user.id !== BigInt('782946852278501407') && command.details.category !== ApplicationCommandCategory.Core) {
+  if (
+    MAINTENANCE.toLowerCase() === 'true' &&
+    interaction.user.id !== BigInt('782946852278501407') &&
+    command.details.category !== ApplicationCommandCategory.Core
+  ) {
     await interaction.respond({
       components: [
         {

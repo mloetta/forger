@@ -1557,10 +1557,7 @@ createApplicationCommand({
         .filter(
           (v: any) =>
             v.name.toLowerCase() !==
-            (data.equipmentType === 'Weapon'
-              ? equipment.weapon.name
-              : equipment.armor.name
-            ).toLowerCase(),
+            (data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name).toLowerCase(),
         )
         .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
         .map((v: any) => ({
@@ -1598,7 +1595,7 @@ createApplicationCommand({
                 },
               },
               ...(validVariants.length > 0
-                ? [
+                ? ([
                     {
                       type: MessageComponentTypes.ActionRow,
                       components: [
@@ -1610,7 +1607,7 @@ createApplicationCommand({
                         },
                       ],
                     },
-                  ] satisfies MessageComponents
+                  ] satisfies MessageComponents)
                 : []),
               {
                 type: MessageComponentTypes.Section,
@@ -1783,10 +1780,7 @@ createApplicationCommand({
         .filter(
           (v: any) =>
             v.name.toLowerCase() !==
-            (data.equipmentType === 'Weapon'
-              ? equipment.weapon.name
-              : equipment.armor.name
-            ).toLowerCase(),
+            (data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name).toLowerCase(),
         )
         .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
         .map((v: any) => ({
@@ -1824,7 +1818,7 @@ createApplicationCommand({
                 },
               },
               ...(validVariants.length > 0
-                ? [
+                ? ([
                     {
                       type: MessageComponentTypes.ActionRow,
                       components: [
@@ -1836,7 +1830,7 @@ createApplicationCommand({
                         },
                       ],
                     },
-                  ] satisfies MessageComponents
+                  ] satisfies MessageComponents)
                 : []),
               {
                 type: MessageComponentTypes.Section,
@@ -2128,10 +2122,7 @@ createApplicationCommand({
         .filter(
           (v: any) =>
             v.name.toLowerCase() !==
-            (data.equipmentType === 'Weapon'
-              ? equipment.weapon.name
-              : equipment.armor.name
-            ).toLowerCase(),
+            (data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name).toLowerCase(),
         )
         .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
         .map((v: any) => ({
@@ -2169,7 +2160,7 @@ createApplicationCommand({
                 },
               },
               ...(validVariants.length > 0
-                ? [
+                ? ([
                     {
                       type: MessageComponentTypes.ActionRow,
                       components: [
@@ -2181,7 +2172,7 @@ createApplicationCommand({
                         },
                       ],
                     },
-                  ] satisfies MessageComponents
+                  ] satisfies MessageComponents)
                 : []),
               {
                 type: MessageComponentTypes.Section,
@@ -2704,8 +2695,6 @@ createApplicationCommand({
           roll: runeValues,
         });
       }
-
-      console.log('Selected runes:', data.runes);
 
       selections.set(i.user.id.toString(), data);
 
@@ -4087,10 +4076,7 @@ createApplicationCommand({
         .filter(
           (v: any) =>
             v.name.toLowerCase() !==
-            (data.equipmentType === 'Weapon'
-              ? equipment.weapon.name
-              : equipment.armor.name
-            ).toLowerCase(),
+            (data.equipmentType === 'Weapon' ? equipment.weapon.name : equipment.armor.name).toLowerCase(),
         )
         .filter((v: any) => !v.from || v.from.includes(data.world ?? "Stonewake's Cross"))
         .map((v: any) => ({
@@ -4128,7 +4114,7 @@ createApplicationCommand({
                 },
               },
               ...(validVariants.length > 0
-                ? [
+                ? ([
                     {
                       type: MessageComponentTypes.ActionRow,
                       components: [
@@ -4140,7 +4126,7 @@ createApplicationCommand({
                         },
                       ],
                     },
-                  ] satisfies MessageComponents
+                  ] satisfies MessageComponents)
                 : []),
               {
                 type: MessageComponentTypes.Section,

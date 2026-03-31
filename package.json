@@ -8,7 +8,7 @@
     "rest": "bun run src/core/rest/index.ts",
     "bot": "bun run src/core/bot/index.ts",
     "gateway": "bun run src/core/gateway/index.ts",
-    "register": "bun run src/core/bot/register.ts",
+    "register": "bun run src/core/scripts/register.ts",
     "format": "bunx prettier --write ."
   },
   "devDependencies": {

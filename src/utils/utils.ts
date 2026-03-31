@@ -1,7 +1,8 @@
 import fs from 'fs';
-import path from 'path';
+import path, { join } from 'path';
 import { pathToFileURL } from 'url';
 import CallStack from 'libs/stack';
+import { readdir } from 'fs/promises';
 
 export const readableFileSizeUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
@@ -112,35 +113,22 @@ export function levenshteinDistance(a: string, b: string): number {
   return prev[m] as number;
 }
 
-export async function readDirectory(dir: string): Promise<any[]> {
-  if (!path.isAbsolute(dir)) {
-    throw new Error('The provided path must be absolute.');
+export async function readDirectory(folder: string): Promise<void> {
+  const files = await readdir(folder, { recursive: true });
+
+  for (const filename of files) {
+    if (!filename.endsWith('.ts')) continue;
+
+    const fullPath = join(folder, filename);
+
+    await import(pathToFileURL(fullPath).href).catch((e) =>
+      console.log(`Cannot import file (${fullPath}) for reason:`, e),
+    );
   }
-
-  const results = fs.readdirSync(path.resolve(dir), {
-    recursive: true,
-    encoding: 'utf-8',
-  });
-  const stack = new CallStack();
-  const modules: any[] = [];
-
-  for (const file of results) {
-    const filepath = path.resolve(dir, file);
-    if (fs.statSync(filepath).isDirectory()) continue;
-
-    const module = await stack.add(async () => import(pathToFileURL(filepath).href));
-    modules.push(module);
-  }
-
-  return modules;
 }
 
 export default function or<Value1 = any, Value2 = any>(ifExists: Value1, ifNot: Value2): NonNullable<Value1> | Value2 {
   return ifExists !== null && ifExists !== undefined && !Number.isNaN(ifExists)
     ? (ifExists as NonNullable<Value1>)
     : ifNot;
-}
-
-export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
-  return Object.fromEntries(Object.entries(obj).filter(([key]) => !keys.includes(key as K))) as Omit<T, K>;
 }

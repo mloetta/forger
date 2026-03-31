@@ -1,4 +1,3 @@
-import { bot } from 'bot/bot';
 import { collectors } from 'bot/events/interactions';
 import { INVITE_LINK, SUPPORT_SERVER } from 'core/constants';
 import { Emoji } from 'core/emojis';

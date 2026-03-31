@@ -35,7 +35,7 @@ createApplicationCommand({
     if (remove) {
       const removed = await redis.sRem(key, user.id.toString());
       if (removed) {
-        await interaction.respond({
+        await interaction.edit({
           components: [
             {
               type: MessageComponentTypes.Container,
@@ -50,7 +50,7 @@ createApplicationCommand({
           flags: MessageFlags.IsComponentsV2,
         });
       } else {
-        await interaction.respond({
+        await interaction.edit({
           components: [
             {
               type: MessageComponentTypes.Container,
@@ -70,7 +70,7 @@ createApplicationCommand({
     } else {
       const alreadyBlacklisted = await redis.sIsMember(key, user.id.toString());
       if (alreadyBlacklisted) {
-        await interaction.respond({
+        await interaction.edit({
           components: [
             {
               type: MessageComponentTypes.Container,
